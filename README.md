@@ -10,7 +10,7 @@ Featuring projects in the following groups: Ethics, Society, and Technology, Dev
 
 * [How to OREL]() (coming soon).
   
-* Prior GSoC projects have lead to: [Devolearn](https://github.com/DevoLearn/devolearn), [Developmental Braitenberg Vehicles](https://github.com/OREL-group/dBV), [Contextual Geometric Structures](https://github.com/Orthogonal-Research-Lab/CGS)
+* Prior GSoC projects have lead to: [DevoLearn](https://github.com/DevoLearn/devolearn), [Developmental Braitenberg Vehicles](https://github.com/OREL-group/dBV), [Contextual Geometric Structures](https://github.com/Orthogonal-Research-Lab/CGS)
 
 ### Ethics, Technology, and Society
     
