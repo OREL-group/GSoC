@@ -1,6 +1,11 @@
 ## Google Summer of Code Projects 2022
-Ethics, Society, and Technology, DevoWorm, and Rokwire Community
+![](https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png)
+Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community. 
+* [Onboarding guide](https://github.com/devoworm/Proposals-Public-Lectures/blob/master/Onboarding%20Guide/onboarding-guide.md) for 2022 (DevoWorm). 
 
+* [How to OREL]() (coming soon).
+
+![](https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png)
 ### Ethics, Technology, and Society
 #### A Collective Cognition Model for AI Ethics
 
@@ -20,6 +25,7 @@ __Planned Effort__
 350 hours. Mentors: Bradly Alicea (bradly.alicea@outlook.com), Jesse Parent (jtparent2018@gmail.com)
 
 ### DevoWorm
+![](https://github.com/OREL-group/GSoC/blob/main/Media/DW.png)
 #### GNNs as Developmental Networks
 Biological development features many different types of networks: neural connectomes, gene regulatory networks, interactome networks, and anatomical networks. Using cell tracking and high-resolution microscopy, we can reconstruct the origins of these networks in the early embryo. Building on our group's past work in deep learning and pre-trained models, we look to apply graph neural networks (GNNs) to developmental biological analysis.
 
@@ -59,6 +65,7 @@ __Planned Effort__
 175 hours. Mentors: Bradly Alicea (balicea@openworm.org), Susan Crawford-Young (susan.crawfordyoung@gmail.com).
 
 ### Rokwire Community
+![](https://github.com/OREL-group/GSoC/blob/main/Media/RokComm.png)
 #### Interactive Applications for the Open-source Contributors Community
 
 Support the Rokwire Community of mobile developers by creating sample applications as tutorials for new open-source contributors. Rokwire is an open-source platform for developing mobile applications that enable smart communities. Existing applications include the Illinois App (campus app for the University of Illinois Urbana-Champaign) and Safer (a public health and COVID management app).
