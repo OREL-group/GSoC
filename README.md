@@ -2,7 +2,7 @@
 <P>
     <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
 </P>
-Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community. 
+Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community.     
 * [Onboarding guide](https://github.com/devoworm/Proposals-Public-Lectures/blob/master/Onboarding%20Guide/onboarding-guide.md) for 2022 (DevoWorm). 
 
 * [How to OREL]() (coming soon).
