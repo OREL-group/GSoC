@@ -1,12 +1,12 @@
 ## Google Summer of Code Projects 2022
-![](https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png)
+![](https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png)    
 Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community. 
 * [Onboarding guide](https://github.com/devoworm/Proposals-Public-Lectures/blob/master/Onboarding%20Guide/onboarding-guide.md) for 2022 (DevoWorm). 
 
 * [How to OREL]() (coming soon).
 
-![](https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png)
 ### Ethics, Technology, and Society
+![](https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png)
 #### A Collective Cognition Model for AI Ethics
 
 The need for automated evaluation of real-time data is important in a number of sociotechnical contexts. Our group is looking to develop an auditing system and simulation of collective cognition that will improve open-source community sustainability. This interdisciplinary approach to AI ethics will involve both the development of a homeostatic system that encourages cooperative and altruistic interactions, and using simulated data generated through an agent-based model of open-source behaviors and interactions.
