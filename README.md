@@ -1,7 +1,7 @@
 ## Google Summer of Code Projects 2022
 
 <P>
-    <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
+    <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
 </P>
     
 Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community.     
@@ -80,9 +80,11 @@ __Planned Effort__
 175 hours. Mentors: Bradly Alicea (balicea@openworm.org), Susan Crawford-Young (susan.crawfordyoung@gmail.com).
 
 ### Rokwire Community
+    
 <P>
-    <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/RokComm.png">
+    <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/RokComm.png">
 </P>
+
 #### Interactive Applications for the Open-source Contributors Community
 
 Support the Rokwire Community of mobile developers by creating sample applications as tutorials for new open-source contributors. Rokwire is an open-source platform for developing mobile applications that enable smart communities. Existing applications include the Illinois App (campus app for the University of Illinois Urbana-Champaign) and Safer (a public health and COVID management app).
