@@ -15,7 +15,7 @@ Featuring projects in the following groups: Ethics, Society, and Technology, Dev
 ### Ethics, Technology, and Society
     
 <P>
-    <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png">
+    <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png">
 </P>
 
 #### A Collective Cognition Model for AI Ethics
@@ -38,7 +38,7 @@ __Planned Effort__
 ### DevoWorm
     
 <P>
-    <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/DW.png">
+    <IMG align="center" height = "115" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/DW.png">
 </P>
 
 #### GNNs as Developmental Networks
@@ -82,7 +82,7 @@ __Planned Effort__
 ### Rokwire Community
     
 <P>
-    <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/RokComm.png">
+    <IMG align="center" height = "100" width = "200" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/RokComm.png">
 </P>
 
 #### Interactive Applications for the Open-source Contributors Community
