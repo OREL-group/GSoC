@@ -1,8 +1,11 @@
 ## Google Summer of Code Projects 2022
+
 <P>
     <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
 </P>
+    
 Featuring projects in the following groups: Ethics, Society, and Technology, DevoWorm, and Rokwire Community.     
+    
 * [Onboarding guide](https://github.com/devoworm/Proposals-Public-Lectures/blob/master/Onboarding%20Guide/onboarding-guide.md) for 2022 (DevoWorm). 
 
 * [How to OREL]() (coming soon).
@@ -10,9 +13,11 @@ Featuring projects in the following groups: Ethics, Society, and Technology, Dev
 * Prior GSoC projects have lead to: [Devolearn](https://github.com/DevoLearn/devolearn), [Developmental Braitenberg Vehicles](https://github.com/OREL-group/dBV), [Contextual Geometric Structures](https://github.com/Orthogonal-Research-Lab/CGS)
 
 ### Ethics, Technology, and Society
+    
 <P>
     <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/OREL.png">
 </P>
+
 #### A Collective Cognition Model for AI Ethics
 
 The need for automated evaluation of real-time data is important in a number of sociotechnical contexts. Our group is looking to develop an auditing system and simulation of collective cognition that will improve open-source community sustainability. This interdisciplinary approach to AI ethics will involve both the development of a homeostatic system that encourages cooperative and altruistic interactions, and using simulated data generated through an agent-based model of open-source behaviors and interactions.
@@ -31,9 +36,11 @@ __Planned Effort__
 350 hours. Mentors: Bradly Alicea (bradly.alicea@outlook.com), Jesse Parent (jtparent2018@gmail.com)
 
 ### DevoWorm
+    
 <P>
     <IMG align="center" height = "40%" width = "40%" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/DW.png">
 </P>
+
 #### GNNs as Developmental Networks
 Biological development features many different types of networks: neural connectomes, gene regulatory networks, interactome networks, and anatomical networks. Using cell tracking and high-resolution microscopy, we can reconstruct the origins of these networks in the early embryo. Building on our group's past work in deep learning and pre-trained models, we look to apply graph neural networks (GNNs) to developmental biological analysis.
 
