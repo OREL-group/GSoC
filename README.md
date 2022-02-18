@@ -101,7 +101,7 @@ This project requires familiarity with some or all of the following languages: P
 __Planned Effort__
 350 hours. Mentors: Bradly Alicea (balicea@illinois.edu), Sandeep Puthanveetil Satheesan (sandeeps@illinois.edu)
 
-Extended Reality (XR) for Open-source Community-building
+#### Extended Reality (XR) for Open-source Community-building
 Help the Rokwire Community to develop an extended reality (XR) infrastructure. The focus will be building upon the Mozilla platforms A-Frame (web framework), Mozilla Hubs (virtual rooms), and Spoke (3-D social scenes). Your efforts will culminate in two outcomes. The first outcomes involves developing a pipeline of virtual experiences for education and collaboration in the Rokwire Community. Secondarily, we would like to develop Augmented Reality resources to be integrated into mobile apps. Contribute to our broader vision of smart communities in XR! 
 
 __Skills/Requirements__
