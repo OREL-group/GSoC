@@ -109,3 +109,30 @@ Familiarity with Unity or Blender is a must. Experience with C++, Python, or Jav
 
 __Planned Effort__
 175 hours. Mentors: Bradly Alicea (balicea@illinois.edu).
+    
+### Towhee
+    
+#### Towhee Open Source Machine Learning Pipelines
+Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing 
+everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. The idea of the Towhee project is to sweep out those obstacles and make MLops significantly easier. Support Towhee community by creating pipelines for STEM. Interdisciplinary pipelines which reach diversified audience. 
+    
+__Some of Towhee's key features include__    
+* easy ML for everyone: Run a machine learning pipeline with less than five lines of code.
+
+* rich operators and pipelines: Collaborate and share pipelines with the open source community.
+
+* automatic versioning: Our versioning mechanism for pipelines and operators ensures that you never run into dependency hell. Support for fine-tuning models: Feed your dataset into our Trainer and get a new model in just a few easy steps.
+    
+* deploy to cloud (to be implemented): Ready-made pipelines can be deployed to the cloud with minimal effort.
+
+__What can I do before GSoC?__    
+Find us on [GitHub](http://www.github.com/towhee-io), join our [Slack Channel](http://slack.towhee.io), follow us on [Twitter](https://www.twitter.com/towheeio), visit our [Towhee hub](https://towhee.io). Join our Office Hours every Thursday from 4-5pm PST.
+
+You can also build a basic prototype for this project. Please feel free to join the Towhee Slack or attend our Office Hour to raise questions/discussions 
+regarding your approach to the problem.
+    
+__Skills/requirements__   
+Pytorch and good understanding of python programming language along with interest in interdisciplinary research.
+
+__Planned Effort__    
+350 hours Mentors: Krishna Katyal [(krishnakatyal5121@gmail.com)](mailto:krishnakatyal5121@gmail.com), Frank Liu [(frank.zijie@gmail.com)](mailto:frank.zijie@gmail.com).
