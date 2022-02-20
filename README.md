@@ -111,10 +111,13 @@ __Planned Effort__
 175 hours. Mentors: Bradly Alicea (balicea@illinois.edu).
     
 ### Towhee
+
+<P>
+    <IMG align="center" height = "100" width = "200" SRC="https://github.com/OREL-group/GSoC/blob/main/towhee.png">
+</P>
     
 #### Towhee Open Source Machine Learning Pipelines
-Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing 
-everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. The idea of the Towhee project is to sweep out those obstacles and make MLops significantly easier. Support Towhee community by creating pipelines for STEM. Interdisciplinary pipelines which reach diversified audience. 
+Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. The idea of the Towhee project is to sweep out those obstacles and make MLops significantly easier. Support Towhee community by creating pipelines for STEM. Interdisciplinary pipelines which reach diversified audience. 
     
 __Some of Towhee's key features include__    
 * easy ML for everyone: Run a machine learning pipeline with less than five lines of code.
