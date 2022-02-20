@@ -113,7 +113,7 @@ __Planned Effort__
 ### Towhee
 
 <P>
-    <IMG align="center" height = "100" width = "200" SRC="https://github.com/OREL-group/GSoC/blob/main/towhee.png">
+    <IMG align="center" height = "50" width = "200" SRC="https://github.com/OREL-group/GSoC/blob/main/towhee.png">
 </P>
     
 #### Towhee Open Source Machine Learning Pipelines
