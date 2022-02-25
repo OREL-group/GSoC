@@ -55,11 +55,11 @@ DevoWorm is an interdisciplinary group engaged in both computational and biologi
 __What can I do before GSoC?__
 You can ask one of the mentors to direct you to the data source and you can start working on it. Please feel free to join the OpenWorm Slack or attend our meetings to raise questions/discussions regarding your approach to the problem.
 
-DevoWorm website: link
+DevoWorm website: [link](https://devoworm.weebly.com/)
 
-DevoLearn (preprint): link
+DevoLearn (preprint): [link](https://www.researchgate.net/publication/357648139_DevoLearn_Machine_Learning_Models_and_Education_that_Enable_Computational_Developmental_Biology)
 
-DevoWorm AI: link
+DevoWorm AI: [link](https://devoworm.github.io/DevoWormAi/)
 
 __Skills/requirements__
 PyTorch/Tensorflow (PyTorch will be preferred because all our other models are on that framework already) Wrangling with video data Building a simple GUI on top of the model to run it on local systems (on Linux/windows/macOS). Basic knowledge of biology and complex networks theory would be helpful.
