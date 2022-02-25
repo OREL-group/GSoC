@@ -47,7 +47,7 @@ Difficulty: __Moderate to Hard__. 350 hours. Mentors: Bradly Alicea (bradly.alic
 #### GNNs as Developmental Networks
 Biological development features many different types of networks: neural connectomes, gene regulatory networks, interactome networks, and anatomical networks. Using cell tracking and high-resolution microscopy, we can reconstruct the origins of these networks in the early embryo. Building on our group's past work in deep learning and pre-trained models, we look to apply graph neural networks (GNNs) to developmental biological analysis.
 
-__Expected Outcomes__  
+__Expected Outcomes__
 We seek to create graph embeddings that resemble actual biological networks found throughout development. Potential activities include growing graph embeddings using biological rules, differentiation of nodes in the network, and GNNs that generate different types of movement output based on movement seen in microscopy movies. The goal is to create a library of GNNs that can simulate developmental processes by analyzing time-series microscopy data.
 
 DevoWorm is an interdisciplinary group engaged in both computational and biological data analysis. We have weekly meetings on Jit.si, and are a part of the OpenWorm Foundation. You may also have the chance to work with our DevoLearn (open-source pre-trained deep learning) software, in addition to adding your contributions to the DevoWorm AI library.
@@ -70,7 +70,7 @@ Difficulty: __Moderate__. 175 hours. Mentors: Bradly Alicea (balicea@illinois.ed
 #### Digital Microsphere
 This project will build upon the specialized microscopy techniques to develop a shell composed of projected microscopy images, arranged to represent the full external surface of a sphere. This will allow us to create an atlas of the embryo’s outer surface, which in some species (e.g. Axolotl) enables us to have a novel perspective on neural development. 
     
-__Exprected Outcomes__    
+__Expected Outcomes__
 You will build a computational tool that allows us to visualize 4D data derived from the surface of an Axolotl embryo. The spatial model and animation (4th dimension) of microscopy image data can be created in a 3-D modeling software of your choice.  
 
 __What can I do before GSoC?__
@@ -128,9 +128,6 @@ Difficulty: __Easy__. 175 hours. Mentors: Bradly Alicea (balicea@illinois.edu).
 #### Towhee Open Source Machine Learning Pipelines
 Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. 
     
-__Expected Outcomes__
-Contribute to our library of pipelines (improve upon or create anew). Work with the mentors to find problem doomains for the Towhee libraries. As a contributor to the Towhee project, you will be working towards making MLops significantly easier. Your efforts will also support the Towhee community by creating Interdisciplinary STEM pipelines which diversified audiences. 
-    
 __Some of Towhee's key features include__    
 * easy ML for everyone: Run a machine learning pipeline with less than five lines of code.
 
@@ -139,15 +136,18 @@ __Some of Towhee's key features include__
 * automatic versioning: Our versioning mechanism for pipelines and operators ensures that you never run into dependency hell. Support for fine-tuning models: Feed your dataset into our Trainer and get a new model in just a few easy steps.
     
 * deploy to cloud (to be implemented): Ready-made pipelines can be deployed to the cloud with minimal effort.
-
-__What can I do before GSoC?__    
+    
+__Expected Outcomes__
+Contribute to our library of pipelines (improve upon or create anew). Work with the mentors to find problem doomains for the Towhee libraries. As a contributor to the Towhee project, you will be working towards making MLops significantly easier. Your efforts will also support the Towhee community by creating Interdisciplinary STEM pipelines which diversified audiences. 
+    
+__What can I do before GSoC?__
 Find us on [GitHub](http://www.github.com/towhee-io), join our [Slack Channel](http://slack.towhee.io), follow us on [Twitter](https://www.twitter.com/towheeio), visit our [Towhee hub](https://towhee.io). Join our Office Hours every Thursday from 4-5pm PST.
 
 You can also build a basic prototype for this project. Please feel free to join the Towhee Slack or attend our Office Hour to raise questions/discussions 
 regarding your approach to the problem.
     
-__Skills/requirements__   
+__Skills/requirements__
 Pytorch and good understanding of python programming language along with interest in interdisciplinary research.
 
-__Planned Effort__    
+__Planned Effort__
 Difficulty: __Moderate__. 350 hours Mentors: Krishna Katyal [(krishnakatyal5121@gmail.com)](mailto:krishnakatyal5121@gmail.com), Frank Liu [(frank.zijie@gmail.com)](mailto:frank.zijie@gmail.com).
