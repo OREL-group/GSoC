@@ -26,7 +26,7 @@ The need for automated evaluation of real-time data is important in a number of 
 
 In taking a cybernetic approach, the candidate will build an analytical model that incorporates features such as general feedback loops (recurrent relationships) and causal loops (reciprocal causality). This might be in the form of a traditional boxes and arrows (input-output) model, or something more exotic such as Reinforcement Learning. Applicants might take inspiration from Mick Ashby’s ethical regulator (https://en.wikipedia.org/wiki/Ethical_regulator).
 
-    __Expected Outcomes__
+__Expected Outcomes__
 The broader goal is to build a model of cultural evolution that will encourage desired behaviors. The first part of this project will involve building a computational system to model the resources, activities, and interrelationships of an open-source community. The second part of the project will involve simulating this community using an agent-based model, which will provide the candidate with output data necessary to train and benchmark the cybernetic model.
 
 __What can I do before GSoC?__
