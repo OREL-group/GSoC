@@ -26,6 +26,7 @@ The need for automated evaluation of real-time data is important in a number of 
 
 In taking a cybernetic approach, the candidate will build an analytical model that incorporates features such as general feedback loops (recurrent relationships) and causal loops (reciprocal causality). This might be in the form of a traditional boxes and arrows (input-output) model, or something more exotic such as Reinforcement Learning. Applicants might take inspiration from Mick Ashby’s ethical regulator (https://en.wikipedia.org/wiki/Ethical_regulator).
 
+    __Expected Outcomes__
 The broader goal is to build a model of cultural evolution that will encourage desired behaviors. The first part of this project will involve building a computational system to model the resources, activities, and interrelationships of an open-source community. The second part of the project will involve simulating this community using an agent-based model, which will provide the candidate with output data necessary to train and benchmark the cybernetic model.
 
 __What can I do before GSoC?__
@@ -35,7 +36,7 @@ __Requirements__
 Expertise or the ability to learn Python, Julia, or Kotlin (for the cybernetic model) and Scala and Java (for the agent-based model). The ability to extract model representations from complex systems is helpful. Knowledge of open-source development practices and an interest in interdisciplinary research are a must.
 
 __Planned Effort__
-350 hours. Mentors: Bradly Alicea (bradly.alicea@outlook.com), Jesse Parent (jtparent2018@gmail.com)
+Difficulty: __Moderate to Hard__. 350 hours. Mentors: Bradly Alicea (bradly.alicea@outlook.com), Jesse Parent (jtparent2018@gmail.com)
 
 ### DevoWorm
     
@@ -46,6 +47,7 @@ __Planned Effort__
 #### GNNs as Developmental Networks
 Biological development features many different types of networks: neural connectomes, gene regulatory networks, interactome networks, and anatomical networks. Using cell tracking and high-resolution microscopy, we can reconstruct the origins of these networks in the early embryo. Building on our group's past work in deep learning and pre-trained models, we look to apply graph neural networks (GNNs) to developmental biological analysis.
 
+__Expected Outcomes__  
 We seek to create graph embeddings that resemble actual biological networks found throughout development. Potential activities include growing graph embeddings using biological rules, differentiation of nodes in the network, and GNNs that generate different types of movement output based on movement seen in microscopy movies. The goal is to create a library of GNNs that can simulate developmental processes by analyzing time-series microscopy data.
 
 DevoWorm is an interdisciplinary group engaged in both computational and biological data analysis. We have weekly meetings on Jit.si, and are a part of the OpenWorm Foundation. You may also have the chance to work with our DevoLearn (open-source pre-trained deep learning) software, in addition to adding your contributions to the DevoWorm AI library.
@@ -63,10 +65,13 @@ __Skills/requirements__
 PyTorch/Tensorflow (PyTorch will be preferred because all our other models are on that framework already) Wrangling with video data Building a simple GUI on top of the model to run it on local systems (on Linux/windows/macOS). Basic knowledge of biology and complex networks theory would be helpful.
 
 __Planned Effort__
-175 hours. Mentors: Bradly Alicea (balicea@illinois.edu), TBA
+Difficulty: __Moderate__. 175 hours. Mentors: Bradly Alicea (balicea@illinois.edu), TBA
 
 #### Digital Microsphere
-This project will build upon the specialized microscopy techniques to develop a shell composed of projected microscopy images, arranged to represent the full external surface of a sphere. This will allow us to create an atlas of the embryo’s outer surface, which in some species (e.g. Axolotl) enables us to have a novel perspective on neural development. You will build a computational tool that allows us to visualize 4D data derived from the surface of an Axolotl embryo.
+This project will build upon the specialized microscopy techniques to develop a shell composed of projected microscopy images, arranged to represent the full external surface of a sphere. This will allow us to create an atlas of the embryo’s outer surface, which in some species (e.g. Axolotl) enables us to have a novel perspective on neural development. 
+    
+__Exprected Outcomes__    
+You will build a computational tool that allows us to visualize 4D data derived from the surface of an Axolotl embryo. The spatial model and animation (4th dimension) of microscopy image data can be created in a 3-D modeling software of your choice.  
 
 __What can I do before GSoC?__
 Build basic prototypes for this project and discuss about them with the mentors, then read these papers:
@@ -79,7 +84,7 @@ __Skills/requirements__
 Handling higher dimensional microscopy data (preferably also creating an API to load them as tensors for computation on the GPU). Building an intuitive GUI (or a web interface). Feature extraction (canny edges/thresholding/denoising).
 
 __Planned Effort__
-175 hours. Mentors: Bradly Alicea (balicea@openworm.org), Susan Crawford-Young (susan.crawfordyoung@gmail.com).
+Difficulty: __Easy to Moderate__. 175 hours. Mentors: Bradly Alicea (balicea@openworm.org), Susan Crawford-Young (susan.crawfordyoung@gmail.com).
 
 ### Rokwire Community
     
@@ -91,24 +96,28 @@ __Planned Effort__
 
 Support the Rokwire Community of mobile developers by creating sample applications as tutorials for new open-source contributors. [Rokwire](https://rokwire.org/) is an open-source platform for developing mobile applications that enable smart communities. Existing applications include the Illinois App (campus app for the University of Illinois Urbana-Champaign) and Safer (a public health and COVID management app).
 
-We are interested in creating programming templates in the form of interactive programming. This will consist of breaking down the steps to creating things in Rokwire and demonstrating this to potential open-source contributors. These programming templates will be distributable in the form of video tutorials and digital notebooks. These templates will allow open-source contributors with limited understanding of the architecture to create their own capabilities and talents for inclusion as functionality in a community mobile app.
-
 One prerequisite to this project is to develop a working understanding of the Rokwire architecture. A starting point for this is the [Building Blocks API](https://github.com/rokwire/rokwire-building-blocks-api) and various [Community Wiki](https://github.com/rokwire/rokwire-community/wiki/API-Ecosystem-Diagram) entries. In Rokwire, capabilities and talents are build atop the Rokwire building blocks, which enable users to have a customized, privacy-assured experience. Your efforts will also help to facilitate adoption of the Rokwire platform, serve to establish a set of community standards, and participate in educational opportunities related to open-source. 
+    
+__Expected Outcomes__
+We are interested in creating programming templates in the form of interactive programming. This will consist of breaking down the steps to creating things in Rokwire and demonstrating this to potential open-source contributors. These programming templates will be distributable in the form of video tutorials and digital notebooks. These templates will allow open-source contributors with limited understanding of the architecture to create their own capabilities and talents for inclusion as functionality in a community mobile app.
 
 __Skills/requirements__
 This project requires familiarity with some or all of the following languages: Python, Golang, Dart, and Flutter.
 
 __Planned Effort__
-350 hours. Mentors: Bradly Alicea (balicea@illinois.edu), Sandeep Puthanveetil Satheesan (sandeeps@illinois.edu)
+Difficulty: __Moderate to Hard__. 350 hours. Mentors: Bradly Alicea (balicea@illinois.edu), Sandeep Puthanveetil Satheesan (sandeeps@illinois.edu)
 
 #### Extended Reality (XR) for Open-source Community-building
-Help the Rokwire Community to develop an extended reality (XR) infrastructure. The focus will be building upon the Mozilla platforms A-Frame (web framework), Mozilla Hubs (virtual rooms), and Spoke (3-D social scenes). Your efforts will culminate in two outcomes. The first outcomes involves developing a pipeline of virtual experiences for education and collaboration in the Rokwire Community. Secondarily, we would like to develop Augmented Reality resources to be integrated into mobile apps. Contribute to our broader vision of smart communities in XR! 
+Help the Rokwire Community to develop an extended reality (XR) infrastructure. The focus will be building upon the Mozilla platforms A-Frame (web framework), Mozilla Hubs (virtual rooms), and Spoke (3-D social scenes). 
+
+__Expected Outcomes__
+Your efforts will culminate in two outcomes. The first outcomes involves developing a pipeline of virtual experiences for education and collaboration in the Rokwire Community. Secondarily, we would like to develop Augmented Reality resources to be integrated into mobile apps. Contribute to our broader vision of smart communities in XR! 
 
 __Skills/Requirements__
 Familiarity with Unity or Blender is a must. Experience with C++, Python, or Java are desirable.
 
 __Planned Effort__
-175 hours. Mentors: Bradly Alicea (balicea@illinois.edu).
+Difficulty: __Easy__. 175 hours. Mentors: Bradly Alicea (balicea@illinois.edu).
     
 ### Towhee
 
@@ -117,7 +126,10 @@ __Planned Effort__
 </P>
     
 #### Towhee Open Source Machine Learning Pipelines
-Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. The idea of the Towhee project is to sweep out those obstacles and make MLops significantly easier. Support Towhee community by creating pipelines for STEM. Interdisciplinary pipelines which reach diversified audience. 
+Towhee is a flexible, application-oriented framework for running machine learning (ML) pipelines. It is a Python project that aims to make greatly simple anything2vec, allowing everyone - from beginner developers to large organizations - to deploy complex pipelines with just a few lines of code. It has become a common practice among the industry to drive data applications with neural network models. Applications involving embedding can be seen in all walks of life, such as product recommender system, copyright protection, data management, software security, new drug discovery, finance, insurance, etc. Despite the fact that the concept of "embed everything" has prevailed in academia and industry in recent years, how to embed unstructured data reasonably and efficiently based on business needs is still an urgent problem that has not yet been resolved. 
+    
+__Expected Outcomes__
+Contribute to our library of pipelines (improve upon or create anew). Work with the mentors to find problem doomains for the Towhee libraries. As a contributor to the Towhee project, you will be working towards making MLops significantly easier. Your efforts will also support the Towhee community by creating Interdisciplinary STEM pipelines which diversified audiences. 
     
 __Some of Towhee's key features include__    
 * easy ML for everyone: Run a machine learning pipeline with less than five lines of code.
@@ -138,4 +150,4 @@ __Skills/requirements__
 Pytorch and good understanding of python programming language along with interest in interdisciplinary research.
 
 __Planned Effort__    
-350 hours Mentors: Krishna Katyal [(krishnakatyal5121@gmail.com)](mailto:krishnakatyal5121@gmail.com), Frank Liu [(frank.zijie@gmail.com)](mailto:frank.zijie@gmail.com).
+Difficulty: __Moderate__. 350 hours Mentors: Krishna Katyal [(krishnakatyal5121@gmail.com)](mailto:krishnakatyal5121@gmail.com), Frank Liu [(frank.zijie@gmail.com)](mailto:frank.zijie@gmail.com).
