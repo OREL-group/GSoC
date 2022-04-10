@@ -1,6 +1,6 @@
 ## Google Summer of Code Projects 2022
 
-[Apply to our projects here](https://summerofcode.withgoogle.com/) (through April 19).
+#### [Apply to our projects here](https://summerofcode.withgoogle.com/) (through April 19).
 
 <P>
     <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
