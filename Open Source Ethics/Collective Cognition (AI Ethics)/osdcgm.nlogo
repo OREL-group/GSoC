@@ -1,3 +1,5 @@
+extensions [ array ]
+
 ;;
 ;  Variable Instantiations
 ;;
@@ -20,7 +22,7 @@ turtles-own [
   ; repo variables
   agent_prs
   agent_issues
-  agent_code
+  agent_contrib_size
   agent_efficiency_quality
   agent_efficiency_quantity
   agent_engagement
@@ -53,6 +55,7 @@ to go
   get-sensory-info
   update-internal
   take-action
+  ; update world after action
   update-world
 
   tick
@@ -63,9 +66,10 @@ end
 ;  Initialization Functions
 ;;
 
-; initialize the variables of the world, repo size, PRs, Issues, number of agents
+; initialize variables of the world, repo size, PRs, Issues, number of agents
 to initialize-world
-  set repo_size (random 1000.0) ; set a random repo size to start
+  set issues array:from-list []
+  ;set repo_size (random 1000.0) ; set a random repo size to start
   make-prs (random 6) ; make a random number of PRs
   make-issues (random 6) ; make a random number of Issues
 end
@@ -74,10 +78,38 @@ end
 ; engagement index, and efficiency index
 to initialize-agents
   crt num_agents [ ; create a number of turtles
-    set agent_role (one-of ["admin" "dev" "other"]) ; set their roles randomly (note: this should be more sophisticated)
-    set agent_engagement (random 1.0) ; set the engagement index
-    set agent_efficiency_quantity (random 1.0) ; set the quantity position
-    set agent_efficiency_quality (random 1.0) ; set the quality position
+    ; (note: this should all be more sophisticated)
+    set agent_contrib_size (random 1000.0) ; set a random
+    set repo_size (repo_size + agent_contrib_size)
+
+    set agent_role (one-of ["admin" "dev" "other"]) ; set their roles randomly
+    set agent_engagement (random 100) / 100 ; set the engagement index
+    set agent_efficiency_quantity (random 100) / 100 ; set the quantity position
+    set agent_efficiency_quality (random 100) / 100 ; set the quality position
+
+    ; bootstrap active inference variables
+    set agent_states array:from-list [0.1 0.1 0.1 0.7]
+    set agent_targets array:from-list [0.7 0.1 0.1 0.1]
+    set agent_ToM array:from-list [0.1 0.9]
+    set agent_goal_alignment array:from-list [0.2 0.8]
+
+    ; arrange on screen
+    ;setxy random-xcor random-ycor
+    ;setxy (random 10.0) (random 10.0)
+    setxy ((agent_efficiency_quantity * max-pxcor * 2) - max-pxcor) ((agent_efficiency_quality * max-pycor * 2) - max-pycor)
+    ifelse agent_role = "admin" [
+      set shape "house"
+      set color (list (agent_engagement * 255) 0 0)
+    ]
+    [
+      ifelse agent_role = "dev" [
+        set color (list 0 (agent_engagement * 255) 0)
+      ]
+      [
+        set shape "person"
+        set color (list 0 0 (agent_engagement * 255))
+      ]
+    ]
   ]
 end
 
@@ -87,22 +119,24 @@ end
 ;;
 
 to make-prs [num_prs]
+  set prs array:from-list n-values num_prs [""]
   let i 0 ; starting with i=0
   loop [ ; make num_prs PRs
     if num_prs = i [ stop ]
     let code "code string"
     let new_pr code
-    show insert-item 0 prs new_pr ; add created PR to prs
+    array:set prs i new_pr ; add created PR to prs
     set i (i + 1)
   ]
 end
 
 to make-issues [num_issues]
+  set issues array:from-list n-values num_issues [""]
   let i 0
   loop [
     if num_issues = i [ stop ]
     let new_issue "issue string"
-    show insert-item 0 issues new_issue ; add create Issue to issues
+    array:set issues i new_issue ; add create Issue to issues
     set i (i + 1)
   ]
 end
@@ -129,9 +163,11 @@ end
 
 ; update world state
 to update-world
-
+  set repo_size 0
+  ask turtles [
+    set repo_size sum [agent_contrib_size] of turtles
+  ]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -147,8 +183,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
@@ -169,7 +205,7 @@ num_agents
 num_agents
 0
 100
-50.0
+49.0
 1
 1
 NIL
@@ -189,6 +225,69 @@ churn_rate
 1
 NIL
 HORIZONTAL
+
+PLOT
+3
+122
+203
+272
+churn
+ticks
+burn out rate
+0.0
+100.0
+0.0
+1.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
+
+MONITOR
+67
+286
+140
+331
+repo size
+repo_size
+17
+1
+11
+
+BUTTON
+6
+293
+62
+326
+setup
+setup\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+144
+294
+199
+327
+go
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
