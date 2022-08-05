@@ -1,4 +1,4 @@
-extensions [ array ]
+extensions [ array matrix py ]
 
 ;;
 ;  Variable Instantiations
@@ -10,15 +10,20 @@ globals [
   repo_size
   prs
   issues
+  horizon
   ; num_agents
   ; churn_rate
+  ; GLOBALS from Kaufmann et al
+  ENV_SIZE
 ]
+
+breed [ members member ]
 
 ; turtles own variables belong to each agent, and correspond to the aforementioned pr and issue arrays
 ; also their code contributions (and corresponding size), efficiency and engagement index, their role,
 ; and the states they are in, which contains the state space matrices, along with their target encodings
 ; also each agent's theory of mind (ToM) and goal alginment
-turtles-own [
+members-own [
   ; repo variables
   agent_prs
   agent_issues
@@ -32,12 +37,23 @@ turtles-own [
   agent_targets
   agent_ToM
   agent_goal_alignment
+  ; HMM variables
+  agent_transitions
+  agent_prior
+  agent_state
+  ; other agent variables
+  other_agents
 ]
 
 ; set up the world, and the agents
 to setup
   ca
 
+  ; initialize python
+  py:setup py:python3
+  py:run "import numpy as np"
+  ;py:run "import pandas as pd"
+  ;show py:runresult "1 + 1"
   initialize-world
   initialize-agents
 
@@ -52,13 +68,68 @@ to go
   ; sense environment,
   ; optimize belief distribution relative to sensory inputs and
   ; act to reduce FE relative to desired beliefs
-  get-sensory-info
-  update-internal
-  take-action
-  ; update world after action
-  update-world
+  ask members [
+    get-sensory-info
+    update-internal
+    take-action
+    ; update world after action
+    update-world
+  ]
 
   tick
+end
+
+
+;;
+;  Python Helper Functions
+;;
+to-report model_encoding [b]
+  report (softmax b)
+end
+
+to-report model_encoding_derivative [b]
+  report (D_softmax (model_encoding b))
+end
+
+to-report variational_density [b]
+  report (model_encoding b)
+end
+
+to-report logdiff [p1 p2]
+  report (py:runresult "(np.log(p1) - np.log(p2))")
+end
+
+to-report KLv [p1 p2]
+  py:set "log_diff" (logdiff p1 p2)
+  report (py:runresult "np.multiply(p1, logdiff)")
+end
+
+to-report KL [p1 p2]
+  py:set "KL_v" (KLv p1 p2)
+  report (py:runresult "np.sum(KL_v)")
+end
+
+to-report softmax [b]
+  py:run "sum = np.sum(np.exp(b - b.max()))"
+  report (py:runresult "np.exp(b-b.max()) / sum")
+end
+
+to-report D_softmax [q]
+  report (py:runresult "np.diag(q) - np.outer(q, q)")
+end
+
+to-report rerange [q a]
+  report (a * q + (1 - a) / ENV_SIZE)
+end
+
+to-report dynamic_rerange [q]
+  let p (py:runresult "p = []")
+  let q_hat (py:runresult "q_hat = 0.9 * q / np.max(q)")
+  ;py.run "p.append(q_hat)"
+  ;py.run "A = (1-q_hat) / (np.roll(q, 1) + np.roll(q, -1))"
+  ;py.run "p.append(np.roll(q, -1) * A)" ; a_p = -1
+  ;py.run "p.append(np.roll(q, +1) * A)" ; a_p = +1
+  ;report py.runresult "np.array(p)"
 end
 
 
@@ -72,12 +143,14 @@ to initialize-world
   ;set repo_size (random 1000.0) ; set a random repo size to start
   make-prs (random 6) ; make a random number of PRs
   make-issues (random 6) ; make a random number of Issues
+  set horizon 1
+  ; check that python is working
 end
 
 ; initialize the agents, number of agents, role (admin, dev, or other),
 ; engagement index, and efficiency index
 to initialize-agents
-  crt num_agents [ ; create a number of turtles
+  create-members num_agents [ ; create a number of turtles
     ; (note: this should all be more sophisticated)
     set agent_contrib_size (random 1000.0) ; set a random
     set repo_size (repo_size + agent_contrib_size)
@@ -87,11 +160,27 @@ to initialize-agents
     set agent_efficiency_quantity (random 100) / 100 ; set the quantity position
     set agent_efficiency_quality (random 100) / 100 ; set the quality position
 
+    set agent_state 2 ; start the agent at 2, engagement
+
     ; bootstrap active inference variables
-    set agent_states array:from-list [0.1 0.1 0.1 0.7]
-    set agent_targets array:from-list [0.7 0.1 0.1 0.1]
-    set agent_ToM array:from-list [0.1 0.9]
-    set agent_goal_alignment array:from-list [0.2 0.8]
+    ; set up Active Inference arrays
+    ;set agent_states array:from-list [0.1 0.1 0.1 0.7]
+    ;set agent_targets array:from-list [0.7 0.1 0.1 0.1]
+    ;set agent_ToM array:from-list [0.1 0.9]
+    ;set agent_goal_alignment array:from-list [0.2 0.8]
+    ; set up HMM matrices
+    ; A = outcomes (qual+, quan+, qual-, quan-, eng+, eng-) x states (maximal: qual, quan, eng)
+    set agent_states matrix:from-row-list [[1 0 0] [0 1 0] [-1 0 0] [0 -1 0] [0 0 1] [0 0 -1]]
+    ; B = which index is maxed, next state by current state
+    set agent_transitions matrix:from-row-list [[2 1 1] [0 2 0] [1 0 2]]
+    set agent_transitions (agent_transitions matrix:* (1 / 3))
+    ; D = prior index, states by first state
+    set agent_prior matrix:from-row-list [[0] [0] [1]]
+
+    ; other_agent information
+    ;create array of all other agents within horizon range
+    ;set other_agents array:from-list (list (ask turtles with [xcor < agent_efficiency_quality and ycor < agent_efficiency_quantity][turtles])
+    ;fill array with information on these agents, position (quantity, quality), engagement, goal alignment, ToM
 
     ; arrange on screen
     ;setxy random-xcor random-ycor
@@ -148,35 +237,37 @@ end
 
 ; update the sensory state with variables from world, within engagement horizon, globals (PR, Issues, Repo Size)
 to get-sensory-info
+  ; find the local horizon of the given agent
+  let horizon-value (agent_engagement * horizon)
+  ; look around at all the agents around that agent and their holdings?
 
+  ; OR fill variables with info
 end
 
 ; update internal state based on sensory state, ToM, position/index values,
 to update-internal
-
+  ; run state through B to determine next state
+  set agent_state 1
 end
 
 ; take an action based on target encoding
 to take-action
-
+   ; decide an action
 end
 
 ; update world state
 to update-world
-  set repo_size 0
-  ask turtles [
-    set repo_size sum [agent_contrib_size] of turtles
-  ]
+  set repo_size (agent_contrib_size + repo_size)
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-647
-448
+661
+462
 -1
 -1
-13.0
+13.42424242424243
 1
 10
 1
