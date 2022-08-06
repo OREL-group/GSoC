@@ -38,25 +38,20 @@ members-own [
   agent_targets
   agent_ToM
   agent_goal_alignment
-  ; HMM variables
+  agent_actions
+  ; POMDP variables
   agent_state
   agent_transitions
   agent_prior
-  ; Kaufmann variables
-  psi
-  alterity
-  sensory_dynamics
-  b
-  b_star
-  q
-  q_star
-  p_ap
-  a
-  a_pp
-  delta
+  matrix_A
+  matrix_B
+  matrix_C
+  matrix_D
+  matrix_G
   ; other agent variables
   other_agents
 ]
+
 
 ; set up the world, and the agents
 to setup
@@ -92,83 +87,6 @@ to go
   tick
 end
 
-
-;;
-;  Python Helper Functions
-;;
-to-report model_encoding [f_b]
-  report (softmax f_b)
-end
-
-to-report model_encoding_derivative [f_b]
-  report (D_softmax (model_encoding f_b))
-end
-
-to-report variational_density [f_b]
-  report (model_encoding f_b)
-end
-
-to-report logdiff [p1 p2]
-  py:set "p1" p1
-  py:set "p2" p2
-  report (py:runresult "(np.log(p1) - np.log(p2))")
-end
-
-to-report KLv [p1 p2]
-  py:set "log_diff" (logdiff p1 p2)
-  report (py:runresult "np.multiply(p1, logdiff)")
-end
-
-to-report KL [p1 p2]
-  py:set "KL_v" (KLv p1 p2)
-  report (py:runresult "np.sum(KL_v)")
-end
-
-to-report softmax [f_b]
-  py:set "b" f_b
-  py:run "sum = np.sum(np.exp(b - b.max()))"
-  report (py:runresult "np.exp(b-b.max()) / sum")
-end
-
-to-report D_softmax [f_q]
-  py:set "q" f_q
-  report (py:runresult "np.diag(q) - np.outer(q, q)")
-end
-
-to-report rerange [f_q f_a]
-  report (f_a * f_q + (1 - f_a) / ENV_SIZE)
-end
-
-to-report dynamic_rerange [f_q]
-  py:set "q" f_q
-  (py:run
-    "p = []"
-    "q_hat = 0.9 * q / np.max(q)"
-    "p.append(q_hat)"
-    "A = (1-q_hat) / (np.roll(q, 1) + np.roll(q, -1))"
-    "p.append(np.roll(q, -1) * A)" ; a_p = -1
-    "p.append(np.roll(q, +1) * A)")
-  report py:runresult "np.array(p)"
-end
-
-
-;;
-;  Agent Class Functions from Kaumann et al
-;;
-
-to init_agent [n_psi n_b_star perceptiveness n_alterity alignment]
-  set psi n_psi
-  set alterity n_alterity
-  py:set "ENV_SIZE" ENV_SIZE
-  py:run "SENSE_DECAY_RATE = 2" ; or whatever this value is
-  py:run "env = np.array(range(ENV_SIZE))"
-  py:set "perceptiveness" perceptiveness
-  set sensory_dynamics (py:runresult "perceptiveness * np.exp(-SENSE_DECAY_RATE * np.minimum(np.abs(env - int(ENV_SIZE/2), np.abs(env - int(ENV_SIZE/2) - ENV_SIZE)))")
-  set b (py:runresult "(np.zeros(ENV_SIZE), np.zeros(ENV_SIZE)")
-  py:set "b_star" n_b_star
-  py:set "alignment" alignment
-  set b_star (py:runresult "(b_star[0] + (1 - alignment) * b_star[1], b_star[0] + (1 - alignment) * b_star[2])")
-end
 
 ;;
 ;  Initialization Functions
@@ -214,6 +132,17 @@ to initialize-agents
     set agent_transitions (agent_transitions matrix:* (1 / 3))
     ; D = prior index, states by first state
     set agent_prior matrix:from-row-list [[0] [0] [1]]
+    ; actions able to be taken are:
+    ; make code, PRs, Issues   QUAL+
+    ; commit code, approve PRs, close Issues QUAN+
+    ; request changes, comment, forks ENG+
+    ; quiesce QUAL- QUAN- ENG-
+    set agent_actions matrix:from-row-list [
+      ["make code" "make PR" "make Issue"] ; QUAL+
+      ["commit code" "approve PRs" "close Issues"] ; QUAN+
+      ["request changes" "comment" "fork"] ; ENG+
+      ["quiesce"] ; QUAL- QUAN- ENG-
+    ]
 
     ; other_agent information
     ;create array of all other agents within horizon range
@@ -240,7 +169,82 @@ to initialize-agents
         set color (list 0 0 (agent_engagement * 255))
       ]
     ]
+
+    ; POMDP matrices init
+    ; A = outcomes x states = eng-hi, end-mid, eng-lo, quan-hi, quan-med, quan-lo, qual-hi, qual-med, qual-lo
+    set matrix_A matrix:from-row-list [[1.0 0.0 0.0 0.0 0.0 0.0] [0.0 1.0 0.0 0.0 0.0 0.0] [0.0 0.0 1.0 0.0 0.0 0.0] [0.0 0.0 0.0 1.0 0.0 0.0] [0.0 0.0 0.0 0.0 1.0 0.0] [0.0 0.0 0.0 0.0 0.0 1.0]]
+    ; B = next state x state = eng-hi, end-mid, eng-lo, quan-hi, quan-med, quan-lo, qual-hi, qual-med, qual-lo
+    set matrix_B matrix:from-row-list [[1.0 0.0 0.0 0.0 0.0 0.0] [0.0 1.0 0.0 0.0 0.0 0.0] [0.0 0.0 1.0 0.0 0.0 0.0] [0.0 0.0 0.0 1.0 0.0 0.0] [0.0 0.0 0.0 0.0 1.0 0.0] [0.0 0.0 0.0 0.0 0.0 1.0]]
+    ; C = softmax(preferences)
+    set matrix_C (softmax [3 0 -3 3 0 -3 3 0 -3])
+    ; D = prior probs transposed
+    set matrix_D [1 1 1 1 1 1 1 1 1]
+    set matrix_D map [x -> x / (length matrix_D)] matrix_D
+    ; G = policy probabilities
+
+
+    ; convert list to matrix!
+    ;let n_matrix matrix:make-constant 1 (length matrix_C) 0
+    ;matrix:set-row n_matrix 0 matrix_C
+
+
   ]
+end
+
+
+;;
+;  Ported Python Functions
+;;
+
+; not sure if this is useful yet
+to-report softmax_matrix [f_b]
+  let soft_exp (matrix:map exp (matrix:map - f_b (max f_b)))
+  let soft_sum (matrix:map sum soft_exp)
+  report (matrix:map / soft_exp soft_sum)
+end
+
+; softmax function for lists
+; shifted by b_max for numerical stability
+; tested against python
+to-report softmax [f_b]
+  let b_max (max f_b)
+  let b_exp f_b
+  set b_exp map [x -> (exp (x - b_max)) ] b_exp
+  let b_sum (sum b_exp)
+  set b_exp map [x -> (x / b_sum)] f_b
+  report f_b
+end
+
+to-report D_softmax [f_b]
+    let n_matrix matrix:make-constant 1 (length f_b) 0
+    matrix:set-row n_matrix 0 f_b
+  report (np_diag f_b) matrix:- (np_outer n_matrix n_matrix)
+end
+
+to-report model_encoding [f_b]
+  report (softmax f_b)
+end
+
+to-report variational_density [f_b]
+  report (model_encoding f_b)
+end
+
+;;
+;  Numpy functions
+;;
+
+to-report np_diag [b]
+  let b_diag (matrix:make-identity (length b))
+  let cnt 0
+  foreach b [ x ->
+    matrix:set b_diag cnt cnt x
+    set cnt (cnt + 1)
+  ]
+  report b_diag
+end
+
+to-report np_outer [a b]
+  report ((matrix:transpose b) matrix:* a)
 end
 
 
@@ -311,6 +315,12 @@ to take-action
   if (agent_efficiency_quantity * max-pycor) > max-pycor [ set agent_efficiency_quantity 1.0 ]
   if (agent_efficiency_quality * min-pxcor) < min-pxcor [ set agent_efficiency_quality 0.0 ]
   if (agent_efficiency_quantity * min-pycor) < min-pycor [ set agent_efficiency_quantity 0.0 ]
+
+  let eps (0.999 + (random 3) * 0.002)
+  ;show eps
+
+
+
 end
 
 ; update world state
@@ -369,7 +379,7 @@ num_agents
 num_agents
 0
 100
-31.0
+49.0
 1
 1
 NIL
