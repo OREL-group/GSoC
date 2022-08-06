@@ -17,6 +17,7 @@ globals [
   ENV_SIZE
 ]
 
+; members are members of the open source development community under consideration
 breed [ members member ]
 
 ; turtles own variables belong to each agent, and correspond to the aforementioned pr and issue arrays
@@ -38,9 +39,21 @@ members-own [
   agent_ToM
   agent_goal_alignment
   ; HMM variables
+  agent_state
   agent_transitions
   agent_prior
-  agent_state
+  ; Kaufmann variables
+  psi
+  alterity
+  sensory_dynamics
+  b
+  b_star
+  q
+  q_star
+  p_ap
+  a
+  a_pp
+  delta
   ; other agent variables
   other_agents
 ]
@@ -83,19 +96,21 @@ end
 ;;
 ;  Python Helper Functions
 ;;
-to-report model_encoding [b]
-  report (softmax b)
+to-report model_encoding [f_b]
+  report (softmax f_b)
 end
 
-to-report model_encoding_derivative [b]
-  report (D_softmax (model_encoding b))
+to-report model_encoding_derivative [f_b]
+  report (D_softmax (model_encoding f_b))
 end
 
-to-report variational_density [b]
-  report (model_encoding b)
+to-report variational_density [f_b]
+  report (model_encoding f_b)
 end
 
 to-report logdiff [p1 p2]
+  py:set "p1" p1
+  py:set "p2" p2
   report (py:runresult "(np.log(p1) - np.log(p2))")
 end
 
@@ -109,29 +124,51 @@ to-report KL [p1 p2]
   report (py:runresult "np.sum(KL_v)")
 end
 
-to-report softmax [b]
+to-report softmax [f_b]
+  py:set "b" f_b
   py:run "sum = np.sum(np.exp(b - b.max()))"
   report (py:runresult "np.exp(b-b.max()) / sum")
 end
 
-to-report D_softmax [q]
+to-report D_softmax [f_q]
+  py:set "q" f_q
   report (py:runresult "np.diag(q) - np.outer(q, q)")
 end
 
-to-report rerange [q a]
-  report (a * q + (1 - a) / ENV_SIZE)
+to-report rerange [f_q f_a]
+  report (f_a * f_q + (1 - f_a) / ENV_SIZE)
 end
 
-to-report dynamic_rerange [q]
-  let p (py:runresult "p = []")
-  let q_hat (py:runresult "q_hat = 0.9 * q / np.max(q)")
-  ;py.run "p.append(q_hat)"
-  ;py.run "A = (1-q_hat) / (np.roll(q, 1) + np.roll(q, -1))"
-  ;py.run "p.append(np.roll(q, -1) * A)" ; a_p = -1
-  ;py.run "p.append(np.roll(q, +1) * A)" ; a_p = +1
-  ;report py.runresult "np.array(p)"
+to-report dynamic_rerange [f_q]
+  py:set "q" f_q
+  (py:run
+    "p = []"
+    "q_hat = 0.9 * q / np.max(q)"
+    "p.append(q_hat)"
+    "A = (1-q_hat) / (np.roll(q, 1) + np.roll(q, -1))"
+    "p.append(np.roll(q, -1) * A)" ; a_p = -1
+    "p.append(np.roll(q, +1) * A)")
+  report py:runresult "np.array(p)"
 end
 
+
+;;
+;  Agent Class Functions from Kaumann et al
+;;
+
+to init_agent [n_psi n_b_star perceptiveness n_alterity alignment]
+  set psi n_psi
+  set alterity n_alterity
+  py:set "ENV_SIZE" ENV_SIZE
+  py:run "SENSE_DECAY_RATE = 2" ; or whatever this value is
+  py:run "env = np.array(range(ENV_SIZE))"
+  py:set "perceptiveness" perceptiveness
+  set sensory_dynamics (py:runresult "perceptiveness * np.exp(-SENSE_DECAY_RATE * np.minimum(np.abs(env - int(ENV_SIZE/2), np.abs(env - int(ENV_SIZE/2) - ENV_SIZE)))")
+  set b (py:runresult "(np.zeros(ENV_SIZE), np.zeros(ENV_SIZE)")
+  py:set "b_star" n_b_star
+  py:set "alignment" alignment
+  set b_star (py:runresult "(b_star[0] + (1 - alignment) * b_star[1], b_star[0] + (1 - alignment) * b_star[2])")
+end
 
 ;;
 ;  Initialization Functions
@@ -143,7 +180,8 @@ to initialize-world
   ;set repo_size (random 1000.0) ; set a random repo size to start
   make-prs (random 6) ; make a random number of PRs
   make-issues (random 6) ; make a random number of Issues
-  set horizon 1
+  set horizon max-pxcor
+  set ENV_SIZE max-pxcor
   ; check that python is working
 end
 
@@ -179,7 +217,10 @@ to initialize-agents
 
     ; other_agent information
     ;create array of all other agents within horizon range
-    ;set other_agents array:from-list (list (ask turtles with [xcor < agent_efficiency_quality and ycor < agent_efficiency_quantity][turtles])
+    ; find the local horizon of the given agent
+    let horizon-value (agent_engagement * horizon)
+    ; look around at all the agents around that agent and their variables
+    set other_agents (list (members in-radius horizon-value))
     ;fill array with information on these agents, position (quantity, quality), engagement, goal alignment, ToM
 
     ; arrange on screen
@@ -238,26 +279,58 @@ end
 ; update the sensory state with variables from world, within engagement horizon, globals (PR, Issues, Repo Size)
 to get-sensory-info
   ; find the local horizon of the given agent
-  let horizon-value (agent_engagement * horizon)
-  ; look around at all the agents around that agent and their holdings?
-
-  ; OR fill variables with info
+  let horizon_value (agent_engagement * horizon)
+  ; look around at all the agents around that agent and their variables
+  set other_agents (members in-radius horizon_value)
 end
 
 ; update internal state based on sensory state, ToM, position/index values,
 to update-internal
-  ; run state through B to determine next state
-  set agent_state 1
+  ;let nearest_sizes ([agent_contrib_size] of other_agents)
+  ;let nearest_engagement ([agent_engagement] of other_agents)
+  ;let nearest_quality ([agent_efficiency_quality] of other_agents)
+  ;let nearest_quantity ([agent_efficiency_quantity] of other_agents)
 end
 
 ; take an action based on target encoding
 to take-action
-   ; decide an action
+  ; decide an action
+  let max_nearest_quality (max ([agent_efficiency_quality] of other_agents))
+  let max_nearest_quantity (max ([agent_efficiency_quantity] of other_agents))
+  let min_nearest_quality (min ([agent_efficiency_quality] of other_agents))
+  let min_nearest_quantity (min ([agent_efficiency_quantity] of other_agents))
+  let max_nearest_engagement (max ([agent_engagement] of other_agents))
+  let min_nearest_engagement (min ([agent_engagement] of other_agents))
+  set agent_efficiency_quality (agent_efficiency_quality + ((max_nearest_quality - min_nearest_quality) / 2))
+  set agent_efficiency_quantity (agent_efficiency_quantity + ((max_nearest_quantity - min_nearest_quantity) / 2))
+  set agent_engagement (agent_engagement + ((max_nearest_engagement - min_nearest_engagement) / 2))
+  ; HACKY FIXES - should be irrelevant very soon
+  if agent_engagement > 1.0 [ set agent_engagement 1.0 ]
+  if agent_engagement < 1.0 [ set agent_engagement 0.0 ]
+  if (agent_efficiency_quality * max-pxcor) > max-pxcor [ set agent_efficiency_quality 1.0 ]
+  if (agent_efficiency_quantity * max-pycor) > max-pycor [ set agent_efficiency_quantity 1.0 ]
+  if (agent_efficiency_quality * min-pxcor) < min-pxcor [ set agent_efficiency_quality 0.0 ]
+  if (agent_efficiency_quantity * min-pycor) < min-pycor [ set agent_efficiency_quantity 0.0 ]
 end
 
 ; update world state
 to update-world
   set repo_size (agent_contrib_size + repo_size)
+  setxy ((agent_efficiency_quantity * max-pxcor) - max-pxcor) ((agent_efficiency_quality * max-pycor) - max-pycor)
+  ifelse agent_role = "admin" [
+      set shape "house"
+      set color (list (agent_engagement * 255) 0 0)
+    ]
+    [
+      ifelse agent_role = "dev" [
+        set color (list 0 (agent_engagement * 255) 0)
+      ]
+      [
+        set shape "person"
+        set color (list 0 0 (agent_engagement * 255))
+      ]
+    ]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -296,7 +369,7 @@ num_agents
 num_agents
 0
 100
-49.0
+31.0
 1
 1
 NIL
