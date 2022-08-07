@@ -15,6 +15,7 @@ globals [
   ; churn_rate
   ; GLOBALS from Kaufmann et al
   ENV_SIZE
+  names
 ]
 
 ; members are members of the open source development community under consideration
@@ -25,6 +26,7 @@ breed [ members member ]
 ; and the states they are in, which contains the state space matrices, along with their target encodings
 ; also each agent's theory of mind (ToM) and goal alginment
 members-own [
+  agent_name
   ; repo variables
   agent_prs
   agent_issues
@@ -101,6 +103,34 @@ to initialize-world
   set horizon max-pxcor
   set ENV_SIZE max-pxcor
   ; check that python is working
+
+  set names [ "Abigail" "Adelard" "Astrid" "Alvin" "Arthur" "Annie" "Axel" "Adam" "Alf" "Alice" "Ansel" "Adelaide" "Arturo" "Amabalis" "Anais" "Angela" "Adolfo"
+              "Beatrix" "Bernice" "Bob" "Barbie" "Baxter" "Bigby" "Brian" "Bullet" "Budgie" "Barbara" "Baron" "Byron" "Billy" "Beanie" "Bootsy" "Bobo" "Bono"
+              "Cedric" "Christina" "Christian" "Christopher" "Christie" "Copernicus" "Calvin" "Calder" "Cecil" "Colin" "Cady" "Caitlin" "Caligula" "Charles" "Crissy" "Cinder"
+              "Debra" "Delores" "Dudley" "Dilbert" "Dodge" "Dan" "Danielle" "David" "Duke" "Devina" "Denny" "Dingus" "Donathan" "Donny" "Dante" "Diogenes" "Dawn"
+              "Edmund" "Edgar" "Eloise" "EttaLou" "Elvira" "Elsie" "Elmer" "Ettiene" "Erasmus" "Elohim" "Exeter" "Ever" "Eunice" "Eustice" "Eduardo" "Edwina" "Edith"
+              "Francine" "Fallon" "Frank" "Feivel" "Fifi" "Francois" "Ferdinand" "Felicia" "Felix" "Fred" "Flannery" "Fido" "Faust" "Francisco" "Fanny" "Fenwick"
+              "George" "Gertrude" "Georgie" "Gus" "Gary" "Gene" "Gramps" "Granny" "Gringo" "Geronimo" "Geraldo" "Glen" "Georgette" "Geoff" "Gunther" "Garland"
+              "Howie" "Hannah" "Havarah" "Heinrick" "Henna" "Havana" "Heaven" "Holly" "Hope" "Heiman" "Heimy" "Howard" "Hulk" "Honey" "Hannibal" "Herod"
+              "Icarus" "Ionia" "Isabelle" "Isis" "Israel" "Issy" "Ione" "Ingrid" "Ibex" "Ivy" "Imogen" "Inez" "Ignacio" "Isadora" "Irma" "Iggy" "India" "Inju"
+              "Justine" "Joe" "Jack" "Jake" "Janet" "Jill" "Jonathan" "Jasper" "Janelle" "Janice" "Joaquin" "Jay" "Jerry" "Jessica" "Josephine" "Joa" "Joan" "Jolene"
+              "Katya" "Kate" "Kathleen" "Karl" "Kathy" "Kortney" "Kronkite" "Kirby" "Kimberly" "Kim" "Kadisha" "Kristina" "Keith" "Kalamity" "Kenji" "Kendall"
+              "Louise" "Louis" "Linda" "Loretta" "Lionel" "Lyle" "Lewis" "Lumpy" "Linette" "Lenny" "Lorene" "Lola" "Letecia" "Lisette" "Lucy" "Lucian" "Landry"
+              "Montgomery" "Margerie" "Maggie" "Midge" "Myron" "Mark" "Mike" "Miles" "Minerva" "Mykael" "Michael" "Melissa" "Melanie" "Macy" "Moira" "Manny"
+              "Nick" "Nicholas" "Nigel" "Nanine" "Nancy" "Ninette" "Naomi" "Ned" "Noona" "Nona" "Nina" "Nissa" "Nancy" "Neva" "Nieva" "Nora" "Newt" "Noam"
+              "Octavius" "Oliver" "Ollie" "Olivia" "Ormand" "Oswald" "Orville" "Owen" "Oswaldo" "Olivander" "Orson" "Orex" "Onmund" "Offenglove" "Ozzy"
+              "Peter" "Patricia" "Patrice" "Patrick" "Prince" "Pierce" "Patty" "Pygmalia" "Pigeon" "Paul" "Petey" "Pliny" "Penelope" "Ptomely" "Piper"
+              "Quinn" "Quan"
+              "Robert" "Raymond" "Reinhart" "Rachel" "Raquel" "Ringo" "Robbie" "Raleigh" "Riley" "Rory" "Roland" "Ryan" "Raphael" "Rapunzel" "Rupolph" "Rupbert" "Rufus" "Rusty"
+              "Steve" "Steinway" "Sarah" "Sandra" "Sigourney" "Susie" "Sissy" "Sally" "Susan" "Silver" "Stella" "Stellathe" "Stewart" "Sylvia" "Sophie" "Sage" "Sophia" "Sonia"
+              "Todd" "Timothy" "Talus" "Tallulah" "Ted" "Tyler" "Theodore" "Tom" "Thomas" "Tammy" "Tanya" "Titus" "Thor" "Tyra" "Tyree" "Thaddeus" "Thucydides" "Teal" "Tanner" "Tyson"
+              "Ulysses" "Ulrich" "Undine" "Ulgar" "Uniqwa" "Ursula" "Ursaline" "Uzaki" "Usher"
+              "Vanover" "Victor" "Valerie" "Valmor" "Val" "Veronica" "Vaughn" "Viviana" "Vivian" "Vivianca" "Vlad"
+              "Wallace" "Walter" "William" "Wilemena" "Wilemette" "Wilhelm" "Wole" "Winona" "Winnie" "Wales" "Wyatt" "Wilt" "Wilson" "Waldo" "Wilbur" "Watson"
+              "Xerxes" "Xander" "Xandra" "Xanadu" "Xiah" "Xavier" "Xerox"
+              "Yaro" "Yahweh"
+              "Zed" "Zena" "Zenon" "Zero" "Zeb"
+  ]
 end
 
 ; initialize the agents, number of agents, role (admin, dev, or other),
@@ -137,12 +167,12 @@ to initialize-agents
     ; commit code, approve PRs, close Issues QUAN+
     ; request changes, comment, forks ENG+
     ; quiesce QUAL- QUAN- ENG-
-    set agent_actions matrix:from-row-list [
-      ["make code" "make PR" "make Issue"] ; QUAL+
-      ["commit code" "approve PRs" "close Issues"] ; QUAN+
-      ["request changes" "comment" "fork"] ; ENG+
-      ["quiesce"] ; QUAL- QUAN- ENG-
-    ]
+    ;set agent_actions matrix:from-row-list [
+    ;  ["make code" "make PR" "make Issue"] ; QUAL+
+    ;  ["commit code" "approve PRs" "close Issues"] ; QUAN+
+    ;  ["request changes" "comment" "fork"] ; ENG+
+    ;  ["quiesce"] ; QUAL- QUAN- ENG-
+    ;]
 
     ; other_agent information
     ;create array of all other agents within horizon range
@@ -156,8 +186,10 @@ to initialize-agents
     ;setxy random-xcor random-ycor
     ;setxy (random 10.0) (random 10.0)
     setxy ((agent_efficiency_quantity * max-pxcor * 2) - max-pxcor) ((agent_efficiency_quality * max-pycor * 2) - max-pycor)
+
+    set shape "person"
     ifelse agent_role = "admin" [
-      set shape "house"
+      ;set shape "house"
       set color (list (agent_engagement * 255) 0 0)
     ]
     [
@@ -187,7 +219,8 @@ to initialize-agents
     ;let n_matrix matrix:make-constant 1 (length matrix_C) 0
     ;matrix:set-row n_matrix 0 matrix_C
 
-
+    show (length names)
+    set agent_name (one-of names)
   ]
 end
 
@@ -228,6 +261,19 @@ end
 to-report variational_density [f_b]
   report (model_encoding f_b)
 end
+
+
+;;
+;  Ported Kaufmann functions
+;;
+to-report initialize_b_star [targets sharpness]
+  ;B_STANDARD
+  let f_b_star matrix:make-constant 1 ENV_SIZE 0
+  set f_b_star map [x -> (exp (-(x - ENV_SIZE / 2) / (ENV_SIZE / sharpness) ^ 2))] f_b_star
+  report f_b_star
+end
+
+
 
 ;;
 ;  Numpy functions
@@ -277,6 +323,23 @@ end
 
 
 ;;
+;  Index Functions
+;;
+
+to-report agent_quality_index
+  report agent_efficiency_quality
+end
+
+to-report agent_quantity_index
+  report agent_efficiency_quantity
+end
+
+to-report agent_engagement_index
+  report agent_engagement
+end
+
+
+;;
 ;  Update Functions
 ;;
 
@@ -305,10 +368,13 @@ to take-action
   let min_nearest_quantity (min ([agent_efficiency_quantity] of other_agents))
   let max_nearest_engagement (max ([agent_engagement] of other_agents))
   let min_nearest_engagement (min ([agent_engagement] of other_agents))
-  set agent_efficiency_quality (agent_efficiency_quality + ((max_nearest_quality - min_nearest_quality) / 2))
-  set agent_efficiency_quantity (agent_efficiency_quantity + ((max_nearest_quantity - min_nearest_quantity) / 2))
-  set agent_engagement (agent_engagement + ((max_nearest_engagement - min_nearest_engagement) / 2))
+  ;set agent_efficiency_quality (agent_efficiency_quality + ((max_nearest_quality - min_nearest_quality) / 2))
+  ;set agent_efficiency_quantity (agent_efficiency_quantity + ((max_nearest_quantity - min_nearest_quantity) / 2))
+  ;set agent_engagement (agent_engagement + ((max_nearest_engagement - min_nearest_engagement) / 2))
   ; HACKY FIXES - should be irrelevant very soon
+  ;show agent_engagement
+  ;show agent_efficiency_quality
+  ;show agent_efficiency_quantity
   if agent_engagement > 1.0 [ set agent_engagement 1.0 ]
   if agent_engagement < 1.0 [ set agent_engagement 0.0 ]
   if (agent_efficiency_quality * max-pxcor) > max-pxcor [ set agent_efficiency_quality 1.0 ]
@@ -316,19 +382,46 @@ to take-action
   if (agent_efficiency_quality * min-pxcor) < min-pxcor [ set agent_efficiency_quality 0.0 ]
   if (agent_efficiency_quantity * min-pycor) < min-pycor [ set agent_efficiency_quantity 0.0 ]
 
+
   let eps (0.999 + (random 3) * 0.002)
-  ;show eps
+  let SHORTEST_PATH (int (ENV_SIZE / 3))
+  let TARGET_DELTA (int (ENV_SIZE / 3))
 
+  let EPOCHS 100 ; originally 200
+  let N_STEPS 50 ; number of grad desc steps
+  let LEARNING_RATE 0.7 ; stochastic grad descent rate
 
+  let shared_target 0 ; originally FOOD_POSITION = 15, now a point in the agent's horizon to move to
+  let perceptiveness 0 ; originally MAX_SENSE_PROBABILITY = [0.99, 0.05] strong, weak agents
+  let alterity 0 ; originally CONDITIONS[MODEL]['tom'] where MODEL is a number corresponding to a [0,0] or [0,0.5] ToM array and an alignment number (0-1)
+  let alignment 0 ; originally CONDITIONS[MODEL]['alignment']
 
+  let initial_positions (list (shared_target + SHORTEST_PATH) (shared_target - SHORTEST_PATH)) ; originally contained % ENV_SIZE on each list element
+
+  let target_0 (shared_target - TARGET_DELTA) ; note these also had % ENV_SIZE
+  let target_1 (shared_target + TARGET_DELTA) ; note these also had % ENV_SIZE
+
+  ;let init_b_matrix matrix:from-row-list (list shared_target target_0 target_1)
+  ;let init_b_matrix2 matrix:from-row-list (list shared_target target_1 target_0)
+  ;let b_star_0 (initialize_b_star init_b_matrix 6)
+  ;let b_star_1 (initialize_b_star init_b_matrix2 6)
+
+  ;let epoch 0
+  ;while [epoch < EPOCHS]
+  ;  [ let delta matrix:make-constant 0 2 0
+  ;    ;matrix:set 0 0 delta ()]
+  ;    set epoch (epoch + 1)
+  ;]
 end
 
 ; update world state
 to update-world
   set repo_size (agent_contrib_size + repo_size)
-  setxy ((agent_efficiency_quantity * max-pxcor) - max-pxcor) ((agent_efficiency_quality * max-pycor) - max-pycor)
+  ;setxy ((agent_efficiency_quantity * max-pxcor) - max-pxcor) ((agent_efficiency_quality * max-pycor) - max-pycor)
+  setxy (agent_efficiency_quantity * max-pxcor) (agent_efficiency_quality * max-pycor)
+  set shape "person"
   ifelse agent_role = "admin" [
-      set shape "house"
+      ;set shape "house"
       set color (list (agent_engagement * 255) 0 0)
     ]
     [
@@ -336,11 +429,9 @@ to update-world
         set color (list 0 (agent_engagement * 255) 0)
       ]
       [
-        set shape "person"
         set color (list 0 0 (agent_engagement * 255))
       ]
     ]
-
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -378,7 +469,7 @@ SLIDER
 num_agents
 num_agents
 0
-100
+500
 49.0
 1
 1
