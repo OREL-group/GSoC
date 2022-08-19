@@ -17,3 +17,7 @@ Reidl C, Kim Y, Gupta P, Woolley A. Quantifying collective intelligence in human
 AlMarzouq M, Grover V, Thatcher J. Taxing the development structure of open source communities: An information processing view, Decision Support Systems, Volume 80, 2015; Pages 27-41, ISSN 0167-9236. https://doi.org/10.1016/j.dss.2015.09.004
 
 Waade, P.T., Enevoldsen, K.C., Vermillet, AQ. et al. Introducing tomsup: Theory of mind simulations using Python. Behav Res (2022). https://doi.org/10.3758/s13428-022-01827-2
+
+Ashby M. Ethical Regulators and Super-Ethical Systems. Systems 2020, 8(4), 53; https://doi.org/10.3390/systems8040053 
+
+CHAOSS Metrics https://chaoss.community/metrics/
