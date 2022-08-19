@@ -262,7 +262,6 @@ to setup
       "  A_choice[choice_id, :, choice_id] = 1.0"
       "A[2] = A_choice"
     )
-    py:run "plot_likelihood(A[2][:,0,:], 'Mapping between sensed states and true states')"
 
     ; create the B matrix
     ; the B matrix is our transition matrix, given a context which state will be next,
@@ -292,7 +291,6 @@ to setup
       "C_reward[2] = 2.0"
       "C[1] = C_reward"
     )
-    py:run "plot_beliefs(softmax(C_reward), title_str = 'Prior preferences')"
 
     ; create the D matrix
     ; D here is our prior or starting situation

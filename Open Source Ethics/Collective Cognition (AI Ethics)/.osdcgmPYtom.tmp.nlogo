@@ -33,6 +33,7 @@ to setup
     "from pymdp import utils"
     "from pymdp.agent import Agent"
     "from pymdp.maths import softmax"
+
   )
 
   ; helper functions to plot likelihood and beliefs
