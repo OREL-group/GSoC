@@ -160,30 +160,34 @@ to setup
     ; create the A matrix!
     (py:run
       "A = utils.obj_array( num_modalities )"
-      "p_hint = 0.7 # accuracy of horizon/hint for agent, how much they trust their perception"
-      "A_hint = np.zeros( ( len(horizon_obs_names), len(context_names), len(choice_names) ) )"
+      "p_horizon = 0.7 # accuracy of horizon/hint for agent, how much they trust their perception"
+      "A_horizon = np.zeros( ( len(horizon_obs_names), len(context_names), len(choice_names) ) )"
       "for choice_id, choice_name in enumerate(choice_names):"
       "  if choice_name == 'Write Code':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Create PR':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Create Issue':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Commit Code':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Approve PR':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Close Issue':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Request Changes':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Comment':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Fork':"
-      "    A_hint[0,:,choice_id] = 1.0"
+      "    #pos_horizon_array = np.ones(9)"
+      "    #neg_horizon_array = -pos_horizon_array"
+      "    #horizon_array = np.array([neg_horizon_array, pos_horizon_array, neg_horizon_array, pos_horizon_array, neg_horizon_array, pos_horizon_array, neg_horizon_array, pos_horizon_array])"
+      "    #A_horizon[1:,:,choice_id] = softmax(horizon_array)"
+      "    A_horizon[0,:,choice_id] = 1.0"
       "  elif choice_name == 'Quiesce':"
-      "    A_hint[0,:,choice_id] = 1.0"
-      "A[0] = A_hint"
+      "    A_horizon[0,:,choice_id] = 1.0"
+      "A[0] = A_horizon"
     )
     (py:run
       "A_reward = np.zeros((len(reward_obs_names), len(context_names), len(choice_names)))"
@@ -296,7 +300,7 @@ to take-action
   )
   let chosen_action py:runresult "action_num"
 
-  ;show chosen_action
+  show chosen_action
   ; 0 => qual+ 1 => quan+ 2 => engag+ 3 => all-
 
   let change_val 0.01
@@ -370,7 +374,7 @@ num_agents
 num_agents
 0
 100
-35.0
+68.0
 1
 1
 NIL
@@ -429,7 +433,7 @@ BUTTON
 327
 go
 go
-T
+NIL
 1
 T
 OBSERVER
