@@ -188,7 +188,11 @@ to setup
       "A = utils.obj_array( num_modalities )"
       "p_horizon = 0.7 # accuracy of horizon/hint for agent, how much they trust their perception"
       "A_horizon = np.zeros( ( len(horizon_obs_names), len(context_names), len(choice_names) ) )"
-      "horizon_array = np.eye(9)"
+      "#horizon_array = np.eye(9)"
+      "#other_horizon_array = (1.0 - p_horizon) * np.roll(horizon_array, -1, axis=0)"
+      "#horizon_array = p_horizon * horizon_array"
+      "#horizon_array += other_horizon_array"
+      "horizon_array = softmax(np.random.normal(0.0, 1.0, size=(9,9)))"
       "for choice_id, choice_name in enumerate(choice_names):"
       "  if choice_name == 'Write Code':"
       "    #A_horizon[0,:,choice_id] = 1.0"
@@ -223,13 +227,19 @@ to setup
       "A[0] = A_horizon"
     )
     ; debug A matrix
-    show py:runresult "A[0]"
+    ;show py:runresult "A[0]"
     py:run "plot_likelihood(A[0][:,:,1], title_str = 'Probability of the horizon types for the states')"
 
     ; then make the reward A matrix
     ; NOTE: quantifying actions seems odd, perhaps this could be another type of matrix altogether?
     (py:run
+      "p_reward = 0.8"
       "A_reward = np.zeros((len(reward_obs_names), len(context_names), len(choice_names)))"
+      "#reward_array = np.array(9)"
+      "#other_reward_array = (1.0 - p_reward) * np.roll(reward_array, -1, axis=0)"
+      "#reward_array = p_reward * reward_array"
+      "#reward_array += other_reward_array"
+      "#reward_array = np.ones(9)"
       "for choice_id, choice_name in enumerate(choice_names):"
       "  if choice_name == 'Write Code':"
       "    A_reward[0,:,choice_id] = 1.0"
@@ -263,7 +273,7 @@ to setup
       "  A_choice[choice_id, :, choice_id] = 1.0"
       "A[2] = A_choice"
     )
-    py:run "plot_likelihood(A[2][:,0,:], 'Mapping between sensed states and true states')"
+    ;py:run "plot_likelihood(A[2][:,0,:], 'Mapping between sensed states and true states')"
 
     ; create the B matrix
     ; the B matrix is our transition matrix, given a context which state will be next,
