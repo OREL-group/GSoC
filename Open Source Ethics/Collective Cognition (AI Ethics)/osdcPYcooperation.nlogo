@@ -1,16 +1,15 @@
-extensions [ py ]
-
 globals [
   ;num_agents
-  ;num_cooperating
+  num_cooperating
   ;uncertainty
   ;reevaluate_rate
   churn_rate
   repo_size
-  unit
-  horizon
+  ;unit
+  ;horizon
   dynamics_of_coop
   fraction_cooperating
+  ;max_noise
 ]
 
 breed [ members member ]
@@ -22,11 +21,11 @@ members-own [
   contrib_size
   role
   other_agents
-  energy
   utility
   benefit_rate
   personal_cost
   cooperating?
+  local_num_cooperating
   horizon_length
   success_prob
   f_crit
@@ -35,29 +34,16 @@ members-own [
 to setup
   ca
 
-  ; setup python
-  py:setup py:python3
-  ; test python
-  ;show py:runresult "1 + 1"
-  ; imports and such
-  (py:run
-    "import numpy as np"
-    "import pymdp"
-    "from pymdp import utils"
-    "from pymdp.agent import Agent"
-    "from pymdp.maths import softmax"
-  )
-
-  set unit 10 ; amount we count repo size by
-  set horizon 1;
+  ;set unit 1 ; amount we count repo size by
+  ;set horizon 2;
 
   create-members num_agents [
     ; initialize values
-    set benefit_rate random-normal 0.0 1.0
-    set personal_cost random-normal 0.0 1.0
+    set utility random-normal 0.0 100.0
+    set benefit_rate random-normal 0.0 100.0
+    set personal_cost random-normal 0.0 100.0
     ifelse (one-of [0 1]) = 1 [set cooperating? TRUE] [set cooperating? FALSE]
-    set reevaluate_rate random-normal 0.0 1.0
-    set horizon_length random-normal 0.0 1.0
+    set horizon_length random-normal 0 100
     set success_prob random-normal 0.0 1.0
 
     ; find f_crit
@@ -66,9 +52,9 @@ to setup
     ; estimate num_cooperating based on current values
     let cooperating_val 0
     if cooperating? [ set cooperating_val 1 ]
-    set num_cooperating ((num_agents / benefit_rate) * (utility + (personal_cost * cooperating_val)))
+    set local_num_cooperating ((num_agents / benefit_rate) * (utility + (personal_cost * cooperating_val)))
 
-    ifelse f_crit > num_cooperating
+    ifelse f_crit > local_num_cooperating
     [ set cooperating? TRUE ]
     [ set cooperating? FALSE ]
 
@@ -108,21 +94,26 @@ to go
     get-sensory-info
     take-action
     update-world
-
-    set dynamics_of_coop find-dynamics
-    set fraction_cooperating (num_cooperating / num_agents)
   ]
+
+  set num_cooperating (count members with [cooperating? = TRUE])
+  set dynamics_of_coop find-dynamics
 
   tick
 end
 
 to-report find-dynamics
-  report (- reevaluate_rate) * (fraction_cooperating - (1 / 2) * (1 + error_func))
+  set fraction_cooperating (num_cooperating / num_agents)
+  report (- reevaluate_rate) * (fraction_cooperating - (1 / 2) * (1 + error-func))
 end
 
-to-report error_func
-  let coop_function ((num_cooperating - f_crit) / (uncertainty * (sqrt 2)))
-  report success_prob * fraction_cooperating + (1 - success_prob) * (1 - fraction_cooperating)
+to-report error-func
+  let mean_f_crit (mean [f_crit] of members)
+  let mean_success_prob (mean [success_prob] of members)
+  let mean_num_cooperating (mean [local_num_cooperating] of members)
+  let f_coop (mean_success_prob * mean_num_cooperating + (1 - mean_success_prob) * (1 - mean_num_cooperating))
+  let coop_function ((f_coop - mean_f_crit) / (uncertainty * (sqrt 2)))
+  report coop_function
 end
 
 to get-sensory-info
@@ -130,6 +121,25 @@ to get-sensory-info
   let horizon_value (engag * horizon)
   ; look around at all the agents around that agent and their variables
   set other_agents (members in-radius horizon_value)
+
+  ; find f_crit
+  set f_crit (((num_agents * personal_cost) - benefit_rate) / (horizon_length * reevaluate_rate * (benefit_rate - personal_cost)))
+  ;show f_crit
+
+  ; set the cooperating value (kroenecker delta)
+  let cooperating_val 0.0
+  if cooperating? [ set cooperating_val 1.0 ]
+
+  ; calculate local utility using last known local_num_cooperating
+  set utility (benefit_rate * (local_num_cooperating / num_agents) - (personal_cost * cooperating_val))
+
+  ; estimate local_num_cooperating based on current values
+  set local_num_cooperating (((count other_agents) / benefit_rate) * (utility + (personal_cost * cooperating_val)))
+  ;show local_num_cooperating
+
+  ifelse f_crit > local_num_cooperating
+  [ set cooperating? TRUE ]
+  [ set cooperating? FALSE ]
 end
 
 to take-action
@@ -138,10 +148,10 @@ to take-action
   if cooperating?
   [  set chosen_action one-of [0 1 2]  ]
 
-  show chosen_action
+  ;show chosen_action
   ; 0 => qual+ 1 => quan+ 2 => engag+ 3 => all-
 
-  let change_val 0.01
+  let change_val ((contrib_size * (random-normal 1.0 max_noise)) / repo_size)
   if role = "admin" [
     set change_val (change_val * 2)
   ]
@@ -156,15 +166,17 @@ to take-action
     set quan (quan - change_val)
     set engag (engag - change_val)
   ]
+
+  set contrib_size (quan * unit) ; using the quantitative value, find the size they contribute
 end
 
 to update-world
   if (qual * max-pxcor) > max-pxcor [ set qual 1.0 ]
   if (quan * max-pycor) > max-pycor [ set quan 1.0 ]
   if (engag * 255) > 255 [ set engag 1.0 ]
-  if (qual * max-pxcor) < min-pxcor [ set qual 0.1 ]
-  if (quan * max-pycor) < min-pycor [ set quan 0.1 ]
-  if (engag * 255) < 0 [ set engag 0.1 ]
+  if (qual * max-pxcor) < min-pxcor [ set qual 0.0 ]
+  if (quan * max-pycor) < min-pycor [ set quan 0.0 ]
+  if (engag * 255) < 0 [ set engag 0.0 ]
 
   setxy (qual * max-pxcor) (quan * max-pycor)
 
@@ -204,15 +216,15 @@ ticks
 30.0
 
 SLIDER
-12
-35
-184
-68
+14
+10
+186
+43
 num_agents
 num_agents
 0
 1000
-200.0
+312.0
 1
 1
 NIL
@@ -220,9 +232,9 @@ HORIZONTAL
 
 PLOT
 4
-255
+270
 204
-405
+420
 dynamics of cooperation
 ticks
 cooperating agents
@@ -271,49 +283,111 @@ NIL
 1
 
 SLIDER
-9
-75
-191
-108
-num_cooperating
-num_cooperating
-0
-1000
-100.19362724602738
-1
+12
+126
+184
+159
+uncertainty
+uncertainty
+0.01
+1.0
+0.16
+0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-16
-114
-188
-147
-uncertainty
-uncertainty
-0
+11
+162
+186
+195
+reevaluate_rate
+reevaluate_rate
+0.01
 1.0
+0.7
+0.01
+1
+NIL
+HORIZONTAL
+
+MONITOR
+67
+422
+142
+467
+NIL
+repo_size
+0
+1
+11
+
+SLIDER
+10
+200
+182
+233
+unit
+unit
+0.01
+10.0
+1.09
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+10
+238
+182
+271
+horizon
+horizon
+1
+100
+19.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+36
+44
+162
+89
+NIL
+num_cooperating
+2
+1
+11
+
+SLIDER
+12
+90
+184
+123
+max_noise
+max_noise
+1.0
+500.0
+20.1
 0.1
-0.01
 1
 NIL
 HORIZONTAL
 
-SLIDER
-15
-150
-187
-183
-reevaluate_rate
-reevaluate_rate
+TEXTBOX
+36
+117
+186
+135
+will cause craziness
+10
 0.0
-1.0
--0.9028040689321567
-0.01
 1
-NIL
-HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
