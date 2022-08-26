@@ -135,11 +135,19 @@ to get-sensory-info
 
   ; estimate local_num_cooperating based on current values
   set local_num_cooperating (((count other_agents) / benefit_rate) * (utility + (personal_cost * cooperating_val)))
-  ;show local_num_cooperating
 
-  ifelse f_crit > local_num_cooperating
-  [ set cooperating? TRUE ]
-  [ set cooperating? FALSE ]
+  ;let local_fraction_cooperating (local_num_cooperating / num_agents)
+  let local_fraction_cooperating (success_prob * local_num_cooperating + (1 - success_prob) * (1 - num_cooperating))
+
+  show f_crit
+  show local_fraction_cooperating
+  ifelse f_crit = local_fraction_cooperating
+  [ set cooperating? one-of [TRUE FALSE] ]
+  [
+    ifelse f_crit < local_fraction_cooperating
+    [ set cooperating? TRUE ]
+    [ set cooperating? FALSE ]
+  ]
 end
 
 to take-action
@@ -167,10 +175,12 @@ to take-action
     set engag (engag - change_val)
   ]
 
-  set contrib_size (quan * unit) ; using the quantitative value, find the size they contribute
+  set contrib_size (contrib_size + (quan * unit)) ; using the quantitative value, find the size they contribute
 end
 
 to update-world
+  set repo_size (repo_size + contrib_size)
+
   if (qual * max-pxcor) > max-pxcor [ set qual 1.0 ]
   if (quan * max-pycor) > max-pycor [ set quan 1.0 ]
   if (engag * 255) > 255 [ set engag 1.0 ]
@@ -185,7 +195,6 @@ to update-world
     [ ifelse role = "dev" [ set color (list 0 (engag * 255) 0) ]
     [ set color (list 0 0 (engag * 255)) ] ]
 
-  set repo_size (repo_size + contrib_size)
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -224,7 +233,7 @@ num_agents
 num_agents
 0
 1000
-312.0
+236.0
 1
 1
 NIL
@@ -291,7 +300,7 @@ uncertainty
 uncertainty
 0.01
 1.0
-0.16
+0.84
 0.01
 1
 NIL
@@ -306,7 +315,7 @@ reevaluate_rate
 reevaluate_rate
 0.01
 1.0
-0.7
+0.08
 0.01
 1
 NIL
@@ -332,7 +341,7 @@ unit
 unit
 0.01
 10.0
-1.09
+10.0
 0.01
 1
 NIL
@@ -347,7 +356,7 @@ horizon
 horizon
 1
 100
-19.0
+7.0
 1
 1
 NIL
@@ -373,7 +382,7 @@ max_noise
 max_noise
 1.0
 500.0
-20.1
+1.0
 0.1
 1
 NIL
