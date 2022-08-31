@@ -1,10 +1,12 @@
-Exploring Openness through Agent-Based Models of Personality 
+# Exploring Openness through Agent-Based Models of Personality 
 
 "SOCRATES: Or again, in a ship, if a man having the power to do what he likes, has no intelligence or skill in navigation [aretes kybernetikes], do you see what will happen to him and to his fellow-sailors?" -Plato, Alcibiades I
 
-As revolutions and innovations have been pushed forward in the field of cybernetics, spanning the foundations of other disciplines like cognitive science, computer science, and robotics, since the field’s inception by ​​Norbert Wiener, researchers have studied how similar principles are involved in the regulation of artificial control systems and organisms. When understanding how humans think and behave, provides a way for creating models of cybernetic theories of the human experience - including personality, emotions, and moods. For personality, in particular, we can construct a "complex" personality using NetLogo, as produced by ​​Duncan McGreggor. 
+As revolutions and innovations have been pushed forward in the field of cybernetics, spanning the foundations of other disciplines like cognitive science, computer science, and robotics, since the field’s inception by ​​Norbert Wiener, researchers have studied how similar principles are involved in the regulation of artificial control systems and organisms. When understanding how humans think and behave, provides a way for creating models of cybernetic theories of the human experience - including personality, emotions, and moods. For personality, in particular, we can construct a "complex" personality using NetLogo, as produced by ​​Duncan McGreggor.
 
-Agent-Based Models of Personality 
+Historically, cybernetics has been developed during about the same period as behaviorism. This resulted in cybernetics being strongly behavioristic. The first cyberneticians made it clear that they regarded humans as black boxes (Ashby) or muddy boxes (Beer) and that they were only interested in developing mathematical models that described how the output of a system changed given different inputs. That is describing the external behavior of the system rather than fantasize about the inner workings of the system. Cognitivism has sprung up from cybernetics, but has taken this functional interpretation of systems too literally and created one psychological construct after another. Constructs that tend to get a life of their own. No, it is better that we interpret CB5T as behavioristic with the clear note that CB5T describes external and internal behavior. Someone scoring high on agreeableness is likely to also engage other people socially in terms of external behavior. At the same time thatsame person can also have internal behaviors that he would describe as activating a goal of working together with other people. DeYoung makes clear that when it comes to external behavior that we interpret as goal driven, it could well be that the person involved has a conscious goal, an unconscious goal or no goal at all! We, as observers, interpret his behavior as goal orientated. But this doesn’t have to mean that there really is a goal. Cybernetics has been developed from the viewpoint of the observer. 
+
+## Agent-Based Models of Personality 
 
 In NetLogo, agent-based models of human behavior and interaction can be constructed. The socio-natural one, for example, is used in studying how different social behaviors contribute to the resiliency of interactions between culture and environment when there are differing social systems. Many of these models are used in simulating human behavior in virtual environments, and allow users to create equations and general descriptions for modelling forces such as attraction and repulsion between individuals for studying how those individuals interact. For this project, we use a NetLogo model for simulating how people with different personality types interact with each other. With four main personality types (I, II, III, IV) with two subtypes (a and b) for each, we use a model with a total of 8 different types of personalities, each interacting with each other in the table shown below: 
 
@@ -79,6 +81,8 @@ Safron, Adam, and Colin G. DeYoung. "Integrating Cybernetic Big Five Theory with
 
 
 *************************************************************************************************************
+
+#### Misc Issues
 
 During Google Summer of Code 2022, a few issues came up with attempting to put together a model of the Law of Requisite Variety in NetLogo and test out its capabilities and functioning capacities for the duration of the summer. 
 
