@@ -6,7 +6,9 @@ Building off of the Big Five theory of personality, DeYoung developed the Cybern
 
 With the Circumplex Model of Personality by Strus, the Big Five Theory of Personality can be used to describe evolutionary behavioral patterns that deal with the relationships between CB5T and the interpersonal circumplex. CB5T describes behavioral patterns that increase our reproductive fitness, helping us deal with the complexity people normally deal with in the environment. Complexity is the sum of all possible states of all the variables in a system. Here, we look at Complexity Systems Science (CSS) for three requirements for dealing with complexity: Adaptability (the ability of the system to have many different possible actions in parallel), Efficiency (as the parts of the system arise together to perform the action at hand), and Scale(how complex the system is). We will focus on the first of the three as a way of interpretting the system in an ethical context.   
 
-In the context of network systems, using many different possible actions available, the system can increase its compelxity to deal with the complexity of the environment. Here, we have a use of Ashby's Law of Requisite Variety: "to be effective, a system must be at least as complex as the environmental behaviors to which it must differentially react."  
+In the context of network systems, using many different possible actions available, the system can increase its compelxity to deal with the complexity of the environment. Here, we have a use of Ashby's Law of Requisite Variety (LRV): "to be effective, a system must be at least as complex as the environmental behaviors to which it must differentially react." 
+
+Ashby's law of requisite variety tells us that a system needs to have a proportional variety of actions to respond to the variety of perturbations from its environment (the word variety here could be substituted for the word complexity). A hierarchy could also be necessary for coping with environmental complexity. 
 
 We find a similar characteristic among Beer's Viable System Model (VSM), a cybernetic model used to structure organizations. The inspiration for VSM came from human beings, particularly in the nervous system and the human brain. With this model, there are five subsystems used for every viable system in order to survive:  
 
@@ -17,9 +19,14 @@ These five subsystems are:
 4. System IV watches out for changes in the environment and in the future. 
 5. System V is the ultimate decision making system in case System III and System IV are unable to come to terms as to the best course of action. If you compare VSM to CSS then System IV is the subsystem responsible for adaptability. System III is responsible for efficiency. The hierarchical levels between systems I and systems V create scale.
 
-If you compare VSM to CSS then System IV is the subsystem responsible for adaptability. System III is responsible for efficiency. The hierarchical levels between systems I and systems V create scale. 
+If you compare VSM to CSS then System IV is the subsystem responsible for adaptability. System III is responsible for efficiency. The hierarchical levels between systems I and systems V create scale.
 
-Given that plasticity is a behavioral pattern that gives us adaptability in terms of CSS and System IV in terms of VSM, if we adapt only a little we are probably more into doing the opposite. Which would be in terms of VSM system III. Which would mean in terms of CSS that if we only adapt a little that we are primarily concerned with efficiency. In this light, DeYoung also discusses these differences in terms of exploration and exploitation. Exploration is about finding new goals and strategies in the inner world and the outer environment and the future. Exploitation is about making the best use of known goals and strategies. Mostly in the external world, but also in the inner world by exploiting one’s feelings. Taking into account psychopathologies, we find that if you do too much exploitation and too much efficiency, you are so much tied to what is known that exploitation becomes rigidity. And if you do too much (inner) exploration, exploration turns into psychosis.
+For CSS and System IV of VSM, the behaviorial pattern of plasticity provides a way of understanding this type of adaptiveness as used with the Law of Requisite Variety. By adapting a little with efficiency,   
 
+Given that plasticity is a behavioral pattern that gives us adaptability in terms of CSS and System IV in terms of VSM, if we adapt only a little we are probably more into doing the opposite. Which would be in terms of VSM System III. Which would mean in terms of CSS that if we only adapt a little that we are primarily concerned with efficiency. 
 
-
+Deyoung also defines:
+* Exploration - finding new goals and strategies in the inner world and the outer environment and the future 
+* Exploitation - making the best use of known goals and strategies. 
+* * Mostly in the external world, but also in the inner world by exploiting one's feelings. 
+* * Taking into account psychopathologies, we find that if you do too much exploitation and too much efficiency, you are so much tied to what is known that exploitation becomes rigidity. And if you do too much (inner) exploration, exploration turns into psychosis.
