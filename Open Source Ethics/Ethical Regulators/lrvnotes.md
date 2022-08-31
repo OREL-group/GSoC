@@ -30,3 +30,13 @@ Deyoung also defines:
 * Exploitation - making the best use of known goals and strategies. 
 * * Mostly in the external world, but also in the inner world by exploiting one's feelings. 
 * * Taking into account psychopathologies, we find that if you do too much exploitation and too much efficiency, you are so much tied to what is known that exploitation becomes rigidity. And if you do too much (inner) exploration, exploration turns into psychosis.
+
+Sources:
+
+DeYoung, C. G. (2013). The neuromodulator of exploration: A unifying theory of the role of dopamine in personality. Frontiers in Human Neuroscience, 7, article 762. 
+
+DeYoung, C. G. (2015). Cybernetic Big Five Theory. Journal of Research in Personality, 56, 33–58. 
+
+DeYoung, C. G. (2017a). A cybernetic perspective on integrating personality structure, personality process, and personality development. European Journal of Personality, 31, 538–539. 
+
+DeYoung, C. G. (2017b). In defense of (some) trait theories: Commentary on Hogan and Foster (2016). International Journal of Personality Psychology, 3, 13–16. 
