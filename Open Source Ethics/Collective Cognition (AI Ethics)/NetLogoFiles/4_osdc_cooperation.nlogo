@@ -1,141 +1,92 @@
-extensions [ py ]
-
 globals [
   ;num_agents
+  num_cooperating
+  ;uncertainty
+  ;reevaluate_rate
   churn_rate
   repo_size
-  unit
-  horizon
+  ;unit
+  ;horizon
+  dynamics_of_coop
+  fraction_cooperating
+  ;max_noise
 ]
 
 breed [ members member ]
 
 members-own [
+  member_name
   qual
   quan
   engag
   contrib_size
   role
   other_agents
+  utility
+  benefit_rate
+  personal_cost
+  cooperating?
+  local_num_cooperating
+  horizon_length
+  success_prob
+  f_crit
 ]
 
 to setup
   ca
 
-  ; setup python
-  py:setup py:python3
-  ; test python
-  ;show py:runresult "1 + 1"
-  ; imports and such
-  (py:run
-    "import numpy as np"
-    "import pymdp"
-    "from pymdp import utils"
-    "from pymdp.agent import Agent"
-    "from pymdp.maths import softmax"
-  )
-
-  ; helper functions to plot likelihood and beliefs
-  (py:run
-    "import matplotlib.pyplot as plt"
-    "import seaborn as sns"
-    "def plot_likelihood(matrix, title_str = 'Likelihood distribution (A)'):"
-    "  if not np.isclose(matrix.sum(axis=0), 1.0).all():"
-    "    raise ValueError('Distribution not column-normalized! Please normalize (ensure matrix.sum(axis=0) == 1.0 for all columns)')"
-    "  fig = plt.figure(figsize = (9,9))"
-    "  ax = sns.heatmap(matrix, cmap = 'gray', cbar = False, vmin = 0.0, vmax = 1.0)"
-    "  plt.title(title_str)"
-    "  plt.show()"
-    "def plot_beliefs(belief_dist, title_str=''):"
-    "  if not np.isclose(belief_dist.sum(), 1.0):"
-    "    raise ValueError('Distribution not normalized! Please normalize')"
-    "  plt.grid(zorder = 0)"
-    "  plt.bar(range(belief_dist.shape[0]), belief_dist, color='r', zorder=3)"
-    "  plt.xticks(range(belief_dist.shape[0]))"
-    "  plt.title(title_str)"
-    "  plt.show()"
-  )
-
-  ; set up the agent matrix
-  py:set "num_agents" num_agents
-  py:run "agent_matrix = list(range(num_agents))"
-
-  ; set up environment class
-  ; define agent class for action interpretation
-  ; NOTE: this is from an example notebook (https://pymdp-rtd.readthedocs.io/en/latest/notebooks/using_the_agent_class.html)
-  ; which is an "Epistemic Two-Armed Bandit" with an extra action called "Get Hint" which here is "Get Horizon"
-  (py:run
-    "class CommunityMember(object):"
-    "  def __init__(self, context = None, p_horizon = 1.0, p_reward = 0.8):"
-    "    self.context_names = ['Qual Low','Qual Med','Qual High','Quan Low','Quan Med','Quan High','Eng Low','Eng Med','Eng High']"
-    "    self.p_horizon = p_horizon"
-    "    self.p_reward = p_reward"
-    "    self.horizon_obs_names = ['Most Qual Decrease','Most Qual Nothing','Most Qual Increase','Most Quan Decrease','Most Quan Nothing','Most Quan Increase','Most Getting Duller','Most Staying Same','Most Getting Brighter']"
-    "    self.reward_obs_names = ['Null','Loss','Reward']"
-    "  def step(self, action):"
-    "    #choice_action_names = ['Write Code','Create PR','Create Issue','Commit Code','Approve PR','Close Issue','Request Changes','Comment','Fork','Quiesce']"
-    "    if action == 'Write Code':"
-    "      observed_horizon = 'Most Qual Nothing'"
-    "      observed_reward = 'Null'"
-    "      observed_choice = 'Write Code'"
-    "    elif action == 'Create PR':"
-    "      observed_horizon = 'Most Qual Increase'"
-    "      observed_reward = 'Reward'"
-    "      observed_choice = 'Write Code'"
-    "    elif action == 'Create Issue':"
-    "      observed_horizon = 'Most Qual Increase'"
-    "      observed_reward = 'Null'"
-    "      observed_choice = 'Create Issuee'"
-    "    elif action == 'Commit Code':"
-    "      observed_horizon = 'Most Quan Increase'"
-    "      observed_reward = 'Null'"
-    "      observed_choice = 'Commit Code'"
-    "    elif action == 'Approve PR':"
-    "      observed_horizon = 'Most Quan Increase'"
-    "      observed_reward = 'Reward'"
-    "      observed_choice = 'Approve PR'"
-    "    elif action == 'Close Issue':"
-    "      observed_horizon = 'Most Getting Brighter'"
-    "      observed_reward = 'Reward'"
-    "      observed_choice = 'Close Issue'"
-    "    elif action == 'Request Changes':"
-    "      observed_horizon = 'Most Getting Brighter'"
-    "      observed_reward = 'Reward'"
-    "      observed_choice = 'Request Changes'"
-    "    elif action == 'Comment':"
-    "      observed_horizon = 'Most Getting Brighter'"
-    "      observed_reward = 'Reward'"
-    "      observed_choice = 'Comment'"
-    "    elif action == 'Fork':"
-    "      observed_horizon = 'Most Getting Brighter'"
-    "      observed_reward = 'Null'"
-    "      observed_choice = 'Fork'"
-    "    elif action == 'Quiesce':"
-    "      observed_horizon = 'Most Staying Same'"
-    "      observed_reward = 'Loss'"
-    "      observed_choice = 'Quiesce'"
-    "    obs = [observed_horizon, observed_reward, observed_choice]"
-    "    return obs"
-  )
-  ; define the active inference step function, for use in the go method
-  (py:run
-    "def run_active_inference_step(my_agent, my_env):"
-    "  obs_label = ['Most Qual Nothing','Null','Quiesce']"
-    "  obs = [horizon_obs_names.index(obs_label[0]), reward_obs_names.index(obs_label[1]), choice_obs_names.index(obs_label[2])]"
-    "  qs = my_agent.infer_states(obs)"
-    "  q_pi, efe = my_agent.infer_policies()"
-    "  chosen_action_id = my_agent.sample_action()"
-    "  movement_id = int(chosen_action_id[1])"
-    "  choice_action = choice_action_names[movement_id]"
-    "  obs_label = my_env.step(choice_action)"
-    "  obs = [horizon_obs_names.index(obs_label[0]),reward_obs_names.index(obs_label[1]), choice_obs_names.index(obs_label[2])]"
-    "  return choice_action"
-  )
-
-  set unit 10 ; amount we count repo size by
-  set horizon 1;
+  ;set unit 1 ; amount we count repo size by
+  ;set horizon 2;
+  let names [ "Abigail" "Adelard" "Astrid" "Alvin" "Arthur" "Annie" "Axel" "Adam" "Alf" "Alice" "Ansel" "Adelaide" "Arturo" "Amabalis" "Anais" "Angela" "Adolfo"
+              "Beatrix" "Bernice" "Bob" "Barbie" "Baxter" "Bigby" "Brian" "Bullet" "Budgie" "Barbara" "Baron" "Byron" "Billy" "Beanie" "Bootsy" "Bobo" "Bono"
+              "Cedric" "Christina" "Christian" "Christopher" "Christie" "Copernicus" "Calvin" "Calder" "Cecil" "Colin" "Cady" "Caitlin" "Caligula" "Charles" "Crissy" "Cinder"
+              "Debra" "Delores" "Dudley" "Dilbert" "Dodge" "Dan" "Danielle" "David" "Duke" "Devina" "Denny" "Dingus" "Donathan" "Donny" "Dante" "Diogenes" "Dawn"
+              "Edmund" "Edgar" "Eloise" "EttaLou" "Elvira" "Elsie" "Elmer" "Ettiene" "Erasmus" "Elohim" "Exeter" "Ever" "Eunice" "Eustice" "Eduardo" "Edwina" "Edith"
+              "Francine" "Fallon" "Frank" "Feivel" "Fifi" "Francois" "Ferdinand" "Felicia" "Felix" "Fred" "Flannery" "Fido" "Faust" "Francisco" "Fanny" "Fenwick"
+              "George" "Gertrude" "Georgie" "Gus" "Gary" "Gene" "Gramps" "Granny" "Gringo" "Geronimo" "Geraldo" "Glen" "Georgette" "Geoff" "Gunther" "Garland"
+              "Howie" "Hannah" "Havarah" "Heinrick" "Henna" "Havana" "Heaven" "Holly" "Hope" "Heiman" "Heimy" "Howard" "Hulk" "Honey" "Hannibal" "Herod"
+              "Icarus" "Ionia" "Isabelle" "Isis" "Israel" "Issy" "Ione" "Ingrid" "Ibex" "Ivy" "Imogen" "Inez" "Ignacio" "Isadora" "Irma" "Iggy" "India" "Inju"
+              "Justine" "Joe" "Jack" "Jake" "Janet" "Jill" "Jonathan" "Jasper" "Janelle" "Janice" "Joaquin" "Jay" "Jerry" "Jessica" "Josephine" "Joa" "Joan" "Jolene"
+              "Katya" "Kate" "Kathleen" "Karl" "Kathy" "Kortney" "Kronkite" "Kirby" "Kimberly" "Kim" "Kadisha" "Kristina" "Keith" "Kalamity" "Kenji" "Kendall"
+              "Louise" "Louis" "Linda" "Loretta" "Lionel" "Lyle" "Lewis" "Lumpy" "Linette" "Lenny" "Lorene" "Lola" "Letecia" "Lisette" "Lucy" "Lucian" "Landry"
+              "Montgomery" "Margerie" "Maggie" "Midge" "Myron" "Mark" "Mike" "Miles" "Minerva" "Mykael" "Michael" "Melissa" "Melanie" "Macy" "Moira" "Manny"
+              "Nick" "Nicholas" "Nigel" "Nanine" "Nancy" "Ninette" "Naomi" "Ned" "Noona" "Nona" "Nina" "Nissa" "Nancy" "Neva" "Nieva" "Nora" "Newt" "Noam"
+              "Octavius" "Oliver" "Ollie" "Olivia" "Ormand" "Oswald" "Orville" "Owen" "Oswaldo" "Olivander" "Orson" "Orex" "Onmund" "Offenglove" "Ozzy"
+              "Peter" "Patricia" "Patrice" "Patrick" "Prince" "Pierce" "Patty" "Pygmalia" "Pigeon" "Paul" "Petey" "Pliny" "Penelope" "Ptomely" "Piper"
+              "Quinn" "Quan"
+              "Robert" "Raymond" "Reinhart" "Rachel" "Raquel" "Ringo" "Robbie" "Raleigh" "Riley" "Rory" "Roland" "Ryan" "Raphael" "Rapunzel" "Rupolph" "Rupbert" "Rufus" "Rusty"
+              "Steve" "Steinway" "Sarah" "Sandra" "Sigourney" "Susie" "Sissy" "Sally" "Susan" "Silver" "Stella" "Stellathe" "Stewart" "Sylvia" "Sophie" "Sage" "Sophia" "Sonia"
+              "Todd" "Timothy" "Talus" "Tallulah" "Ted" "Tyler" "Theodore" "Tom" "Thomas" "Tammy" "Tanya" "Titus" "Thor" "Tyra" "Tyree" "Thaddeus" "Thucydides" "Teal" "Tanner" "Tyson"
+              "Ulysses" "Ulrich" "Undine" "Ulgar" "Uniqwa" "Ursula" "Ursaline" "Uzaki" "Usher"
+              "Vanover" "Victor" "Valerie" "Valmor" "Val" "Veronica" "Vaughn" "Viviana" "Vivian" "Vivianca" "Vlad"
+              "Wallace" "Walter" "William" "Wilemena" "Wilemette" "Wilhelm" "Wole" "Winona" "Winnie" "Wales" "Wyatt" "Wilt" "Wilson" "Waldo" "Wilbur" "Watson"
+              "Xerxes" "Xander" "Xandra" "Xanadu" "Xiah" "Xavier" "Xerox"
+              "Yaro" "Yahweh"
+              "Zed" "Zena" "Zenon" "Zero" "Zeb"
+  ]
 
   create-members num_agents [
+    set member_name one-of names
+    ; initialize values
+    set utility random-normal 0.0 100.0
+    set benefit_rate random-normal 0.0 100.0
+    set personal_cost random-normal 0.0 100.0
+    ifelse (one-of [0 1]) = 1 [set cooperating? TRUE] [set cooperating? FALSE]
+    set horizon_length random-normal 0 100
+    set success_prob random-normal 0.0 1.0
+
+    ; find f_crit
+    set f_crit ((num_agents * personal_cost - benefit_rate) / (horizon_length * reevaluate_rate * (benefit_rate - personal_cost)))
+
+    ; estimate num_cooperating based on current values
+    let cooperating_val 0
+    if cooperating? [ set cooperating_val 1 ]
+    set local_num_cooperating ((num_agents / benefit_rate) * (utility + (personal_cost * cooperating_val)))
+
+    ifelse f_crit > local_num_cooperating
+    [ set cooperating? TRUE ]
+    [ set cooperating? FALSE ]
+
     set qual ((random 100) / 100)
     set quan ((random 100) / 100)
     set engag ((random 100) / 100)
@@ -158,167 +109,6 @@ to setup
         set color (list 0 0 (engag * 255))
       ]
     ]
-
-    ; setup agent code for active inference
-    ; adapted from https://pymdp-rtd.readthedocs.io/en/stable/notebooks/using_the_agent_class.html
-    ; note i've changed the 'hint' matrix from the two-armed bandit example
-    ; to the 'horizon' matrix of the agent's observations from within its horizons
-    py:set "who" who
-    (py:run
-      "context_names = ['Qual Low','Qual Med','Qual High','Quan Low','Quan Med','Quan High','Eng Low','Eng Med','Eng High']"
-      "choice_names = ['Write Code','Create PR','Create Issue','Commit Code','Approve PR','Close Issue','Request Changes','Comment','Fork','Quiesce']"
-      "num_states = [len(context_names), len(choice_names)] # hidden state factor dimensions"
-      "num_factors = len(num_states)"
-      "#context_action_names = ['Move Left','Dont Move LR','Move Right','Move Down','Dont Move UD','Move Up','Less Bright','Stay Same','More Bright']"
-      "context_action_names = ['Do-nothing']"
-      "choice_action_names = ['Write Code','Create PR','Create Issue','Commit Code','Approve PR','Close Issue','Request Changes','Comment','Fork','Quiesce']"
-      "num_controls = [len(context_action_names), len(choice_action_names)] # control state factor dimensions"
-      "horizon_obs_names = ['Most Qual Decrease','Most Qual Nothing','Most Qual Increase','Most Quan Decrease','Most Quan Nothing','Most Quan Increase','Most Getting Duller','Most Staying Same','Most Getting Brighter']"
-      "#reward_obs_names = ['Qual Low','Qual Med','Qual High','Quan Low','Quan Med','Quan High','Eng Low','Eng Med','Eng High']"
-      "reward_obs_names = ['Null','Loss','Reward']"
-      "choice_obs_names = ['Write Code','Create PR','Create Issue','Commit Code','Approve PR','Close Issue','Request Changes','Comment','Fork','Quiesce']"
-      "num_obs = [len(horizon_obs_names), len(reward_obs_names), len(choice_obs_names)]"
-      "num_modalities = len(num_obs)"
-    )
-    ; create the A matrix
-    ; starting with the Horizon Modality
-    ; NOTE: at the moment this modality does very little, but it would be great to get some ToM going!
-    (py:run
-      "A = utils.obj_array( num_modalities )"
-      "p_horizon = 0.7 # accuracy of horizon/hint for agent, how much they trust their perception"
-      "A_horizon = np.zeros( ( len(horizon_obs_names), len(context_names), len(choice_names) ) )"
-      "horizon_array = np.eye(9)"
-      "for choice_id, choice_name in enumerate(choice_names):"
-      "  if choice_name == 'Write Code':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Create PR':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Create Issue':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Commit Code':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Approve PR':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Close Issue':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Request Changes':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Comment':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Fork':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "  elif choice_name == 'Quiesce':"
-      "    #A_horizon[0,:,choice_id] = 1.0"
-      "    A_horizon[0:,:,choice_id] = horizon_array"
-      "A[0] = A_horizon"
-    )
-    ; debug A matrix
-    show py:runresult "A[0]"
-    py:run "plot_likelihood(A[0][:,:,1], title_str = 'Probability of the horizon types for the states')"
-
-    ; then make the reward A matrix
-    ; NOTE: quantifying actions seems odd, perhaps this could be another type of matrix altogether?
-    (py:run
-      "A_reward = np.zeros((len(reward_obs_names), len(context_names), len(choice_names)))"
-      "for choice_id, choice_name in enumerate(choice_names):"
-      "  if choice_name == 'Write Code':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Create PR':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Create Issue':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Commit Code':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Approve PR':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Close Issue':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Request Changes':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Comment':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Fork':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "  elif choice_name == 'Quiesce':"
-      "    A_reward[0,:,choice_id] = 1.0"
-      "A[1] = A_reward"
-    )
-    py:run "plot_likelihood(A[1][:,:,2], 'Payoff structure if playing the Left Arm, for the two contexts')"
-
-    ; then make the choice A matrix
-    ; NOTE: in this case the choices are all equally likely
-    (py:run
-      "A_choice = np.zeros((len(choice_obs_names), len(context_names), len(choice_names)))"
-      "for choice_id in range(len(choice_names)):"
-      "  A_choice[choice_id, :, choice_id] = 1.0"
-      "A[2] = A_choice"
-    )
-    py:run "plot_likelihood(A[2][:,0,:], 'Mapping between sensed states and true states')"
-
-    ; create the B matrix
-    ; the B matrix is our transition matrix, given a context which state will be next,
-    ; which choice is likely given the current choice, etc
-    ; starting with the context matrix
-    (py:run
-      "B = utils.obj_array(num_factors)"
-      "B_context = np.zeros( (len(context_names), len(context_names), len(context_action_names)) )"
-      "B_context[:,:,0] = np.eye(len(context_names))"
-      "B[0] = B_context"
-    )
-    ; then make the choice matrix
-    (py:run
-      "B_choice = np.zeros( (len(choice_names), len(choice_names), len(choice_action_names)) )"
-      "for choice_i in range(len(choice_names)):"
-      "  B_choice[choice_i, :, choice_i] = 1.0"
-      "B[1] = B_choice"
-    )
-
-    ; create the C matrix
-    ; in this case C is our preferences or targets
-    ; NOTE: at the moment this is a simple reward structure
-    (py:run
-      "C = utils.obj_array_zeros(num_obs)"
-      "C_reward = np.zeros(len(reward_obs_names))"
-      "C_reward[1] = -4.0"
-      "C_reward[2] = 2.0"
-      "C[1] = C_reward"
-    )
-    py:run "plot_beliefs(softmax(C_reward), title_str = 'Prior preferences')"
-
-    ; create the D matrix
-    ; D here is our prior or starting situation
-    ; NOTE: at the moment every agent begins by Quiescing
-    (py:run
-      "D = utils.obj_array(num_factors)"
-      "D_context = softmax(np.ones(len(context_names)))"
-      "D[0] = D_context"
-      "D_choice = np.zeros(len(choice_names))"
-      "D_choice[choice_names.index('Quiesce')] = 1.0"
-      "D[1] = D_choice"
-    )
-
-    ; fill the agent_matrix with agents!
-    ; NOTE: at the moment there is no way to make different numbers of agents without resetting
-    (py:run
-      "agent_matrix[who] = Agent( A = A, B = B, C = C, D = D )"
-    )
-
-    ; instantiate an environment
-    ; with a horizon and reward variable
-    (py:run
-      "p_horizon_env = 1.0"
-      "p_reward_env = 0.7"
-      "env = CommunityMember(p_horizon = p_horizon_env, p_reward = p_reward_env)"
-    )
   ]
 
   ask members [
@@ -335,7 +125,24 @@ to go
     update-world
   ]
 
+  set num_cooperating (count members with [cooperating? = TRUE])
+  set dynamics_of_coop find-dynamics
+
   tick
+end
+
+to-report find-dynamics
+  set fraction_cooperating (num_cooperating / num_agents)
+  report (- reevaluate_rate) * (fraction_cooperating - (1 / 2) * (1 + error-func))
+end
+
+to-report error-func
+  let mean_f_crit (mean [f_crit] of members)
+  let mean_success_prob (mean [success_prob] of members)
+  let mean_num_cooperating (mean [local_num_cooperating] of members)
+  let f_coop (mean_success_prob * mean_num_cooperating + (1 - mean_success_prob) * (1 - mean_num_cooperating))
+  let coop_function ((f_coop - mean_f_crit) / (uncertainty * (sqrt 2)))
+  report coop_function
 end
 
 to get-sensory-info
@@ -343,29 +150,45 @@ to get-sensory-info
   let horizon_value (engag * horizon)
   ; look around at all the agents around that agent and their variables
   set other_agents (members in-radius horizon_value)
+
+  ; find f_crit
+  set f_crit (((num_agents * personal_cost) - benefit_rate) / (horizon_length * reevaluate_rate * (benefit_rate - personal_cost)))
+  ;show f_crit
+
+  ; set the cooperating value (kroenecker delta)
+  let cooperating_val 0.0
+  if cooperating? [ set cooperating_val 1.0 ]
+
+  ; calculate local utility using last known local_num_cooperating
+  set utility (benefit_rate * (local_num_cooperating / num_agents) - (personal_cost * cooperating_val))
+
+  ; estimate local_num_cooperating based on current values
+  set local_num_cooperating (((count other_agents) / benefit_rate) * (utility + (personal_cost * cooperating_val)))
+
+  ;let local_fraction_cooperating (local_num_cooperating / num_agents)
+  let local_fraction_cooperating (success_prob * local_num_cooperating + (1 - success_prob) * (1 - num_cooperating))
+
+  ;show f_crit
+  ;show local_fraction_cooperating
+  ifelse f_crit = local_fraction_cooperating
+  [ set cooperating? one-of [TRUE FALSE] ]
+  [
+    ifelse f_crit < local_fraction_cooperating
+    [ set cooperating? TRUE ]
+    [ set cooperating? FALSE ]
+  ]
 end
 
 to take-action
-  ; active inference to choose an action
-  py:set "who" who
-  (py:run
-    "action = run_active_inference_step(agent_matrix[who], env)"
-    "action_num = 0"
-    "if action == 'Write Code' or action == 'Create PR' or action == 'Close Issue':"
-    "  action_num = 0"
-    "if action == 'Commit Code' or action == 'Approve PR' or action == 'Create Issue':"
-    "  action_num = 1"
-    "if action == 'Request Changes' or action == 'Comment' or action == 'Fork':"
-    "  action_num = 2"
-    "if action == 'Quiesce':"
-    "  action_num = 3"
-  )
-  let chosen_action py:runresult "action_num"
+  let chosen_action 3
 
-  show chosen_action
+  if cooperating?
+  [  set chosen_action one-of [0 1 2]  ]
+
+  ;show chosen_action
   ; 0 => qual+ 1 => quan+ 2 => engag+ 3 => all-
 
-  let change_val 0.01
+  let change_val ((contrib_size * (random-normal 1.0 max_noise)) / repo_size)
   if role = "admin" [
     set change_val (change_val * 2)
   ]
@@ -380,15 +203,19 @@ to take-action
     set quan (quan - change_val)
     set engag (engag - change_val)
   ]
+
+  set contrib_size (contrib_size + (quan * unit)) ; using the quantitative value, find the size they contribute
 end
 
 to update-world
+  set repo_size (repo_size + contrib_size)
+
   if (qual * max-pxcor) > max-pxcor [ set qual 1.0 ]
   if (quan * max-pycor) > max-pycor [ set quan 1.0 ]
   if (engag * 255) > 255 [ set engag 1.0 ]
-  if (qual * max-pxcor) < min-pxcor [ set qual 0.1 ]
-  if (quan * max-pycor) < min-pycor [ set quan 0.1 ]
-  if (engag * 255) < 0 [ set engag 0.1 ]
+  if (qual * max-pxcor) < min-pxcor [ set qual 0.0 ]
+  if (quan * max-pycor) < min-pycor [ set quan 0.0 ]
+  if (engag * 255) < 0 [ set engag 0.0 ]
 
   setxy (qual * max-pxcor) (quan * max-pycor)
 
@@ -397,7 +224,6 @@ to update-world
     [ ifelse role = "dev" [ set color (list 0 (engag * 255) 0) ]
     [ set color (list 0 0 (engag * 255)) ] ]
 
-  set repo_size (repo_size + contrib_size)
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -428,28 +254,28 @@ ticks
 30.0
 
 SLIDER
-13
-29
-185
-62
+14
+10
+186
+43
 num_agents
 num_agents
 0
-100
-1.0
+1000
+236.0
 1
 1
 NIL
 HORIZONTAL
 
 PLOT
-3
-122
-203
-272
-churn
+4
+270
+204
+420
+dynamics of cooperation
 ticks
-burn out rate
+cooperating agents
 0.0
 100.0
 0.0
@@ -458,24 +284,13 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot (count members with [engag < 0.1]) / num_agents"
-
-MONITOR
-67
-286
-140
-331
-repo size
-repo_size
-17
-1
-11
+"default" 1.0 0 -16777216 true "" "plot dynamics_of_coop"
 
 BUTTON
-6
-293
-62
-326
+7
+426
+63
+459
 setup
 setup\n
 NIL
@@ -489,13 +304,13 @@ NIL
 1
 
 BUTTON
-144
-294
-199
-327
+145
+427
+200
+460
 go
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -503,6 +318,113 @@ NIL
 NIL
 NIL
 NIL
+1
+
+SLIDER
+12
+126
+184
+159
+uncertainty
+uncertainty
+0.01
+1.0
+0.58
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+11
+162
+186
+195
+reevaluate_rate
+reevaluate_rate
+0.01
+1.0
+0.34
+0.01
+1
+NIL
+HORIZONTAL
+
+MONITOR
+67
+422
+142
+467
+NIL
+repo_size
+0
+1
+11
+
+SLIDER
+10
+200
+182
+233
+unit
+unit
+0.01
+10.0
+10.0
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+10
+238
+182
+271
+horizon
+horizon
+1
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+36
+44
+162
+89
+NIL
+num_cooperating
+2
+1
+11
+
+SLIDER
+12
+90
+184
+123
+max_noise
+max_noise
+1.0
+500.0
+32.8
+0.1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+36
+117
+186
+135
+will cause craziness
+10
+0.0
 1
 
 @#$#@#$#@
