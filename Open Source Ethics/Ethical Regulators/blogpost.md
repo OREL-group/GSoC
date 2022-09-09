@@ -136,6 +136,9 @@ Deyoung also defines:
 <img src="results/pembascomplex/agent32ir7fm3.5/norm1std4init.png">
 With a norm of 1 and standard deviation of 4, how can we observe behavior from this initial condition? 
 
+<img src="results/pembascomplex/agent32ir7fm3.5/norm1std4ifinal.png">
+After letting the NetLogo simulation run for about 1,000 ticks, we can observe how people have moved with those initial conditions. For these final results, what sort of groups or behavior emerged.
+
 In the `results` folder, the results of differing initial conditions can be observed. Essentially, by varying the parameters of standard deviation and norm of initial conditions while keeping the number of agents constant, we can observe what sort of group patterns and behavior emerges.    
 
 It's clear that agents of shades green and turqouise are far more likely to congregate together, and agents of shades pink and red are far more likely to be viewed as "loners." Groups of individuals also become more and more spaced away from one another as the number of more repulsive individuals increases. 
