@@ -77,7 +77,7 @@ According to Mick Ashby's ethical regulator theorem, the following nine requisit
 
 Of these nine requisites, only the first six are necessary for a regulator to be effective. If a system does not need to be ethical, the three requisites of ethics, integrity, and transparency are optional. 
 
-Sources: 
+## Sources: 
 
 Safron, Adam, and Colin G. DeYoung. "Integrating Cybernetic Big Five Theory with the Free Energy Principle: A new strategy for modeling personalities as complex systems." Measuring and modeling persons and situations. Academic Press, 2021. 617-649.
 
