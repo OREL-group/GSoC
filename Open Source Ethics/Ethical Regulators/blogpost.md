@@ -1,7 +1,7 @@
 # Exploring Openness through Agent-Based Models of Personality 
 ## An Adaptive model of Cybernetic Big Five Theory (CB5T)
 
-"SOCRATES: Or again, in a ship, if a man having the power to do what he likes, has no intelligence or skill in navigation [aretes kybernetikes], do you see what will happen to him and to his fellow-sailors?" -Plato, Alcibiades I
+"Socrates: Or again, in a ship, if a man having the power to do what he likes, has no intelligence or skill in navigation [aretes kybernetikes], do you see what will happen to him and to his fellow-sailors?" --Plato, Alcibiades I
 
 As revolutions and innovations have been pushed forward in the field of cybernetics, spanning the foundations of other disciplines like cognitive science, computer science, and robotics, since the field’s inception by ​​Norbert Wiener, researchers have studied how similar principles are involved in the regulation of artificial control systems and organisms. When understanding how humans think and behave, provides a way for creating models of cybernetic theories of the human experience - including personality, emotions, and moods. For personality, in particular, we can construct a "complex" personality using NetLogo, as produced by ​​Duncan McGreggor.
 
@@ -39,40 +39,41 @@ For the NetLogo system, we can observe how different variations in the setup pro
 As they say, three’s a crowd. Or, in this case, groups of 3 or more people come together and form crowds as people come and go in the NetLogo environments. 
 
 Workflow/process:
-Download the “Modeling Crowds with Personality, Emotions and Moods” repository (https://github.com/oubiwann/abm-personality-and-emotions). 
-Open NetLogo.
-Select the `.nlogo` model (File → Open) for the Complex personality.
-Adjust parameters accordingly for the model.
-Click “Go” and observe the population dynamics w.r.t. initial conditions. 
-Law of Requisite Variety
+1. Download the "Modeling Crowds with Personality, Emotions and Moods" repository (https://github.com/oubiwann/abm-personality-and-emotions). 
+2. Open NetLogo.
+3. Select the `.nlogo` model (File -> Open) for the Complex personality.
+4. Adjust parameters accordingly for the model.
+5. Click "Go" and observe the population dynamics w.r.t. initial conditions. 
 
-“Objects are always imagined as being present in the field of vision as would have to be there in order to produce the same impression on the nervous mechanism.”–Hermann Ludwig Ferdinand von Helmholtz (1910)
+## Law of Requisite Variety
 
-“Each movement we make by which we alter the appearance of objects should be thought of as an experiment designed to test whether we have understood correctly the invariant relations of the phenomena before us, that is, their existence in definite spatial relations.”–Hermann Ludwig Ferdinand von Helmholtz (1878) 
+"Objects are always imagined as being present in the field of vision as would have to be there in order to produce the same impression on the nervous mechanism." --Hermann Ludwig Ferdinand von Helmholtz (1910)
 
-With the introduction of the Law of Requisite Variety (LRV) by Ross Ashby, another pioneer in cybernetics, which one might describe as “only variety can absorb variety.” It can also be described as, when the variety or complexity of the environment exceeds the capacity of a system (natural or artificial) the environment will dominate and ultimately destroy that system. This law, now well-known as the First Law of Cybernetics, can also be described as: In order to deal properly with the diversity of problems the world throws at you, you need to have a repertoire of responses which are (at least) as nuanced as the problems you face. 
+"Each movement we make by which we alter the appearance of objects should be thought of as an experiment designed to test whether we have understood correctly the invariant relations of the phenomena before us, that is, their existence in definite spatial relations." --Hermann Ludwig Ferdinand von Helmholtz (1878) 
+
+With the introduction of the Law of Requisite Variety (LRV) by Ross Ashby, another pioneer in cybernetics, which one might describe as "only variety can absorb variety." It can also be described as, when the variety or complexity of the environment exceeds the capacity of a system (natural or artificial) the environment will dominate and ultimately destroy that system. This law, now well-known as the First Law of Cybernetics, can also be described as: In order to deal properly with the diversity of problems the world throws at you, you need to have a repertoire of responses which are (at least) as nuanced as the problems you face. 
 
 Here, variety is the number of possible states available for a system. This is equivalent to statistical entropy. For example, a coin can be shown to have a variety of two – Heads and Tails. Thus, if a user wants a way to randomly choose one of two outcomes, the coin can be used. The user can toss the coin to randomly choose one of two options. However, if the user has 6 choices, they cannot use the coin to randomly choose one of six outcomes efficiently. In this case, a six-sided die can be used. A six-sided die has a variety of six. This is a simple explanation of variety absorbing variety. 
 
 With this background, we can note the extended form of the Law of Requisite Variety as:
 
-H(E) ≥ H(D) – H(A) + H(A|D) – B
+$H(E) \geq H(D) – H(A) + H(A|D) – B$
 
 The H portions of the term represents the statistical entropy for the term. For example, H(E) is the statistical entropy for the essential variables. The larger the value for H, the more the uncertainty around the variable. The goal for the controller is to keep the H(E) as low as possible since a larger value for the entropy for the essential variables indicate a larger range of values for the essential variables. If the essential variables are not kept to a small range of values, the viability of the organism is compromised. We can now look at the other terms of the equation and see how the value for H(E) can be maintained at a lower value.
 
-As these processes would become more thoroughly elaborated upon, von Förster’s geometry came to encompass the patterns of biological life, mathematics, computers, and social systems, not as static structures but as complex and recursive processes of emergence. Here, the foundation is given to propose a project in which these processes come together in creating a homeostatic system that encourages and explores the necessary and sufficient conditions of Mick Ashby’s ethical regulator. 
+As these processes would become more thoroughly elaborated upon, von Förster's geometry came to encompass the patterns of biological life, mathematics, computers, and social systems, not as static structures but as complex and recursive processes of emergence. Here, the foundation is given to propose a project in which these processes come together in creating a homeostatic system that encourages and explores the necessary and sufficient conditions of Mick Ashby’s ethical regulator. 
 
 According to Mick Ashby's ethical regulator theorem, the following nine requisites are necessary and sufficient for a cybernetic regulator to be both effective and ethical:
 
-Purpose expressed as unambiguously prioritized goals.
-Truth about the past and present.
-Variety of possible actions.
-Predictability of the future effects of actions.
-Intelligence to choose the best actions.
-Influence on the regulated system.
-Ethics expressed as unambiguously prioritized rules.
-Integrity of all subsystems.
-Transparency of ethical behavior.
+1. Purpose expressed as unambiguously prioritized goals.
+2. Truth about the past and present.
+3. Variety of possible actions.
+4. Predictability of the future effects of actions.
+5. Intelligence to choose the best actions.
+6. Influence on the regulated system.
+7. Ethics expressed as unambiguously prioritized rules.
+8. Integrity of all subsystems.
+9. Transparency of ethical behavior.
 
 Of these nine requisites, only the first six are necessary for a regulator to be effective. If a system does not need to be ethical, the three requisites of ethics, integrity, and transparency are optional. 
 
@@ -87,23 +88,23 @@ Safron, Adam, and Colin G. DeYoung. "Integrating Cybernetic Big Five Theory with
 
 During Google Summer of Code 2022, a few issues came up with attempting to put together a model of the Law of Requisite Variety in NetLogo and test out its capabilities and functioning capacities for the duration of the summer. 
 
-Attempts to get PyNetLogo running in the Colab environment
-Difficulties with packaging issues and installation requirements
-Issues sorting out which packages are dependent on each other
-These issues would take weeks to pileup such that, at some point, other key features of the project began becoming delayed. 
-For example, while a few visualizations were able to be observed, there were produced bugs and issues arising in the ways for them to be properly viewed via PyNetLogo, Colab, and similar platforms. 
-Jupyter notebook provided another alterantive. However, with this came other package dependnency/install issues. It wouldn’t load properly on my Mac in many of the different conda environments I had tried.
-I also used RNetLogo as well as an interface with Python to see if that’d work well. It still presented its own issues with packages and dependencies. 
-Attempt to recreate Law of Requisite Variety (LRV) using PyNetLogo
-Attempts to use different systems in demonstrating variety 
-Recreating LRV require a more thorough, solid stable understanding and working model before attempting to begin with a theoretical notion of LRV from the ground-up. It varies from model to model and context to context. 
+* Attempts to get PyNetLogo running in the Colab environment
+* * Difficulties with packaging issues and installation requirements
+* * Issues sorting out which packages are dependent on each other
+* * These issues would take weeks to pileup such that, at some point, other key features of the project began becoming delayed. 
+* * * For example, while a few visualizations were able to be observed, there were produced bugs and issues arising in the ways for them to be properly viewed via PyNetLogo, Colab, and similar platforms. 
+* * * Jupyter notebook provided another alterantive. However, with this came other package dependnency/install issues. It wouldn’t load properly on my Mac in many of the different conda environments I had tried.
+* * * I also used RNetLogo as well as an interface with Python to see if that’d work well. It still presented its own issues with packages and dependencies. 
+* * Attempt to recreate Law of Requisite Variety (LRV) using PyNetLogo
+* * Attempts to use different systems in demonstrating variety 
+* * Recreating LRV require a more thorough, solid stable understanding and working model before attempting to begin with a theoretical notion of LRV from the ground-up. It varies from model to model and context to context. 
 
 
 The Big Five Theory can be more thoroughly analyzed with its traits for understanding how the human personality's components are interwoven and interrelated to one another. Behaviorial patterns by the biological structure of the brain itself, with results from the neuroscience of personality, can shed light on how the personality traits of the Big Five theory of personality, arguably the most prominent and trustworthy of personality theories, can be translated into the language of cybernetic theory. Turning to the work of Colin G. DeYoung, the cybernetic theory that was develoepd with the recent findings Personality Neuroscience. By observing and studying the correlatinos between brain structure and the Big Five scores, Personality Neuroscience also provides a way of determining how human behavior itself can be related to personality.  
 
 Building off of the Big Five theory of personality, DeYoung developed the Cybernetic Big Five Theory (CB5T) when comparing the brains of individuals with similar scores on the Big Five personality test. After observing the correlations between brain structure and Big Five scores, he developed the field of Personality Neuroscience. With the cybernetic theory that can be used to explain empirical data with Personality Neuroscience, the Cybernetic Big Five Theory relied on the four layers of evolutionary behavioral patterns used in describing the correlations between the Big Five in Personality Neuroscience. (1) At the top are the two most abstract kinds of evolutounary behaviors with metatraits of stability and plasticity. (2) Alongside this, that are the traditional Big Five: neuroticisim, agreeableness, conscientiousness, extraversion, and openness. (3) Then, withdrawal, volatility, compassion, politeness, industriousness, orderliness, enthusiasm, assertiveness, intellect, and openness comprise the third layer. (4) At the bottom, on the fourth layer, are facets. This way of looking at personality has its own limits, though. The cross-relationships are not covered in the heuristic, among other limitations.   
 
-With the Circumplex Model of Personality by Strus, the Big Five Theory of Personality can be used to describe evolutionary behavioral patterns that deal with the relationships between CB5T and the interpersonal circumplex. CB5T describes behavioral patterns that increase our reproductive fitness, helping us deal with the complexity people normally deal with in the environment. Complexity is the sum of all possible states of all the variables in a system. Here, we look at Complexity Systems Science (CSS) for three requirements for dealing with complexity: Adaptability (the ability of the system to have many different possible actions in parallel), Efficiency (as the parts of the system arise together to perform the action at hand), and Scale(how complex the system is). We will focus on the first of the three as a way of interpretting the system in an ethical context.   
+With the Circumplex Model of Personality by Strus, the Big Five Theory of Personality can be used to describe evolutionary behavioral patterns that deal with the relationships between CB5T and the interpersonal circumplex. CB5T describes behavioral patterns that increase our reproductive fitness, helping us deal with the complexity people normally deal with in the environment. Complexity is the sum of all possible states of all the variables in a system. Here, we look at Complexity Systems Science (CSS) for three requirements for dealing with complexity: Adaptability (the ability of the system to have many different possible actions in parallel), Efficiency (as the parts of the system arise together to perform the action at hand), and Scale (how complex the system is). We will focus on the first of the three as a way of interpretting the system in an ethical context.   
 
 In the context of network systems, using many different possible actions available, the system can increase its complexity to deal with the complexity of the environment. Here, we have a use of Ashby's Law of Requisite Variety (LRV): "to be effective, a system must be at least as complex as the environmental behaviors to which it must differentially react." 
 
