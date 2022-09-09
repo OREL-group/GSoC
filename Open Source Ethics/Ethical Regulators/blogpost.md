@@ -1,4 +1,10 @@
 # Exploring Openness through Agent-Based Models of Personality 
+
+## Other important files:
+
+* See [README.md](https://github.com/OREL-group/GSoC/blob/main/Open%20Source%20Ethics/Ethical%20Regulators/README.md) for information on the project. 
+* [NetLogo file: Complex personality model from the Modeling Crowds with Personality, Emotions and Moods](https://github.com/oubiwann/abm-personality-and-emotions/blob/master/PEMBAs-and-Crowds-Personality-Complex.nlogo) 
+
 ## An Adaptive model of Cybernetic Big Five Theory (CB5T)
 
 "Socrates: Or again, in a ship, if a man having the power to do what he likes, has no intelligence or skill in navigation [aretes kybernetikes], do you see what will happen to him and to his fellow-sailors?" --Plato, Alcibiades I
@@ -41,7 +47,7 @@ As they say, three’s a crowd. Or, in this case, groups of 3 or more people com
 Workflow/process:
 1. Download the "Modeling Crowds with Personality, Emotions and Moods" repository (https://github.com/oubiwann/abm-personality-and-emotions). 
 2. Open NetLogo.
-3. Select the `.nlogo` model (File -> Open) for the Complex personality.
+3. Select the `.nlogo` model (File -> Open) for the Complex personality. (created by Duncan McGreggor)
 4. Adjust parameters accordingly for the model.
 5. Click "Go" and observe the population dynamics w.r.t. initial conditions. 
 
