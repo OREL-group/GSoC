@@ -133,7 +133,7 @@ Deyoung also defines:
 
 # Observations 
 
-<img src="results/pembascomplex/norm1std4init.png">
+<img src="results/pembascomplex/agent32ir7fm3.5/norm1std4init.png">
 With a norm of 1 and standard deviation of 4, how can we observe behavior from this initial condition? 
 
 In the `results` folder, the results of differing initial conditions can be observed. Essentially, by varying the parameters of standard deviation and norm of initial conditions while keeping the number of agents constant, we can observe what sort of group patterns and behavior emerges.    
