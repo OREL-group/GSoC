@@ -1,9 +1,9 @@
 # Exploring Openness through Agent-Based Models of Personality 
 
-## Other important files:
+## Code source
 
-* See [README.md](https://github.com/OREL-group/GSoC/blob/main/Open%20Source%20Ethics/Ethical%20Regulators/README.md) for information on the project. 
-* [NetLogo file: Complex personality model from the Modeling Crowds with Personality, Emotions and Moods](https://github.com/oubiwann/abm-personality-and-emotions/blob/master/PEMBAs-and-Crowds-Personality-Complex.nlogo) 
+* See [the agent-based modelling of personality and emotions](https://github.com/oubiwann/abm-personality-and-emotions) for the source and code of the NetLogo model used in this project. 
+* [NetLogo file: Complex personality model from the Modeling Crowds with Personality, Emotions and Moods](https://github.com/oubiwann/abm-personality-and-emotions/blob/master/PEMBAs-and-Crowds-Personality-Complex.nlogo) (credit to Duncan McGreggor)  
 
 ## An Adaptive model of Cybernetic Big Five Theory (CB5T)
 
