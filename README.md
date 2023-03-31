@@ -6,8 +6,9 @@ Reminder: Proposals are due Tuesday April 4th, 2023. Please contact us via Slack
 
 #### Neurostars
 To see existing proposals, check www.neurostars.org:
-* 4.1 https://neurostars.org/t/gsoc-2023-project-idea-4-1-maintaining-an-open-source-sustainability-project-orthogonal-research-and-education-lab-350-h/24574
-* 4.2 https://neurostars.org/t/gsoc-2023-project-idea-4-2-virtual-reality-for-distributed-research-orthogonal-research-and-education-lab-175-h/24575
+* 4.1 [Open-source Sustainability](https://neurostars.org/t/gsoc-2023-project-idea-4-1-maintaining-an-open-source-sustainability-project-orthogonal-research-and-education-lab-350-h/24574)
+
+* 4.2 [VR/XR for distributed research](https://neurostars.org/t/gsoc-2023-project-idea-4-2-virtual-reality-for-distributed-research-orthogonal-research-and-education-lab-175-h/24575)
 
 <P>
     <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
