@@ -1,3 +1,11 @@
+## GSoC 2023 is under way!
+Congratulations to R. V. Rajagopalan and Vrushali Vidyapeetham! They will be contributing to these projects over the summer of 2023. 
+
+
+
+
+
+
 ## GSoC 2023 -> [Apply to our projects here](https://summerofcode.withgoogle.com/) (see you in 2023).
 Reminder: Proposals are due Tuesday April 4th, 2023. Please contact us via Slack for any discussion.
 
