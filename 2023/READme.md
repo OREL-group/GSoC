@@ -1,12 +1,17 @@
 ## GSoC 2023 is under way!
 Congratulations to R. V. Rajagopalan and Vrushali Vidyapeetham! They will be contributing to these projects over the summer of 2023. 
 
+See also: https://www.jopro.org/mentoring-programs/google-summer-of-code-mentoring, an updated and consolidate version of OREL and DevoWorm's history of GSoC projects. 
 
 
 
 
 
-## GSoC 2023 -> [Apply to our projects here](https://summerofcode.withgoogle.com/) (see you in 2023).
+
+## Archive
+
+### 2023 Pre-Season
+GSoC 2023 -> [Apply to our projects here](https://summerofcode.withgoogle.com/) (see you in 2023).
 Reminder: Proposals are due Tuesday April 4th, 2023. Please contact us via Slack for any discussion.
 
 ### Neurostars
@@ -14,7 +19,7 @@ To see existing proposals, check www.neurostars.org:
 * 4.1 https://neurostars.org/t/gsoc-2023-project-idea-4-1-maintaining-an-open-source-sustainability-project-orthogonal-research-and-education-lab-350-h/24574
 * 4.2 https://neurostars.org/t/gsoc-2023-project-idea-4-2-virtual-reality-for-distributed-research-orthogonal-research-and-education-lab-175-h/24575
   
-## Additional Information  
+### Additional Information  
 GSoC Mentors: 
 * Bradly Alicea (Senior Mentor & OREL Direcor)
 * Jesse Parent (Mentor & OREL Research Coordinator)
