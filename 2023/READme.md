@@ -1,5 +1,5 @@
 ## GSoC 2023 is under way!
-Congratulations to R. V. Rajagopalan and Vrushali Vidyapeetham! They will be contributing to these projects over the summer of 2023. 
+Congratulations to R. V. Rajagopalan and Vrushali Nandurkar! They will be contributing to these projects over the summer of 2023. 
 
 See also: https://www.jopro.org/mentoring-programs/google-summer-of-code-orel-devoworm, an updated and consolidate version of OREL and DevoWorm's history of GSoC projects. 
 
