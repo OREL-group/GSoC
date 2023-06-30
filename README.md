@@ -22,3 +22,5 @@ Updates and Admin:
 * [Onboarding guide](https://github.com/devoworm/Proposals-Public-Lectures/blob/master/Onboarding%20Guide/onboarding-guide.md) for 2022 (DevoWorm). 
   
 * Prior GSoC projects have lead to: [DevoLearn](https://github.com/DevoLearn/devolearn), [Developmental Braitenberg Vehicles](https://github.com/OREL-group/dBV), [Contextual Geometric Structures](https://github.com/Orthogonal-Research-Lab/CGS), [Open-source Collective Behavior and Ethics](https://github.com/OREL-group/GSoC/tree/main/Open%20Source%20Ethics), [D-GNNs](https://github.com/DevoLearn/DevoGraph), [Digital Microspheres](https://github.com/devoworm/GSoC-2022/tree/main/Digital-Microsphere).
+
+* [GSOC History & Alumni](https://www.jopro.org/mentoring-programs/google-summer-of-code-orel-devoworm) 
