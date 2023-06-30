@@ -1,9 +1,12 @@
 ## Google Summer of Code Projects
 ### GSoC 2023
 
+Updates and Admin: 
+- [Github Project Board](https://github.com/orgs/OREL-group/projects/15): Issues, tasks, and updates for GSoC 2023
+
 #### Current Projects
 
-* 4.1 [Open-source Sustainability](https://neurostars.org/t/gsoc-2023-project-idea-4-1-maintaining-an-open-source-sustainability-project-orthogonal-research-and-education-lab-350-h/24574)
+* 4.1 [Open-source Sustainability](https://neurostars.org/t/gsoc-2023-project-idea-4-1-maintaining-an-open-source-sustainability-project-orthogonal-research-and-education-lab-350-h/24574) 
 
 * 4.2 [VR/XR for distributed research](https://neurostars.org/t/gsoc-2023-project-idea-4-2-virtual-reality-for-distributed-research-orthogonal-research-and-education-lab-175-h/24575)
 
