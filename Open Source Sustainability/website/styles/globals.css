@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a{
+  color: #86C8BC;
+  text-decoration: none;
+}
+a:hover{
+  color: #40a08f;
+  text-decoration: none;
+}
+
+.page {
+  min-height: calc(100vh - 100px);
+}
+
+.margin-left-3 {
+  margin-left: 0.7rem;
+}
+
+.btn-search, .btn-search:active {
+  background-color: #97e1d4;
+  transition: all 0.2s ease-in-out;
+  border: 0;
+}
+
+.btn-search:hover, .btn-search:focus, .btn-search:active {
+  background-color: #acfff0 !important;
+  border: 0;
+}
+
+.detail-container,
+.user-container {
+  margin: 20px auto;
+  width: 80%;
+}
+
+.detail {
+  border-radius: 10px;
+  background-color: #fff;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.detail-content {
+  padding-top: 15px;
+  margin: 0 15px;
+}
+
+.icon {
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-left: 15px;
+}
+
+.icon span {
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-pink {
+  background-color: #FFE0F1;
+  color: #B8618A;
+}
+
+.icon-green {
+  background-color: #DDFBFF;
+  color: #5EA8AF;
+}
+
+.icon-purple {
+  background-color: #E6E6FC;
+  color: #7B73C2;
+}
+
+.icon-yellow {
+  background-color: #fcf0d0;
+  color: #c6ae66;
+}
+
+.user-detail-1 {
+  height: 100%;
+}
+
+@media screen and (max-width: 991.5px) {
+
+  .detail-container,
+  .user-container {
+    width: 100%;
+  }
+
+  .detail-content {
+    margin: 0 12px;
+  }
+
+  .icon {
+    margin-left: 10px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .detail {
+    width: 100%;
+  }
+}
