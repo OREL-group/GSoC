@@ -6,9 +6,11 @@ Updates and Admin:
 
 #### Current Projects
 
-* 5.1 [VR/XR for distributed research](https://neurostars.org/t/gsoc-2024-project-idea-5-1-virtual-reality-for-distributed-research-175-h/28250)
+5.1 [VR/XR for distributed research](https://neurostars.org/t/gsoc-2024-project-idea-5-1-virtual-reality-for-distributed-research-175-h/28250)
 
-* 5.2 [Open-source Sustainability](https://neurostars.org/t/gsoc-2024-project-idea-5-2-open-source-community-sustainability-350-h/28251)
+* archive of assets created during GSoC 2023 [Zenodo](https://zenodo.org/records/10046243). Your project can either improve upon these assets, or address one of the points in the project description (__Replicate a famous experimental paradigm (e.g. Morris Water Maze) where the subject can interact with both the environment and stimuli__ or __Replicate scientific knowledge or biological processes in a unique way. Possible applications include a navigable brain or organism atlas)__.
+
+5.2 [Open-source Sustainability](https://neurostars.org/t/gsoc-2024-project-idea-5-2-open-source-community-sustainability-350-h/28251)
 
 <P>
     <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
