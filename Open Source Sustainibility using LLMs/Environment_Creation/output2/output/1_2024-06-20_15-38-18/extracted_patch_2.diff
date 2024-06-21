@@ -1,0 +1,33 @@
+diff --git a/calculator/calculator.py b/calculator/calculator.py
+index 1b528ee..4f54b94 100755
+--- a/calculator/calculator.py
++++ b/calculator/calculator.py
+@@ -1,12 +1,16 @@
+-class Calculator:
+-    def add(self, a, b):
+-        return a + b
+-
+-    def subtract(self, a, b):
+-        return a - b
+-
+-    def multiply(self, a, b):
+-        return a * b
+-
+-    def divide(self, a, b):
+-        return a / b
++class Calculator:
++    def add(self, a, b):
++        return a + b
++
++    def subtract(self, a, b):
++        return a - b
++
++    def multiply(self, a, b):
++        return a * b
++
++    def divide(self, a, b):
++        return a / b
++
++    def sin(self, angle):
++        import math
++        return math.sin(math.radians(angle))

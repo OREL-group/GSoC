@@ -1,0 +1,21 @@
+I apologize for the mistake. Here's another attempt at creating a patch:
+
+```
+# modification 1
+```python
+<file>calculator/calculator.py</file>
+<original>
+    def divide(self, a, b):
+        return a / b
+</original>
+<patched>
+```python
+def divide(self, a, b):
+    if b == 0:
+        return float('inf')
+    else:
+        return a / b
+```
+```
+
+This patch adds a check to see if the divisor is zero. If it is, the function returns positive infinity (`float('inf')`) instead of attempting division by zero.

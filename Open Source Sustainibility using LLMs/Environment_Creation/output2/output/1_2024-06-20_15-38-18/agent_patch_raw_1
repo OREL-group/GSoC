@@ -1,0 +1,27 @@
+Here is the patch for the issue:
+
+# modification 1
+```
+<file>calculator/calculator.py</file>
+<original></original>
+<patched>
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
+    def multiply(self, a, b):
+        return a * b
+
+    def divide(self, a, b):
+        return a / b
+
+    def sin(self, angle):
+        import math
+        return math.sin(math.radians(angle))
+</patched>
+```
+
+This patch adds the `sin` method to the `Calculator` class. The method uses the `math` library to calculate the sine of an angle in radians.

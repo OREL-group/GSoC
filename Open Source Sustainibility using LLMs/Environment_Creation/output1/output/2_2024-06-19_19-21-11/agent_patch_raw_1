@@ -1,0 +1,19 @@
+Here is the patch for the issue:
+
+```
+# modification 1
+```python
+<file>calculator/calculator.py</file>
+<original>
+    def divide(self, a, b):
+        return a / b
+</original>
+<patched>
+    def divide(self, a, b):
+        if b == 0:
+            raise ValueError("Cannot divide by zero")
+        return a / b
+</patched>
+```
+
+This patch adds a simple check to ensure that the divisor is not zero before performing the division. If the divisor is zero, it raises a `ValueError` with a user-friendly message.
