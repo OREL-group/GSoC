@@ -3,6 +3,13 @@ import sys
 from dataclasses import dataclass
 import os
 import docker
+from datetime import datetime
+
+import tarfile
+import io
+
+
+from langchain_community.llms import Ollama
 
 
 @dataclass
@@ -16,8 +23,15 @@ class Issue:
 issues = []
 
 
+def query_ollama(prompt):
+    llm = Ollama(model="llama3")
+    res = llm.invoke(prompt, stop=["<|eot_id|>"])
+    print(f"OLLAMA response: {res}")
+    return res
+
+
 class ContributorAgent:
-    def __init__(self, name, docker_container_id):
+    def __init__(self, name):
         self.name = name
         self.assigned_issue = None
         self.docker_container_id = (
@@ -27,46 +41,154 @@ class ContributorAgent:
     def assign_issue(self, issue):
         self.assigned_issue = issue
 
+    def unassign_issue(self, issue):
+        self.assigned_issue = None
+
     def solve_issue(self):
         if self.assigned_issue is not None:
-            # working on command line
-            #             import docker
-            # >>> client = docker.from_env()
-            # >>> container = client.containers.get('17f9d0abecaa')
-            # >>> container.exec_run('pwd') # problem : conda command not working
-            # >>> container.stop()
+            # Initialize Docker client
+            client = docker.from_env()
 
-            # Call autocoderover command
-            command = f"docker start -i -a {self.docker_container_id}"
-            # Execute the command
-            # os.system(command)
-            # Execute the command and print the output
-            output = os.popen(command).read()
-            print(output)
-            command = " conda activate auto-code-rover"
-            command += f" && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --task-id 1 --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/task_1.md"
-            # Execute the command and print the output
-            output = os.popen(command).read()
-            print(output)
-            # # Write pull request based on the path created by autocderover
-            # # ...
-            # pull_request_path = os.path.join("output", "pull_request.md")
-            # with open(pull_request_path, "r") as file:
-            #     pull_request_content = file.read()
+            # Start and attach to the Docker container
+            try:
+                container = client.containers.get(self.docker_container_id)
+                if container.status != "running":
+                    container.start()
+                    print(f"Container {self.docker_container_id} started.")
+                else:
+                    print(f"Container {self.docker_container_id} is already running.")
+            except Exception as e:
+                print(f"Error starting container: {e}")
+                exit(1)
+            task_id = self.assigned_issue.issue_id
+            # Command to activate conda environment and run Python script
+            commands = [
+                "/bin/bash",
+                "-c",
+                f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/task_{task_id}.md",
+            ]
 
-            # # Do something with the pull request content
-            # # ...
-            # # For example, print the pull request content
-            # print(pull_request_content)
+            # Execute command inside the container and stream output
+        try:
+            # exec_log = container.exec_run(commands, stream=True, tty=True)
 
-            # Write pull request based on the path created by autocderover
-            # ...
+            # # Stream the output to the terminal
+            # for line in exec_log.output:
+            #     try:
+            #         l = line.decode()
+            #     except Exception:
+            #         l = line
+
+            #     print(l, end="")
+
+            # Find the most recent .diff file in the container
+            task_id = self.assigned_issue.issue_id
+            print(f"Finding the most recent .diff file for task ID: {task_id}...")
+            output_dir = "/opt/auto-code-rover/output"
+            output_files = (
+                container.exec_run(["ls", output_dir]).output.decode().split("\n")
+            )
+            task_dirs = [f for f in output_files if f.startswith(f"{task_id}_")]
+
+            if not task_dirs:
+                print("No directories found for the given task ID.")
+                return
+
+            # Sort the directories by their timestamp and select the most recent one
+            task_dirs.sort(
+                key=lambda x: datetime.strptime(
+                    x.split("_")[1] + "_" + x.split("_")[2], "%Y-%m-%d_%H-%M-%S"
+                ),
+                reverse=True,
+            )
+            most_recent_dir = task_dirs[0]
+
+            # Find the .diff file in the most recent directory
+            diff_file_path = None
+            recent_dir_files = (
+                container.exec_run(["ls", f"{output_dir}/{most_recent_dir}"])
+                .output.decode()
+                .split("\n")
+            )
+            for file_name in recent_dir_files:
+                if file_name.endswith(".diff"):
+                    diff_file_path = f"{output_dir}/{most_recent_dir}/{file_name}"
+                    break
+
+            if diff_file_path is None:
+                print("No .diff file found in the most recent directory.")
+                return
+
+            local_pull_requests_dir = ".\calculator_project\pull_requests"
+            if not os.path.exists(local_pull_requests_dir):
+                os.makedirs(local_pull_requests_dir)
+
+            task_id = self.assigned_issue.issue_id
+            pull_request_name = f"pull_request_{task_id}"
+            local_pull_request_dir = os.path.join(
+                local_pull_requests_dir, pull_request_name
+            )
+            os.makedirs(local_pull_request_dir, exist_ok=True)
+
+            local_diff_file_path = os.path.join(
+                local_pull_request_dir, f"{pull_request_name}.diff"
+            )
+
+            # Copy the file from container to local system using docker-py
+            bits, stat = container.get_archive(diff_file_path)
+            tar_stream = io.BytesIO(b"".join(bits))
+            with tarfile.open(fileobj=tar_stream) as tar:
+                tar.extractall(path=local_pull_request_dir)
+
+            # Rename the extracted file to the desired name
+            extracted_file_path = os.path.join(
+                local_pull_request_dir, os.path.basename(diff_file_path)
+            )
+            os.rename(extracted_file_path, local_diff_file_path)
+            # container.stop()
+            print(f"Copied .diff file to {local_diff_file_path}")
+
+            # Make a pr.md file for in the pull_request folder
+
+            with open(self.assigned_issue.file_path, "r") as issue_file:
+                issue_content = issue_file.read()
+                print(f"Read issue content: {issue_content}")
+
+            with open(local_diff_file_path, "r") as diff_file:
+                diff_content = diff_file.read()
+                print(f"Read diff content: {diff_content}")
+
+            # Query OLLAMA to generate appropriate PR content based on the diff
+            prompt = f"""As a contributor in an open source environment, your role is to 
+            participate in the development process by solving assigned issues 
+            and creating pull requests. 
+            You have currently solved issue : {issue_content} and stored its result in the diff file. 
+            Generate a pull request based on the following diff file: {diff_content}. 
+            Please provide a brief description of the changes made.
+            Keep ypur answer to a maximum of 10 sentenecs and don't include any actual code in it.
+            Use the following template for the pull request:
+            Issue Summary: \n\n       Approach:    \n\n"""
+
+            pr_content = query_ollama(prompt=prompt)
+            print(f"Generated pull request content: {pr_content}")
+            pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
+            with open(pr_file_path, "w") as pr_file:
+                pr_file.write(pr_content)
+            print(f"Created pull request file: {pr_file_path}")
+
+        except Exception as e:
+            print(f"Error executing command in container: {e}")
+            exit(1)
+
+
+# class MaintainerAgent:
+#     # a agent that will review the pull request and if accepted
 
 
 def main():
     # Get the path to the issues folder
     print("Getting the path to the issues folder...")
-    issues_folder = "./calculator_project/issues"
+    issues_folder = ".\\calculator_project\\issues"
     issue_counter = 0
     print(f"Issues folder: {issues_folder}")
 
@@ -101,15 +223,17 @@ def main():
         agent.assign_issue(issue)
         print(f"Assigned issue to agent: {issue}")
 
+        # Print the assigned issue
+        print(f"Assigned issue: {agent.assigned_issue}")
+
         # Solve the assigned issue
         agent.solve_issue()
         print("Solved the assigned issue")
 
-        # Print the assigned issue
-        print(f"Assigned issue: {agent.assigned_issue}")
-
         # Print a separator for better readability
         print("-" * 50)
+
+        agent.unassign_issue(issue)
 
 
 if __name__ == "__main__":
