@@ -11,6 +11,8 @@ import io
 
 from langchain_community.llms import Ollama
 
+from utils import *
+
 
 @dataclass
 class Issue:
@@ -34,9 +36,6 @@ class ContributorAgent:
     def __init__(self, name):
         self.name = name
         self.assigned_issue = None
-        self.docker_container_id = (
-            "17f9d0abecaac64204efa32621118366cb5fe8471f2e9d0537293b6b4b4f5b85"
-        )
 
     def assign_issue(self, issue):
         self.assigned_issue = issue
@@ -44,42 +43,57 @@ class ContributorAgent:
     def unassign_issue(self, issue):
         self.assigned_issue = None
 
-    def solve_issue(self):
+    def solve_issue(self, project_dir):
         if self.assigned_issue is not None:
             # Initialize Docker client
             client = docker.from_env()
 
-            # Start and attach to the Docker container
+            # stop any running containers
+            stop_running_containers()
+            # Create and start a new Docker container
             try:
-                container = client.containers.get(self.docker_container_id)
-                if container.status != "running":
-                    container.start()
-                    print(f"Container {self.docker_container_id} started.")
-                else:
-                    print(f"Container {self.docker_container_id} is already running.")
+                volume_bindings = {
+                    project_dir: {
+                        "bind": "/home/calculator_project",
+                        "mode": "rw",
+                    }
+                }
+
+                ports = {"3000/tcp": 3000, "5000/tcp": 5000}
+
+                container = client.containers.run(
+                    "acr1",  # Replace with your Docker image name
+                    # "sleep infinity",  # Command to keep the container running
+                    ports=ports,
+                    volumes=volume_bindings,
+                    detach=True,
+                    tty=True,
+                )
             except Exception as e:
                 print(f"Error starting container: {e}")
+                stop_running_containers()
                 exit(1)
+
             task_id = self.assigned_issue.issue_id
             # Command to activate conda environment and run Python script
             commands = [
                 "/bin/bash",
                 "-c",
-                f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/task_{task_id}.md",
+                f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --enable-validation --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/task_{task_id}.md",
             ]
 
             # Execute command inside the container and stream output
         try:
-            # exec_log = container.exec_run(commands, stream=True, tty=True)
+            exec_log = container.exec_run(commands, stream=True, tty=True)
 
-            # # Stream the output to the terminal
-            # for line in exec_log.output:
-            #     try:
-            #         l = line.decode()
-            #     except Exception:
-            #         l = line
+            # Stream the output to the terminal
+            for line in exec_log.output:
+                try:
+                    l = line.decode()
+                except Exception:
+                    l = line
 
-            #     print(l, end="")
+                print(l, end="")
 
             # Find the most recent .diff file in the container
             task_id = self.assigned_issue.issue_id
@@ -119,12 +133,22 @@ class ContributorAgent:
                 print("No .diff file found in the most recent directory.")
                 return
 
-            local_pull_requests_dir = ".\calculator_project\pull_requests"
+            local_pull_requests_dir = os.path.join(project_dir, "pull_requests")
             if not os.path.exists(local_pull_requests_dir):
+                print(
+                    f"Creating directory: {local_pull_requests_dir} as it does not already exist"
+                )
                 os.makedirs(local_pull_requests_dir)
 
             task_id = self.assigned_issue.issue_id
-            pull_request_name = f"pull_request_{task_id}"
+            version = len(
+                [
+                    f
+                    for f in os.listdir(local_pull_requests_dir)
+                    if f.startswith(f"pull_request_{task_id}")
+                ]
+            )
+            pull_request_name = f"pull_request_{task_id}_v{version+1}"
             local_pull_request_dir = os.path.join(
                 local_pull_requests_dir, pull_request_name
             )
@@ -147,6 +171,9 @@ class ContributorAgent:
             os.rename(extracted_file_path, local_diff_file_path)
             # container.stop()
             print(f"Copied .diff file to {local_diff_file_path}")
+
+            container.stop()
+            container.remove()
 
             # Make a pr.md file for in the pull_request folder
 
@@ -176,22 +203,30 @@ class ContributorAgent:
                 pr_file.write(pr_content)
             print(f"Created pull request file: {pr_file_path}")
 
+            # commit the changes made i.e adding the pull_requests folder and the pull request file
+            repo_commit_current_changes(project_dir)
+
+            return True
+
         except Exception as e:
             print(f"Error executing command in container: {e}")
+            stop_running_containers()
+            return False
             exit(1)
 
 
-# class MaintainerAgent:
-#     # a agent that will review the pull request and if accepted
-
-
 def main():
+
+    current_folder = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.join(current_folder, "calculator_project")
+    initialize_git_repo_and_commit(project_dir)
+
     # Get the path to the issues folder
+    # current folder
     print("Getting the path to the issues folder...")
-    issues_folder = ".\\calculator_project\\issues"
+    issues_folder = os.path.join(project_dir, "issues")
     issue_counter = 0
     print(f"Issues folder: {issues_folder}")
-
     # Loop through all the files in the issues folder
     print("Looping through all the files in the issues folder...")
     for filename in os.listdir(issues_folder):
@@ -214,7 +249,6 @@ def main():
 
     # Create an agent
     agent = ContributorAgent("Contributor_1")
-    print(f"Created agent: {agent}")
 
     # Loop through all the issues in the issues list
     print("Looping through all the issues in the issues list...")
@@ -227,13 +261,11 @@ def main():
         print(f"Assigned issue: {agent.assigned_issue}")
 
         # Solve the assigned issue
-        agent.solve_issue()
-        print("Solved the assigned issue")
-
-        # Print a separator for better readability
-        print("-" * 50)
-
-        agent.unassign_issue(issue)
+        res = agent.solve_issue(project_dir)
+        if res == True:
+            print("Solved the assigned issue")
+        else:
+            print("Error solving the assigned issue")
 
 
 if __name__ == "__main__":
