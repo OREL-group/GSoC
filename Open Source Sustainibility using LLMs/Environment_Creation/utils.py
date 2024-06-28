@@ -53,24 +53,29 @@ def initialize_git_repo_and_commit(project_dir, logger=None):
         )
         run_command(["git", "init"])
 
-    # Run the Git commands
-    try:
-        run_command(["git", "status"])
+        # Run the Git commands
+        try:
+            print("Running command `git status` \n", run_command(["git", "status"]))
 
-        # Add changes
-        run_command(["git", "add", "."])
+            # Add changes
+            print("\nRunning command `git add .` \n", run_command(["git", "add", "."]))
 
-        # Check for changes to commit
-        status_output = run_command(["git", "status", "--porcelain"])
+            # Check for changes to commit
+            status_output = run_command(["git", "status", "--porcelain"])
 
-        if status_output:
-            # Commit changes if there are any
-            run_command(["git", "commit", "-m", "Initial commit"])
-        else:
-            print("No changes to commit.")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        exit(1)
+            if status_output:
+                # Commit changes if there are any
+                print(
+                    "Got status output : \n ",
+                    status_output,
+                    "\n Running command `git add .` \n",
+                    run_command(["git", "commit", "-m", "Initial commit"]),
+                )
+            else:
+                print("No changes to commit.")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            exit(1)
 
 
 def repo_commit_current_changes(project_dir, logger=None):
@@ -78,6 +83,8 @@ def repo_commit_current_changes(project_dir, logger=None):
     Commit the current active changes so that it's safer to do git reset later on.
     Use case: for storing the changes made in pre_install and test_patch in a commit.
     """
+    prev_path = os.getcwd()
+    os.chdir(project_dir)
     if not os.path.exists(os.path.join(project_dir, ".git")):
         print(
             f"The directory {project_dir} is not a Git repository, initiliazing a new one ."
@@ -86,19 +93,66 @@ def repo_commit_current_changes(project_dir, logger=None):
 
     # Run the Git commands
     try:
-        run_command(["git", "status"])
+        print("Running command `git status` \n", run_command(["git", "status"]))
 
         # Add changes
-        run_command(["git", "add", "."])
+        print("\nRunning command `git add .` \n", run_command(["git", "add", "."]))
+
+        # Check for changes to commit
+        status_output = run_command(["git", "status", "--porcelain"])
+        print("Got status output : \n ", status_output)
+        if status_output:
+            # Commit changes if there are any
+            print(
+                "\n Running command `git add .` \n",
+                run_command(["git", "commit", "-m", "Automated commit"]),
+            )
+        else:
+            print("No changes to commit.")
+
+        os.chdir(prev_path)
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        os.chdir(prev_path)
+        exit(1)
+
+
+def repo_apply_diff_and_commit(project_dir, diff_file_path, logger=None):
+    """
+    Apply a git diff from a file to the repository.
+    Use case: for applying patches to the repository.
+    """
+    if not os.path.exists(os.path.join(project_dir, ".git")):
+        print(f"The directory {project_dir} is not a Git repository.")
+        exit(1)
+
+    # Check if the diff file exists
+    if not os.path.exists(diff_file_path):
+        print(f"The diff file {diff_file_path} does not exist.")
+        exit(1)
+
+    # Ensure we are in the correct directory
+    os.chdir(project_dir)
+
+    # Run the Git commands to apply the diff
+    try:
+        run_command(["git", "status"])
+
+        # Apply the diff
+        run_command(["git", "apply", diff_file_path])
+        print("Diff applied successfully.")
 
         # Check for changes to commit
         status_output = run_command(["git", "status", "--porcelain"])
 
         if status_output:
             # Commit changes if there are any
-            run_command(["git", "commit", "-m", "Automated commit"])
+            run_command(["git", "add", "."])
+            run_command(["git", "commit", "-m", "Applied diff from file"])
+            print("Diff applied and changes committed.")
         else:
-            print("No changes to commit.")
+            print("No changes to commit after applying the diff.")
 
     except Exception as e:
         print(f"Unexpected error: {e}")

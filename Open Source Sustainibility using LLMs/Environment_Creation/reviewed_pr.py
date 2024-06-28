@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import os
 import docker
 from datetime import datetime
-
+import shutil
 import tarfile
 import io
 
@@ -19,10 +19,6 @@ class Issue:
     issue_no: int
     issue_id: str
     file_path: str
-
-
-# Global list of issues
-issues = []
 
 
 def query_ollama(prompt):
@@ -40,7 +36,7 @@ class ContributorAgent:
     def assign_issue(self, issue):
         self.assigned_issue = issue
 
-    def unassign_issue(self, issue):
+    def unassign_issue(self):
         self.assigned_issue = None
 
     def solve_issue(self, project_dir):
@@ -62,8 +58,7 @@ class ContributorAgent:
                 ports = {"3000/tcp": 3000, "5000/tcp": 5000}
 
                 container = client.containers.run(
-                    "acr1",  # Replace with your Docker image name
-                    # "sleep infinity",  # Command to keep the container running
+                    "acr1",
                     ports=ports,
                     volumes=volume_bindings,
                     detach=True,
@@ -79,7 +74,7 @@ class ContributorAgent:
             commands = [
                 "/bin/bash",
                 "-c",
-                f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --enable-validation --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/task_{task_id}.md",
+                f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --enable-validation --conv-round-limit 5 --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/pending/task_{task_id}.md",
             ]
 
             # Execute command inside the container and stream output
@@ -215,16 +210,55 @@ class ContributorAgent:
             exit(1)
 
 
-def main():
+class MaintainerAgent:
+    def __init__(self, name):
+        self.name = name
 
+    def review_pull_request(self, pull_request_dir, local_repo_dir):
+        pr_file_path = os.path.join(pull_request_dir, "pr.md")
+        diff_file_path = os.path.join(
+            pull_request_dir,
+            [f for f in os.listdir(pull_request_dir) if f.endswith(".diff")][0],
+        )
+
+        with open(pr_file_path, "r") as pr_file:
+            pr_content = pr_file.read()
+        print(f"Reviewing pull request: {pr_file_path}")
+
+        # Query OLLAMA to review the pull request content
+        prompt = f"""As a maintainer in an open source environment, your role is to 
+        review pull requests submitted by contributors. 
+        Here is a pull request description:\n{pr_content}\n
+        Based on the description, should this pull request be accepted, i.e does it accurately solve the given issue? 
+        Please provide a brief review. Only respond with 'approve' or 'reject'."""
+
+        review_result = query_ollama(prompt=prompt)
+        print(f"Review result: {review_result}")
+
+        if "approve" in review_result.lower():
+            print("Merging the pull request...")
+            # Apply the diff to the local repository
+            repo_apply_diff_and_commit(local_repo_dir, diff_file_path)
+            # commit the changes made i.e applying the diff
+            print("Pull request merged.")
+            return True
+        else:
+            print("Pull request rejected.")
+            return False
+
+
+def main():
+    issues = []
     current_folder = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.join(current_folder, "calculator_project")
-    initialize_git_repo_and_commit(project_dir)
+    project_dir = os.path.join(current_folder, "..", "..", "..", "calculator_project")
+    # initialize_git_repo_and_commit(project_dir)
+    repo_commit_current_changes(project_dir)
 
     # Get the path to the issues folder
     # current folder
     print("Getting the path to the issues folder...")
-    issues_folder = os.path.join(project_dir, "issues")
+    issues_parent_folder = os.path.join(project_dir, "issues")
+    issues_folder = os.path.join(issues_parent_folder, "pending")
     issue_counter = 0
     print(f"Issues folder: {issues_folder}")
     # Loop through all the files in the issues folder
@@ -249,9 +283,13 @@ def main():
 
     # Create an agent
     agent = ContributorAgent("Contributor_1")
+    maintainer = MaintainerAgent("Maintainer_1")
+    print(f"Created agents: {agent} and {maintainer}")
 
     # Loop through all the issues in the issues list
     print("Looping through all the issues in the issues list...")
+    # Review the pull requests
+    pull_requests_dir = os.path.join(project_dir, "pull_requests")
     for issue in issues:
         # Assign an issue from the available issues to the agent
         agent.assign_issue(issue)
@@ -264,8 +302,58 @@ def main():
         res = agent.solve_issue(project_dir)
         if res == True:
             print("Solved the assigned issue")
+            agent.unassign_issue()
         else:
             print("Error solving the assigned issue")
+        # Find the most recent pull request for the given task_id
+        task_id = issue.issue_id
+        pull_request_dirs = [
+            f
+            for f in os.listdir(pull_requests_dir)
+            if f.startswith(f"pull_request_{task_id}")
+        ]
+        if len(pull_request_dirs) == 0:
+            print(f"No pull requests found for task ID: {task_id}")
+            continue
+
+        pull_request_dirs.sort(key=lambda x: int(x.split("_v")[-1]))
+        most_recent_pull_request = pull_request_dirs[-1]
+        pull_request_dir = os.path.join(pull_requests_dir, most_recent_pull_request)
+
+        res_m = maintainer.review_pull_request(pull_request_dir, project_dir)
+        if res_m:
+            print("Reviewed and merged the pull request", most_recent_pull_request)
+            # make a "merged" folder in the pull_requests folder and move the merged pull request there
+            merged_dir = os.path.join(project_dir, "pull_requests", "merged")
+            os.makedirs(merged_dir, exist_ok=True)
+            merged_pull_request_dir = os.path.join(merged_dir, most_recent_pull_request)
+            os.rename(pull_request_dir, merged_pull_request_dir)
+            print(f"Moved merged pull request to {merged_pull_request_dir}")
+
+            # delete the other versions of the pull request for the same task_id
+            for pr_dir in pull_request_dirs:
+                if pr_dir == most_recent_pull_request:
+                    continue
+                print(f"Checking pull request: {pr_dir}")
+                if pr_dir.startswith(f"pull_request_{task_id}"):
+                    pr_dir_path = os.path.join(pull_requests_dir, pr_dir)
+                    shutil.rmtree(pr_dir_path)
+                    print(f"Deleted pull request: {pr_dir_path}")
+
+            # make a "solved" folder in the issues folder and move the solved issue there
+            solved_dir = os.path.join(project_dir, "issues", "solved")
+            os.makedirs(solved_dir, exist_ok=True)
+            solved_issue_path = os.path.join(solved_dir, f"task_{task_id}.md")
+            os.rename(issue.file_path, solved_issue_path)
+            print(f"Moved solved issue to {solved_issue_path}")
+            repo_commit_current_changes(project_dir)
+
+        else:
+            print("Reviewed and rejected the pull request", most_recent_pull_request)
+            # TODO : make a "rejected" folder in the pull_requests folder and move the rejected pull request there
+
+        # Print a separator for better readability
+        print("-" * 50)
 
 
 if __name__ == "__main__":
