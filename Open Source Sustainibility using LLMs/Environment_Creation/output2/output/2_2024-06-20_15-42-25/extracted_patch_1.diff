@@ -1,0 +1,31 @@
+diff --git a/calculator/calculator.py b/calculator/calculator.py
+index 1b528ee..d6a3cdd 100755
+--- a/calculator/calculator.py
++++ b/calculator/calculator.py
+@@ -1,12 +1,14 @@
+-class Calculator:
+-    def add(self, a, b):
+-        return a + b
+-
+-    def subtract(self, a, b):
+-        return a - b
+-
+-    def multiply(self, a, b):
+-        return a * b
+-
+-    def divide(self, a, b):
+-        return a / b
++class Calculator:
++    def add(self, a, b):
++        return a + b
++
++    def subtract(self, a, b):
++        return a - b
++
++    def multiply(self, a, b):
++        return a * b
++
++    def divide(self, a, b):
++        if b == 0:
++            raise ValueError("Cannot divide by zero")
++        return a / b
