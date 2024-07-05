@@ -1,0 +1,544 @@
+fileFormatVersion: 2
+guid: 0e6bb7c71023f55419ea14f276e9084f
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPArmL
+    second: {fileID: 2100000, guid: 33f46314b35b3234f9e9d6df159bdad7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPArmR
+    second: {fileID: 2100000, guid: 6182f373289d6ef43a4bd2931fc4d0a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPBody
+    second: {fileID: 2100000, guid: 1eee099895912714db25c291fa847b74, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPCape
+    second: {fileID: 2100000, guid: 1aa2af228cbadf74689b51548609a912, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPHair
+    second: {fileID: 2100000, guid: ad8eb797966e1b9489acbc8b8941ea1b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPHelmet
+    second: {fileID: 2100000, guid: 79d623bea7622e2479aeb9d59020c0d9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPLegs
+    second: {fileID: 2100000, guid: 4d37295b32fb8b84293fc1517e1a5ba4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LPPants
+    second: {fileID: 2100000, guid: 12b75bf976e3aa14ca3716806a6a95a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubkeship_screens.001
+    second: {fileID: 2100000, guid: 8d91203de9ac67840be9254a98097844, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_bottomhull.001
+    second: {fileID: 2100000, guid: 87909fde66b8a6d439afbdb581d50b5a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_cockpitpanels.001
+    second: {fileID: 2100000, guid: 16f94a6c2fd64b44aa547efdaba97df5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_details.001
+    second: {fileID: 2100000, guid: d6213b7f03ad37644aa6eaf09c59a10b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_engines.001
+    second: {fileID: 2100000, guid: 0d753bc1bd941d943ac0c5ac43d0897e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_glass.001
+    second: {fileID: 2100000, guid: e98b52d64acc7bf428bbd8426e1cf1d2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_interior.door.001
+    second: {fileID: 2100000, guid: efa8d83853e619345a606a2c3bf17462, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull.001
+    second: {fileID: 2100000, guid: b2ea19cce900d844b9d6f6759bb505cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull2.001
+    second: {fileID: 2100000, guid: bdb622eb081840e47ac438d460f6b4ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull3.001
+    second: {fileID: 2100000, guid: 98db05294545751439132ecd9d932edd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull4.001
+    second: {fileID: 2100000, guid: 1cbf45c94363c574fae9ad8579601bff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull5.001
+    second: {fileID: 2100000, guid: 8623cf01900d2ab4f982803f23406e53, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhullhidden.001
+    second: {fileID: 2100000, guid: 7dd671db7342b4f46adac80cdb607eca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_misc.001
+    second: {fileID: 2100000, guid: 129464f5a6ef27d468db452ad0b3a6a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_reardoor.001
+    second: {fileID: 2100000, guid: f311623f8c3f8884c8726c29296ef441, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_rearpanel.001
+    second: {fileID: 2100000, guid: 4a9dc5778c9a1694988ff7951d88ff71, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_seat.001
+    second: {fileID: 2100000, guid: b60de045d6af55043930c72c41c3cac6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_sidepanels.001
+    second: {fileID: 2100000, guid: e136cfff1ec78bb4fa402fdb45a7a6dc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter.002
+    second: {fileID: 2100000, guid: 01f0fc7ba1edb074e8a949eccd404e9b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter.003
+    second: {fileID: 2100000, guid: 891480328765f0e4f880d80b894e044b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullrear.001
+    second: {fileID: 2100000, guid: 7a7db97aec6d6654eb0b45e24347e872, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.007
+    second: {fileID: 2100000, guid: 1786f39c7871eb444b51002d1a941c31, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.008
+    second: {fileID: 2100000, guid: 3f9050a7107c5d7489db45e68ad3f7b7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.009
+    second: {fileID: 2100000, guid: db563c123a8613c41a892c66c8de9523, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ReflexEyes
+    second: {fileID: 2100000, guid: 89d243113b16c334eaab18b74d07b6f1, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arms.Alb
+    second: {fileID: 2800000, guid: b280eb721fc40a34599d0bc038c5a8fb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arms.Emiss
+    second: {fileID: 2800000, guid: 180159c96ba9ab34b9314609ca89fe7f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Arms.Norm
+    second: {fileID: 2800000, guid: 34bd7724925c68b478bcde7fc916c56e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Belt.Normal
+    second: {fileID: 2800000, guid: 3a731a1e40e6a0141947929b084833e8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BodyHead.Alb
+    second: {fileID: 2800000, guid: 7a3cee4360985b94aaafc770bb31b592, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Cape.Albedo
+    second: {fileID: 2800000, guid: 9d59ba909f75e644ca6e8cf7a66c5dc3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Cape.Normal
+    second: {fileID: 2800000, guid: 9686fbeeedb2a1145b2a2c26ad0dfba4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Hair.Base
+    second: {fileID: 2800000, guid: f0f652078ebe7d041aad42973222a3ca, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Helmet.Alb
+    second: {fileID: 2800000, guid: a5cfbafcb9ce07f46a5efb5b7e23d4df, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Helmet.Emm
+    second: {fileID: 2800000, guid: 268db790d255fc8419057b13da65c87c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Legs.Alb
+    second: {fileID: 2800000, guid: 2ce2bbf2f3a189d4e9bdd431d8c2f61c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubkeship_screens_baseColor
+    second: {fileID: 2800000, guid: 0822268284b075746a2b7c0bd4cb3841, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubkeship_screens_emissive
+    second: {fileID: 2800000, guid: 80d27dd1ca40902448529864412b7d9f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubkeship_screens_normal
+    second: {fileID: 2800000, guid: fc6a351f66f35544d9cd762464ad8468, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_bottomhull_baseColor
+    second: {fileID: 2800000, guid: e9f506c3d3779c54e9d0ec9c6ece4beb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_bottomhull_normal
+    second: {fileID: 2800000, guid: 47ca4c347528b1c46973a29de2cda652, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_cockpitpanels_baseColor
+    second: {fileID: 2800000, guid: dcea208a70210bb49ba0233c7cca4baf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_cockpitpanels_normal
+    second: {fileID: 2800000, guid: 428dcfbdca8ca844f98090ce0906eea7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_details_baseColor
+    second: {fileID: 2800000, guid: 262f694cb6a3c894b9b3b2b817449d34, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_details_normal
+    second: {fileID: 2800000, guid: 0a85a634a2264da4c9db4f33723528ab, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_engines_baseColor
+    second: {fileID: 2800000, guid: 9ba2359fa5b68a64d972439084a12122, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_engines_normal
+    second: {fileID: 2800000, guid: 56d8ad1e64d19de41a4eea3cd4c5f1aa, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_glass_baseColor
+    second: {fileID: 2800000, guid: f2d8cf43bb3870849ab06008e780cc3f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_glass_normal
+    second: {fileID: 2800000, guid: 1a7bf3bccdb068a488e3542135c1b8eb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_interior.door_baseColor
+    second: {fileID: 2800000, guid: 179b2d03d9ad8254197021414d555660, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_interior.door_normal
+    second: {fileID: 2800000, guid: 86d3357123b358a4f8ff5e0ca8eba28c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull2_baseColor
+    second: {fileID: 2800000, guid: f3837fd42f52d8543a5d3a51c765178e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull2_normal
+    second: {fileID: 2800000, guid: c442c71c379aecd438d2c6a30b683a02, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull3_baseColor
+    second: {fileID: 2800000, guid: 7d286f48f7ed9d347915d6fa952f1575, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull3_normal
+    second: {fileID: 2800000, guid: 7a7209e4008e3f64697748734d20b24a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull4_baseColor
+    second: {fileID: 2800000, guid: 245e71ad478ee5447972ece6611cd09d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull4_normal
+    second: {fileID: 2800000, guid: bd916a3dd247f974bb3539881b18b3c9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull5_baseColor
+    second: {fileID: 2800000, guid: c1832ebaaa82a5740b9e55d7db86f046, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull5_normal
+    second: {fileID: 2800000, guid: bec36bce5450365459026aba94650cae, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull_baseColor
+    second: {fileID: 2800000, guid: d4407b5809e02c6408bf9208854f4278, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhull_normal
+    second: {fileID: 2800000, guid: 5385a86c75260284aa9ec039c5d8f041, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_mainhullhidden_baseColor
+    second: {fileID: 2800000, guid: 4a2aca6f872dd4041a0e51351fce2b23, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_misc_baseColor
+    second: {fileID: 2800000, guid: 1760c4a4e0682c8409415607b0406ed0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_misc_normal
+    second: {fileID: 2800000, guid: 74c55f16b5643cf498723eec0554b977, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_reardoor_baseColor
+    second: {fileID: 2800000, guid: 8420068dd356bc24582efb4b4d1f4a38, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_reardoor_normal
+    second: {fileID: 2800000, guid: 9339587aac3477b4cab52750afad4728, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_rearpanel_baseColor
+    second: {fileID: 2800000, guid: 0f564492821a6db438ad45bb9cfddb5b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_rearpanel_normal
+    second: {fileID: 2800000, guid: 3b79069c32747ac4981832d695f2d002, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_seat_baseColor
+    second: {fileID: 2800000, guid: 92c1ffcb0f4b7c14d8521dff4f8853cb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_seat_normal
+    second: {fileID: 2800000, guid: 787eca12fc11c0b46aff38d6ad5f254d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_sidepanels_baseColor
+    second: {fileID: 2800000, guid: 4e7aa08ef2f8c4a4f831e60c152d1462, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_sidepanels_normal
+    second: {fileID: 2800000, guid: 91f3c7fbcb229504e94ee93e1a08b784, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter.001_baseColor
+    second: {fileID: 2800000, guid: 1a3cf66ccdd0b0644a4352516776bd28, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter.001_normal
+    second: {fileID: 2800000, guid: fcebadbb3d89a114da61f4c2b21cf1fa, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter_baseColor
+    second: {fileID: 2800000, guid: 7ef3b370b7b66d64185154b9cd62b78d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullcenter_normal
+    second: {fileID: 2800000, guid: fabeab66db6c5a345a852cdb298d1ba2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullrear_baseColor
+    second: {fileID: 2800000, guid: 2fbad8301a88fd546981b75d00420a4f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: M_bubleship_tophullrear_normal
+    second: {fileID: 2800000, guid: fb4e9fb2629dbcc469e0581285cbd8e9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pants.Albedo
+    second: {fileID: 2800000, guid: 0bb35f34da6f02e45bd253dba0838df6, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

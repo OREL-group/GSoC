@@ -1,0 +1,13 @@
+{
+    "commit": "9cc62cc42b9d9f967db103a2548335863d58bcf1",
+    "start_epoch": 1718898145.048391,
+    "end_epoch": 1718898369.023758,
+    "elapsed_seconds": 223.975367,
+    "model": "llama3",
+    "input_cost_per_token": 0.0,
+    "output_cost_per_token": 0.0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "total_tokens": 0,
+    "total_cost": 0.0
+}
