@@ -41,8 +41,6 @@ This approach promotes a more democratic and open selection process:
 
 ### Key Common Features
 - **Proportional Bidding / Rating**: The bid/rating is set according to the matching_level, which is the difference between {{contributor_role}} and {issue.difficulty}. If the matching_level is low, bid is high. If the matching_level is high, bid is very low. This helps to enocourage contributors to attempt tasks closer to their own potential.
-- **Github**     
-
 
 ## Running the Algorithms
 
