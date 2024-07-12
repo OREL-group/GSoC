@@ -25,24 +25,24 @@ class Contributor:
         self.id = id
         self.experience = experience
         self.available = True
-        self.current_task = None
+        self.assigned_issue = None
         self.name = name
 
     def eligible_for_issue(self, issue):
         return self.available and self.experience >= issue.difficulty
 
-    def allot_task(self, issue):
-        self.current_task = issue
+    def assign_issue(self, issue):
+        self.assigned_issue = issue
         self.available = False
         log_and_print(f"Contributor {self.name} has been allotted Issue #{issue.id}.\n")
-        return self.current_task
+        return self.assigned_issue
 
     def solve_task(self):
         # Empty implementation for now, will integrate with earlier code from Environment_Creation later
         log_and_print(
-            f"Contributor {self.name} has created pull request for Issue #{self.current_task.id}.\n"
+            f"Contributor {self.name} has created pull request for Issue #{self.assigned_issue.id}.\n"
         )
-        self.current_task = None
+        self.assigned_issue = None
         self.available = True
         return True  # only if successfully created pull request.
 
@@ -262,7 +262,7 @@ for issue in issues:
     if (
         selected_contributor
     ):  # if no eligible contributors, loop until the issue is solved
-        selected_contributor.allot_task(issue)
+        selected_contributor.assign_issue(issue)
         task_solved = selected_contributor.solve_task()
         if task_solved:
             selected_maintainer.merge_pull_request()
