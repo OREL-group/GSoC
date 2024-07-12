@@ -1,9 +1,0 @@
-I apologize for the mistake. Here is another attempt at writing a patch:
-
-# modification 1
-<file>calculator/calculator.py</file>
-<original>from calculator import Calculator</original>
-<patched>from calculator import Calculator
-from typing import Union</patched>
-
-This patch adds the `typing` module and imports the `Union` type to the `calculator/calculator.py` file.
