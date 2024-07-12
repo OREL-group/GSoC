@@ -1,5 +1,60 @@
 # LLAMOSC : LLM-Powered Agent-Based Model for Open Source Communities
 
+## Overview
+
+LLAMOSC (LLM-Powered Agent-Based Model for Open Source Communities) is a comprehensive framework designed to simulate and enhance the sustainability of open-source communities using Large Language Models (LLMs). The framework focuses on modeling interactions and productivity of agents with varying levels of experience, knowledge, and engagement in a virtual open-source environment.
+
+### Key Components and Features implemented so far
+
+1. **Environment**:
+    - **GitHub (CodeSpace Environment)**: A simulated code space (powered by AutoCodeRover) where agents contribute to open-source projects, mirroring real-world GitHub repositories.
+
+2. **Environment Variables**:
+    - **Issues**: Issues are categorized with varying difficulty from 1 to 5, resembling real-life variation from "Good First Issues" to "Expert Required Issues", assigned based on the contributor agent's experience level.
+
+3. **Agents**:
+    - **Coding Ability**: Skill level in writing and reviewing code, (powered by AutoCodeRover).
+
+4. **Agent Variables (Internal States)**:
+    - **Experience Level**: Categorized from 1 to 5 resembling real-life contributors ranging from Novice to Experienced.
+
+### Framework Capabilities
+
+LLAMOSC integrates multiple capabilities to automate and optimize open-source community activities:
+
+1. **AutoCodeRover Integration**:
+    - Combines LLMs with advanced code navigation and debugging capabilities.
+    - Operates in two stages: Context retrieval and Patch generation.
+    - Features Program Structure Aware code search APIs to navigate codebases and generate patches.
+
+2. **Automated Pull Request Lifecycle**:
+    - **ContributorAgent**: Automates issue identification, solution proposal, and pull request creation.
+    - **MaintainerAgent**: Automates pull request review and merging based on predefined criteria.
+    - Utilizes Docker for environment consistency and isolation.
+    - Implements diff extraction and automated pull request submission (powered by AutoCodeRover).
+
+3. **Multi-Agent Decision Making Algorithms**:
+    - **Authoritarian Algorithm (Benevolent Dictator Model)**:
+        - Central maintainer manages and allocates tasks.
+        - Contributors are rated and assigned tasks based on maintainer’s discretion.
+    - **Decentralized Algorithm (Meritocratic Model)**:
+        - Distributed decision-making among contributors.
+        - Contributors bid on tasks based on their suitability and experience.
+
+### Accomplishments of LLAMOSC so far
+
+- **Preliminary Design and Implementation**:
+    - Created a robust framework for simulating open-source environments.
+    - Developed agents with varying skill levels and experience to reflect real-world dynamics.
+
+- **Automated Pull Request Lifecycle**:
+    - Streamlined the process of identifying, solving issues, creating, submitting, reviewing, and merging pull requests.
+    - Implemented reliable and reproducible workflows for ContributorAgent and MaintainerAgent.
+
+- **Multi-Agent Decision Making**:
+    - Simulated governance models used in open-source projects.
+    - Developed algorithms for both centralized (authoritarian) and decentralized (meritocratic) task allocation.
+
 ## Installation instructions
 
 To begin, please follow the instructions provided in `Open Source Sustainibility using LLMs\Environment_Creation\README.md` and ensure that the scripts run successfully.
@@ -94,3 +149,17 @@ To run the authoritarian algorithm using the LLAMOSC framework, make sure you na
 ```bash
 python .\LLAMOSC\scripts\reviewed_pr_authoritatian.py
 ```
+### Running the Decentralized Algorithm
+
+The decentralized algorithm is a decision-making algorithm used in Multi Agent Decision Making (MADM) systems. It allows for distributed decision-making among multiple agents, eliminating the need for a single decision-maker. More information can be found in `Open Source Sustainibility using LLMs\Multi_Agent_Decision_Making\README.md`.
+
+To run the decentralized algorithm using the LLAMOSC framework, make sure you navigate to the root directory of the LLAMOSC package and use the following command:
+
+```bash
+python .\LLAMOSC\scripts\reviewed_pr_decentralized.py
+```
+## References 
+
+- For [decentralized](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_bidding) and [authoritarian](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_authoritarian) algorithm approaches : [Langchain Use Cases : Agent Simulations](https://python.langchain.com.cn/docs/use_cases/agent_simulations/)
+- For information about [benevelont-dictator](http://oss-watch.ac.uk/resources/benevolentdictatorgovernancemodel) and [meritocratic](http://oss-watch.ac.uk/resources/meritocraticgovernancemodel) open-source goverenance models : http://oss-watch.ac.uk/resources/ 
+- This environment is based on a paper "AutoCodeRover: Autonomous Program Improvement" and it's open-source code implementation [on github](https://github.com/nus-apr/auto-code-rover) has been used as a dependency in my project .

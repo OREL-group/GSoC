@@ -157,6 +157,10 @@ def repo_apply_diff_and_commit(project_dir, diff_file_path, logger=None):
         exit(1)
 
 
+def log(msg):
+    logger.info(msg)
+
+
 def log_and_print(msg):
     # logger.info(msg)
     console.print(msg)

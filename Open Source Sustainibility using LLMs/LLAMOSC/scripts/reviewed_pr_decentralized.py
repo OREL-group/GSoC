@@ -5,6 +5,7 @@ from LLAMOSC.agents.contributor import ContributorAgent
 from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.sim import Simulation
+from LLAMOSC.simulation.rating_and_bidding import *
 from LLAMOSC.utils import *
 
 
@@ -17,13 +18,13 @@ def main():
     # initialize_git_repo_and_commit(project_dir)
     repo_commit_current_changes(project_dir)
 
+    log_and_print("Reading issues from the issues folder...")
     # Get the path to the issues folder
     # current folder
     issues_parent_folder = os.path.join(project_dir, "issues")
     issues_folder = os.path.join(issues_parent_folder, "pending")
     issue_counter = 0
     # Loop through all the files in the issues folder
-    log_and_print("Reading issues from the issues folder...")
     for filename in os.listdir(issues_folder):
         # Create the file path
         file_path = os.path.join(issues_folder, filename)
@@ -79,7 +80,7 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
-        selected_contributor = sim.select_contributor_authoritarian(selected_maintainer)
+        selected_contributor = sim.select_contributor_decentralized(issue)
         # Assign an issue from the available issues to the agent
         if selected_contributor:
             # TODO : if no eligible contributors, loop until the issue is solved
@@ -97,7 +98,6 @@ def main():
                 if len(pull_request_dirs) == 0:
                     log_and_print(f"No pull requests found for task ID: {task_id}")
                     continue
-
                 log_and_print("Solved the assigned issue")
                 pull_request_dirs.sort(key=lambda x: int(x.split("_v")[-1]))
                 most_recent_pull_request = pull_request_dirs[-1]

@@ -54,7 +54,7 @@ class ContributorAgent:
                     tty=True,
                 )
             except Exception as e:
-                print(f"Error starting container: {e}")
+                log(f"Error starting container: {e}")
                 stop_running_containers()
                 exit(1)
 
@@ -81,7 +81,6 @@ class ContributorAgent:
 
             # Find the most recent .diff file in the container
             task_id = self.assigned_issue.id
-            print(f"Finding the most recent .diff file for task ID: {task_id}...")
             output_dir = "/opt/auto-code-rover/output"
             output_files = (
                 container.exec_run(["ls", output_dir]).output.decode().split("\n")
@@ -89,7 +88,7 @@ class ContributorAgent:
             task_dirs = [f for f in output_files if f.startswith(f"{task_id}_")]
 
             if not task_dirs:
-                print("No directories found for the given task ID.")
+                log("No directories found for the given task ID.")
                 return
 
             # Sort the directories by their timestamp and select the most recent one
@@ -114,12 +113,12 @@ class ContributorAgent:
                     break
 
             if diff_file_path is None:
-                print("No .diff file found in the most recent directory.")
+                log("No .diff file found in the most recent directory.")
                 return
 
             local_pull_requests_dir = os.path.join(project_dir, "pull_requests")
             if not os.path.exists(local_pull_requests_dir):
-                print(
+                log(
                     f"Creating directory: {local_pull_requests_dir} as it does not already exist"
                 )
                 os.makedirs(local_pull_requests_dir)
@@ -153,8 +152,6 @@ class ContributorAgent:
                 local_pull_request_dir, os.path.basename(diff_file_path)
             )
             os.rename(extracted_file_path, local_diff_file_path)
-            # container.stop()
-            print(f"Copied .diff file to {local_diff_file_path}")
 
             container.stop()
             container.remove()
@@ -163,11 +160,9 @@ class ContributorAgent:
 
             with open(self.assigned_issue.filepath, "r") as issue_file:
                 issue_content = issue_file.read()
-                print(f"Read issue content: {issue_content}")
 
             with open(local_diff_file_path, "r") as diff_file:
                 diff_content = diff_file.read()
-                print(f"Read diff content: {diff_content}")
 
             # Query OLLAMA to generate appropriate PR content based on the diff
             prompt = f"""As a contributor in an open source environment, your role is to 
@@ -196,7 +191,7 @@ class ContributorAgent:
             return True
 
         except Exception as e:
-            print(f"Error executing command in container: {e}")
+            log_and_print(f"Error executing command in container: {e}")
             stop_running_containers()
             self.unassign_issue()
             return False

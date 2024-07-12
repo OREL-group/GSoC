@@ -37,7 +37,6 @@ class MaintainerAgent:
 
         with open(pr_file_path, "r") as pr_file:
             pr_content = pr_file.read()
-        print(f"Reviewing pull request: {pr_file_path}")
 
         # Query OLLAMA to review the pull request content
         prompt = f"""As a maintainer in an open source environment, your role is to 
@@ -47,17 +46,14 @@ class MaintainerAgent:
         Please provide a brief review. Only respond with 'approve' or 'reject'."""
 
         review_result = query_ollama(prompt=prompt)
-        print(f"Review result: {review_result}")
+        log_and_print(f"Review result: {review_result}")
 
         if "approve" in review_result.lower():
-            print("Merging the pull request...")
             # Apply the diff to the local repository
             repo_apply_diff_and_commit(local_repo_dir, diff_file_path)
             # commit the changes made i.e applying the diff
-            print("Pull request merged.")
             self.unassign_task()
             return True
         else:
-            print("Pull request rejected.")
             self.unassign_task()
             return False

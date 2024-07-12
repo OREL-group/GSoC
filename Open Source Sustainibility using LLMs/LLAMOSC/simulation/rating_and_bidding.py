@@ -112,3 +112,55 @@ def simulate_github_discussion(eligible_contributors, issue):
     formatted_history = format_discussion_history(discussion_history)
     log_and_print(formatted_history)
     return discussion_history
+
+
+def simulate_llm_bidding(eligible_contributors, issue, discussion_history):
+    log_and_print(f"Starting bidding for Issue #{issue.id} based on the discussion.\n")
+    model = ChatOllama(model="llama3")
+    bid_parser = BidOutputParser(
+        regex=r"<(\d+)>", output_keys=["bid"], default_output_key="bid"
+    )
+    issue_description = open(issue.filepath).read()
+    bidding_template = f"""
+    {{discussion_history}}
+    Based on the above discussion, where your comment is {{contributor_content}}, on a scale of 1 to 10, where 1 is not suitable at all and 10 is extremely suitable, rate your suitability compared to all the others for the following issue:
+    Issue #{issue.id}: {issue_description}
+    Difficulty: {issue.difficulty}
+
+    The bid should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {issue.difficulty}. If the matching_level is low, bud high. If the matching_level is high, bid very low.     
+
+    {bid_parser.get_format_instructions()}
+    Do nothing else.
+    """
+
+    bids = {}
+
+    for entry in discussion_history:
+        if entry["role"] == "system":
+            continue
+        contributor_role = entry["role"]
+        contributor_content = entry["content"]
+        bid_message = bidding_template.format(
+            discussion_history="\n".join(
+                f"{entry['role']}: {entry['content']}" for entry in discussion_history
+            ),
+            contributor_content=contributor_content,
+            contributor_role=contributor_role,
+        )
+        system_message = SystemMessage(
+            content=f"You are contributor {contributor_role} bidding on an issue s to contribute to it in an open-source community based on yopur comments in the github_discussion on it."
+        )
+        response = model.invoke(
+            [
+                system_message,
+                HumanMessage(content=bid_message),
+            ]
+        ).content
+        bid_value = int(bid_parser.parse(response)["bid"])
+        contributor_id = (
+            contributor_role.split(":")[1].strip().split(" ")[0].strip("()")
+        )
+        bids[contributor_id] = bid_value
+
+    log_and_print(f"\nBids for Issue #{issue.id}: {bids}\n")
+    return bids
