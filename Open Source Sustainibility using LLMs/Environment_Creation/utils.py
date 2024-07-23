@@ -27,7 +27,7 @@ def run_command(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
         return cp.stdout.strip()
     except subprocess.CalledProcessError as e:
         log_and_print(f"Error executing command {cmd}: {e}")
-        # log_and_print(f"Command output: {e.output}")
+        log_and_print(f"Command output: {e.output}")
         # log_and_print(f"Return code: {e.returncode}")
         exit(1)
 

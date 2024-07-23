@@ -28,6 +28,11 @@ class ContributorAgent:
         self.assigned_issue = None
         self.available = True
 
+    def increase_experience(self, exp=1):
+        if self.experience < 5:
+            self.experience += exp  # Increase experience by 1
+        # maximum experience can be 5
+
     def solve_issue(self, project_dir):
         if self.assigned_issue is not None:
             # Initialize Docker client
