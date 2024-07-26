@@ -5,8 +5,8 @@ from LLAMOSC.simulation.rating_and_bidding import (
     simulate_llm_bidding,
 )
 from LLAMOSC.simulation.issue import Issue
-
 from LLAMOSC.agents.maintainer import MaintainerAgent
+from LLAMOSC.agents.contributor import ContributorAgent
 import random
 
 
@@ -16,7 +16,9 @@ class Simulation:
         self.time_step = 0
 
     # if function is called with maintainer means authoritarian algorithm
-    def select_contributor_authoritarian(self, maintainer: MaintainerAgent):
+    def select_contributor_authoritarian(
+        self, maintainer: MaintainerAgent
+    ) -> ContributorAgent:
         issue = maintainer.current_task
         eligible_contributors = [
             contributor

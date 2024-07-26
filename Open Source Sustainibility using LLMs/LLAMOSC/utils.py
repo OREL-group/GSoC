@@ -122,6 +122,10 @@ def repo_apply_diff_and_commit(project_dir, diff_file_path, logger=None):
         log(f"The diff file {diff_file_path} does not exist.")
         exit(1)
 
+    # check if the diff file is empty (ie not use_acr mode), just skip aplying the diff
+    if os.stat(diff_file_path).st_size == 0:
+        return
+
     # Ensure we are in the correct directory
     os.chdir(project_dir)
 
@@ -154,16 +158,20 @@ def log(msg):
 def log_and_print(msg):
     # logger.info(msg)
     console.print(msg)
+    console.print(".")
 
 
-import docker
-import os
+def docker_necessary_imports():
+    import docker
+    import os
 
-client = docker.from_env()
+    client = docker.from_env()
+    return client
 
 
 # Function to stop and remove running containers
 def stop_running_containers():
+    client = docker_necessary_imports()
     try:
         for container in client.containers.list():
             # print(f"Stopping container {container.id}...")

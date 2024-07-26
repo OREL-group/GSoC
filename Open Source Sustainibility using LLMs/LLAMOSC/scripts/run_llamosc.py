@@ -1,3 +1,17 @@
+# TODO : A script that combines all the functions of the LLAMOSC project
+# (currently in reviewed_pr_.. scripts and new ones)
+# to run the simulation with the options taken from user - TODO done except for issue
+# TODO : like no of agents, no of issues, no of tasks, etc.
+# TODO : automatically makes issues
+# TODO : takes options for choosing between authoritarian and decentralized
+# TODO : stores data at every time step and prints graphical representation of the simulation with all metrics
+# TODO optional : dynamic like new issues as well
+
+# working till 23rd july on reviewed_pr-auth - experience metric done rest remaining
+
+# TODO Working on currently : Make docker optional - TODO done.
+# TODO : takes options for choosing between authoritarian and decentralized - do now
+
 import shutil
 import random
 
@@ -6,9 +20,35 @@ from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.sim import Simulation
 from LLAMOSC.utils import *
+import argparse
 
 
 def main():
+
+    parser = argparse.ArgumentParser(description="LLAMOSC Simulation")
+    parser.add_argument(
+        "--contributors", type=int, default=5, help="Number of contributors"
+    )
+    parser.add_argument(
+        "--maintainers", type=int, default=3, help="Number of maintainers"
+    )
+    # parser.add_argument('--issues', type=int, default=10, help='Number of issues')
+    # parser.add_argument('--issues_filepaths', type=str, default='issues', help='Path to the issues folder')
+    parser.add_argument(
+        "--use_acr",
+        action="store_true",
+        default=False,
+        help="Use ACR (AutoCodeRover which requires Docker setup) for Issue Resolution instead of doing it randomly",
+    )
+
+    args = parser.parse_args()
+
+    n_contributors = args.contributors
+    n_maintainers = args.maintainers
+    # n_issues = args.issues
+    # n_tasks = args.tasks
+    use_acr = args.use_acr
+
     issues = []
     current_folder = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.join(
@@ -38,17 +78,14 @@ def main():
         # Add the issue to the issues list
         issues.append(issue)
 
-    # Create reuired agents
-    # TODO : Later make this number choosable
-    n_contributors = 5
+    # Create required agents
     contributors = [
         ContributorAgent(i, random.randint(1, 5), f"Contributor_{i}")
-        for i in range(n_contributors)
+        for i in range(n_contributors)  # 5 contributors by default
     ]
-    n_mainainers = 3
     maintainers = [
         MaintainerAgent(i, random.randint(4, 5), f"Maintainer_{i}")
-        for i in range(n_mainainers)  # 3 maintainers
+        for i in range(n_maintainers)  # 3 maintainers by default
     ]
 
     log_and_print(f"Created agents: contributors and maintainers")
@@ -90,7 +127,11 @@ def main():
             log(selected_contributor.name)
             # TODO : if no eligible contributors, loop until the issue is solved
             selected_contributor.assign_issue(issue)
-            task_solved = selected_contributor.solve_issue(project_dir)
+            task_solved = (
+                selected_contributor.solve_issue(project_dir)
+                if use_acr
+                else selected_contributor.solve_issue_without_acr(project_dir)
+            )
             if task_solved:
 
                 # Find the most recent pull request for the given task_id
