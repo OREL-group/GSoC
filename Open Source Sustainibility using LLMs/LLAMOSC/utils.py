@@ -161,6 +161,51 @@ def log_and_print(msg):
     console.print(".")
 
 
+# change this to later make for any metric  by CTRL+Fing all this code
+
+# # Initialize dictionary to store experience over time for each contributor
+# experience_over_time = {contributor.name: [] for contributor in contributors}
+
+
+# # Function to store experience data
+# def store_experience(contributors):
+#     for contributor in contributors:
+#         experience_over_time[contributor.name].append(contributor.experience)
+
+
+# # Function to update experience
+# def update_experience(contributors):
+#     global time
+#     log_and_print(f"\nTime Step: {time}\n")
+#     log_and_print("Experience of all contributors:")
+#     log_and_print(
+#         [(contributor.name, contributor.experience) for contributor in contributors]
+#     )
+
+#     # Store the experience data at the current time step
+#     store_experience(contributors)
+
+#     # Simulate some experience increase for a random contributor
+#     selected_contributor = random.choice(contributors)
+#     selected_contributor.experience += random.randint(1, 3)
+
+#     time += 1
+
+
+# # Function to update the plot
+# def update_plot(frame):
+#     update_experience()
+
+#     plt.clf()
+#     for name, experiences in experience_over_time.items():
+#         plt.plot(range(len(experiences)), experiences, label=name)
+
+#     plt.xlabel("Time Steps")
+#     plt.ylabel("Experience")
+#     plt.title("Experience of Contributors Over Time")
+#     plt.legend()
+
+
 def docker_necessary_imports():
     import docker
     import os

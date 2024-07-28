@@ -38,12 +38,13 @@ with open(calculator_file_path, "w") as file:
 
 # Step 2: Move specified issue files to issues/pending from whatever is currently in solved (Option 2)
 solved_issues_dir = os.path.join(project_dir, "issues", "solved")
-source_files = os.listdir(solved_issues_dir)
-for file_name in source_files:
-    shutil.move(
-        os.path.join(solved_issues_dir, file_name),
-        os.path.join(project_dir, "issues", "pending", file_name),
-    )
+if os.path.exists(solved_issues_dir):
+    source_files = os.listdir(solved_issues_dir)
+    for file_name in source_files:
+        shutil.move(
+            os.path.join(solved_issues_dir, file_name),
+            os.path.join(project_dir, "issues", "pending", file_name),
+        )
 
 # Step 3: Remove the issues/solved folder
 solved_issues_path = os.path.join(project_dir, "issues", "solved")
