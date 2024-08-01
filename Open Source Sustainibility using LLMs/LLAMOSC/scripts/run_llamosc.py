@@ -180,7 +180,7 @@ def main():
                 for contributor in contributors
                 if contributor.eligible_for_issue(issue)
             ][0]
-            timestep += 1
+
         log(selected_contributor.name)
         # TODO : if no eligible contributors, loop until the issue is solved
         selected_contributor.assign_issue(issue)
@@ -216,6 +216,8 @@ def main():
                 )
                 # increase experience of the contributor
                 selected_contributor.increase_experience(1)
+                # increase no of pull requests and calculate new average code quality of the simulation
+                sim.update_code_quality(int(pr_accepted))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
                 merged_dir = os.path.join(project_dir, "pull_requests", "merged")
@@ -238,6 +240,7 @@ def main():
                 solved_issue_path = os.path.join(solved_dir, f"task_{task_id}.md")
                 os.rename(issue.filepath, solved_issue_path)
                 repo_commit_current_changes(project_dir)
+
             else:
                 log_and_print(
                     f"Maintainer {selected_maintainer.name} has rejected pull request for Issue #{issue.id}.\n"
@@ -247,7 +250,10 @@ def main():
         else:
             log_and_print("Error solving the assigned issue")
             return
-        timestep += 1
+        # print sim metrics : pull_requests and code_quality
+        log_and_print(
+            f"\nSimulation metrics: Pull Requests = {sim.num_pull_requests} Average Code Quality = {sim.avg_code_quality}\n"
+        )
 
         # Append new experiences to history
         time_history.append(timestep)
@@ -270,6 +276,7 @@ def main():
     pull_requests_dir = os.path.join(project_dir, "pull_requests")
     for issue in issues:
         update(timestep)
+        timestep += 1
         # Print a separator for better readability
         print("\n", "-" * 100, "\n")
 

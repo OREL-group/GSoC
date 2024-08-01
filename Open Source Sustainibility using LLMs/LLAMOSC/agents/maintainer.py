@@ -1,7 +1,8 @@
 import os
+import random
 
 from LLAMOSC.utils import *
-from LLAMOSC.simulation.bid_output_parser import BidOutputParser
+from LLAMOSC.simulation.bid_output_parser import BidOutputParser, QualityRatingParser
 
 from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
@@ -60,11 +61,31 @@ class MaintainerAgent:
             return False
 
     def rate_code_quality(self, pull_request_content):
-        # Query OLLAMA to rate the code quality
-        prompt = f"""As a maintainer in an open source environment, your role is to 
+        # Define the quality rating parser
+        quality_parser = QualityRatingParser(
+            regex=r"<(\d)>", output_keys=["rating"], default_output_key="rating"
+        )
+        prompt_code_review = f"""As a maintainer in an open source environment, your role is to 
         review the code quality of the code submitted by contributors. 
-        Please provide a brief review of the code quality in the pull_request {pull_request_content}."""
+        Please provide a brief review of the code quality in the pull request {pull_request_content}."""
+        review_result = query_ollama(prompt=prompt_code_review)
+        log_and_print(f"Raw code quality review result: {review_result}")
 
-        review_result = query_ollama(prompt=prompt)
-        log_and_print(f"Code quality review result: {review_result}")
-        return review_result
+        # Query OLLAMA to rate the code quality
+        prompt_code_quality = f"""On a scale of 1 to 5, where 1 is very poor and 5 is excellent, provide a quality rating for the code based on the review {review_result}.
+        The rating should be unique and very reflective of the quality of the code. and how the given code solves the issue.
+        {quality_parser.get_format_instructions()}"""
+
+        review_result = query_ollama(prompt=prompt_code_quality)
+        log_and_print(f"Code quality rating result: {review_result}")
+
+        # Parse the review result to get the rating
+        parsed_result = quality_parser.parse(review_result)
+
+        # Extract the rating
+        rating = parsed_result.get(
+            "rating", random.randint(1, 5)
+        )  # Default to random if parsing fails
+
+        log_and_print(f"Parsed code quality rating: {rating}")
+        return rating

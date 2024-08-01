@@ -13,7 +13,23 @@ import random
 class Simulation:
     def __init__(self, contributors):
         self.contributors = contributors
+        self.avg_code_quality = 0
+        self.num_pull_requests = 0  # To keep track of the number of pull requests
         self.time_step = 0
+
+    def update_code_quality(self, new_quality):
+        """
+        Update the average code quality using a simple average.
+
+        :param new_quality: The code quality of the new pull request.
+        """
+        # Increment the number of pull requests
+        self.num_pull_requests += 1
+
+        # Calculate the new average
+        self.avg_code_quality = (
+            (self.avg_code_quality * (self.num_pull_requests - 1)) + new_quality
+        ) / self.num_pull_requests
 
     # if function is called with maintainer means authoritarian algorithm
     def select_contributor_authoritarian(
