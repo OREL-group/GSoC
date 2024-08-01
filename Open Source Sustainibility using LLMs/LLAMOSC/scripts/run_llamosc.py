@@ -5,12 +5,15 @@
 # TODO : automatically makes issues
 # TODO optional : dynamic like new issues as well
 
+# TODO : add code quality metric, llm response and graph
+# TODO : begin personalization part
+
 # was working on reviewed_pr-auth - experience metric done rest remaining
 
-# TODO Working on currently : Make docker optional - TODO done.
+# TODO : Make docker optional - TODO done.
 # TODO : takes options for choosing between authoritarian and decentralized - TODO done
 
-# TODO : add metrics - contributor experience & simulation issues done
+# TODO : add metrics - contributor experience & simulation issues - TODO done
 # TODO : stores data at every time step and prints graphical representation of the simulation with all metrics - doing, working code but after fiorst timestep plot is not nice
 import shutil
 import random

@@ -7,6 +7,75 @@ import random
 
 from LLAMOSC.utils import *
 
+# TODO : add personalization to the prompt to put story for each contributor
+# game_description = f"""Here is the topic for a Dungeons & Dragons game: {quest}.
+#         The characters are: {*character_names,}.
+#         The story is narrated by the storyteller, {storyteller_name}."""
+
+# player_descriptor_system_message = SystemMessage(
+#     content="You can add detail to the description of a Dungeons & Dragons player."
+# )
+
+
+# def generate_character_description(character_name):
+#     character_specifier_prompt = [
+#         player_descriptor_system_message,
+#         HumanMessage(
+#             content=f"""{game_description}
+#             Please reply with a creative description of the character, {character_name}, in {word_limit} words or less.
+#             Speak directly to {character_name}.
+#             Do not add anything else."""
+#         ),
+#     ]
+#     character_description = ChatOpenAI(temperature=1.0)(
+#         character_specifier_prompt
+#     ).content
+#     return character_description
+
+
+# def generate_character_system_message(character_name, character_description):
+#     return SystemMessage(
+#         content=(
+#             f"""{game_description}
+#     Your name is {character_name}.
+#     Your character description is as follows: {character_description}.
+#     You will propose actions you plan to take and {storyteller_name} will explain what happens when you take those actions.
+#     Speak in the first person from the perspective of {character_name}.
+#     For describing your own body movements, wrap your description in '*'.
+#     Do not change roles!
+#     Do not speak from the perspective of anyone else.
+#     Remember you are {character_name}.
+#     Stop speaking the moment you finish speaking from your perspective.
+#     Never forget to keep your response to {word_limit} words!
+#     Do not add anything else.
+#     """
+#         )
+#     )
+
+
+# character_descriptions = [
+#     generate_character_description(character_name) for character_name in character_names
+# ]
+# character_system_messages = [
+#     generate_character_system_message(character_name, character_description)
+#     for character_name, character_description in zip(
+#         character_names, character_descriptions
+#     )
+# ]
+
+# storyteller_specifier_prompt = [
+#     player_descriptor_system_message,
+#     HumanMessage(
+#         content=f"""{game_description}
+#         Please reply with a creative description of the storyteller, {storyteller_name}, in {word_limit} words or less.
+#         Speak directly to {storyteller_name}.
+#         Do not add anything else."""
+#     ),
+# ]
+# storyteller_description = ChatOpenAI(temperature=1.0)(
+#     storyteller_specifier_prompt
+# ).content
+
 
 class ContributorAgent:
     def __init__(self, id, experience, name):

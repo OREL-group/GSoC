@@ -5,6 +5,27 @@ from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
 
 
+# TODO : use personalization in the prompt to get dofferent bidding response for different contributors
+# def generate_character_system_message(character_name, character_header):
+#     return SystemMessage(
+#         content=(
+#             f"""{character_header}
+# You will speak in the style of {character_name}, and exaggerate their personality.
+# You will come up with creative ideas related to {topic}.
+# Do not say the same things over and over again.
+# Speak in the first person from the perspective of {character_name}
+# For describing your own body movements, wrap your description in '*'.
+# Do not change roles!
+# Do not speak from the perspective of anyone else.
+# Speak only from the perspective of {character_name}.
+# Stop speaking the moment you finish speaking from your perspective.
+# Never forget to keep your response to {word_limit} words!
+# Do not add anything else.
+#     """
+#         )
+#     )
+
+
 def rate_contributors_for_issue(maintainer, github_discussion) -> str:
 
     log_and_print(

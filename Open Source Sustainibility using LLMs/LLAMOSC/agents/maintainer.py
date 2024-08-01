@@ -49,11 +49,22 @@ class MaintainerAgent:
         log_and_print(f"Review result: {review_result}")
 
         if "approve" in review_result.lower():
+            code_quality = self.rate_code_quality(pr_content)
             # Apply the diff to the local repository
             repo_apply_diff_and_commit(local_repo_dir, diff_file_path)
             # commit the changes made i.e applying the diff
             self.unassign_task()
-            return True
+            return code_quality
         else:
             self.unassign_task()
             return False
+
+    def rate_code_quality(self, pull_request_content):
+        # Query OLLAMA to rate the code quality
+        prompt = f"""As a maintainer in an open source environment, your role is to 
+        review the code quality of the code submitted by contributors. 
+        Please provide a brief review of the code quality in the pull_request {pull_request_content}."""
+
+        review_result = query_ollama(prompt=prompt)
+        log_and_print(f"Code quality review result: {review_result}")
+        return review_result
