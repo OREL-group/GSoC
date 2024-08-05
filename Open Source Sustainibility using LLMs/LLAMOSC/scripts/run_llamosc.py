@@ -18,6 +18,8 @@
 import shutil
 import random
 
+from matplotlib.axes import Axes
+
 from LLAMOSC.agents.contributor import ContributorAgent
 from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.simulation.issue import Issue
@@ -26,6 +28,15 @@ from LLAMOSC.utils import *
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
+
+def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):
+    axis.set_xlim(0, x_max)
+    axis.set_ylim(0, y_max + 10)
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.legend()
+    return lines.values()
 
 
 def main():
@@ -105,7 +116,7 @@ def main():
 
     # Initialize time and experience history
     global timestep
-    timestep = 0
+    timestep = 1
     experience_history = {
         contributor.name: [contributor.experience] for contributor in contributors
     }
@@ -116,19 +127,11 @@ def main():
     )
 
     # Setup for matplotlib animation
-    fig, ax = plt.subplots()
-    lines = {
-        contributor.name: ax.plot([], [], label=contributor.name)[0]
+    fig_cont_exp, ax_cont_exp = plt.subplots()
+    lines_cont_exp = {
+        contributor.name: ax_cont_exp.plot([], [], label=contributor.name)[0]
         for contributor in contributors
     }
-
-    def init():
-        ax.set_xlim(0, len(issues))
-        ax.set_ylim(0, max(contributor.experience for contributor in contributors) + 10)
-        ax.set_xlabel("Time Step")
-        ax.set_ylabel("Experience")
-        ax.legend()
-        return lines.values()
 
     def update(timestep):
 
@@ -217,7 +220,10 @@ def main():
                 # increase experience of the contributor
                 selected_contributor.increase_experience(1)
                 # increase no of pull requests and calculate new average code quality of the simulation
-                sim.update_code_quality(int(pr_accepted))
+                try:
+                    sim.update_pull_requests(int(pr_accepted))
+                except:
+                    sim.update_code_quality(random.randint(1, 5))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
                 merged_dir = os.path.join(project_dir, "pull_requests", "merged")
@@ -262,7 +268,7 @@ def main():
 
         # Update lines data
         for contributor in contributors:
-            lines[contributor.name].set_data(
+            lines_cont_exp[contributor.name].set_data(
                 time_history, experience_history[contributor.name]
             )
 
@@ -270,7 +276,14 @@ def main():
         plt.draw()
         plt.pause(0.1)
 
-    init()
+    init_plot(
+        axis=ax_cont_exp,
+        x_label="Time Step",
+        y_label="Contributor Experience",
+        y_max=max(contributor.experience for contributor in contributors),
+        title="Contributor Experience Metric",
+        lines=lines_cont_exp,
+    )
     # Loop through all the issues in the issues list
     # Review the pull requests
     pull_requests_dir = os.path.join(project_dir, "pull_requests")
