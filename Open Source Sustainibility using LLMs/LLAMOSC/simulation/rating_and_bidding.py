@@ -5,6 +5,27 @@ from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
 
 
+# TODO : use personalization in the prompt to get dofferent bidding response for different contributors
+# def generate_character_system_message(character_name, character_header):
+#     return SystemMessage(
+#         content=(
+#             f"""{character_header}
+# You will speak in the style of {character_name}, and exaggerate their personality.
+# You will come up with creative ideas related to {topic}.
+# Do not say the same things over and over again.
+# Speak in the first person from the perspective of {character_name}
+# For describing your own body movements, wrap your description in '*'.
+# Do not change roles!
+# Do not speak from the perspective of anyone else.
+# Speak only from the perspective of {character_name}.
+# Stop speaking the moment you finish speaking from your perspective.
+# Never forget to keep your response to {word_limit} words!
+# Do not add anything else.
+#     """
+#         )
+#     )
+
+
 def rate_contributors_for_issue(maintainer, github_discussion) -> str:
 
     log_and_print(
@@ -21,8 +42,8 @@ def rate_contributors_for_issue(maintainer, github_discussion) -> str:
     Issue #{maintainer.current_task.id}: {open(maintainer.current_task.filepath).read()}
     Difficulty: {maintainer.current_task.difficulty}
 
-    The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bud high. If the matching_level is high, bid very low.     
-
+    The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bid higher than 5. If the matching_level is high, bid lower than 5.     
+    If experience is 5 in {{contributor_role}}, bid lesser than 3.
     {bid_parser.get_format_instructions()}
     Do nothing else.
     """

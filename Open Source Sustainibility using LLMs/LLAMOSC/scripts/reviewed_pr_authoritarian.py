@@ -65,6 +65,11 @@ def main():
     pull_requests_dir = os.path.join(project_dir, "pull_requests")
     for issue in issues:
         log_and_print(f"\nTime Step: {time}\n")
+        log("Experience of all contributors:")
+        log(
+            [(contributor.name, contributor.experience) for contributor in contributors]
+        )
+
         issue_description = open(issue.filepath).read()
         log_and_print(
             f"\nIssue #{issue.id} (Difficulty ({issue.difficulty})): {issue_description}\n"
@@ -82,6 +87,7 @@ def main():
         selected_contributor = sim.select_contributor_authoritarian(selected_maintainer)
         # Assign an issue from the available issues to the agent
         if selected_contributor:
+            log(selected_contributor.name)
             # TODO : if no eligible contributors, loop until the issue is solved
             selected_contributor.assign_issue(issue)
             task_solved = selected_contributor.solve_issue(project_dir)
@@ -112,6 +118,9 @@ def main():
                     log_and_print(
                         f"Maintainer {selected_maintainer.name} has merged pull request for Issue #{issue.id}.\n"
                     )
+                    # increase experience of the contributor
+                    selected_contributor.increase_experience(1)
+
                     # make a "merged" folder in the pull_requests folder and move the merged pull request there
                     merged_dir = os.path.join(project_dir, "pull_requests", "merged")
                     os.makedirs(merged_dir, exist_ok=True)
