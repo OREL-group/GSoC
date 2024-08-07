@@ -4,6 +4,7 @@
 # like no of agents, no of issues, no of tasks, etc. - TODO done except for issue
 # TODO : automatically makes issues
 # TODO optional : dynamic like new issues as well
+# TODO : in average code quality show both current code quality and average code quality
 
 # TODO : add code quality metric, llm response and graph
 # TODO : begin personalization part
@@ -308,6 +309,7 @@ def main():
         title="Contributor Experience Metric",
         lines=lines_cont_exp,
     )
+
     init_plot(
         axis=ax_code_qal,
         x_label="Time Step",
