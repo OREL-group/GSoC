@@ -31,12 +31,13 @@ import matplotlib.animation as animation
 
 
 def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):
-    axis.set_xlim(0, x_max)
-    axis.set_ylim(0, y_max + 10)
+    axis.set_xlim(0, x_max + 1)
+    axis.set_ylim(0, y_max + 1)
     axis.set_xlabel(x_label)
     axis.set_ylabel(y_label)
+    axis.set_title(title)
     axis.legend()
-    return lines.values()
+    # return lines.values()
 
 
 def main():
@@ -102,7 +103,7 @@ def main():
 
     # Create required agents
     contributors = [
-        ContributorAgent(i, random.randint(1, 5), f"Contributor_{i}")
+        ContributorAgent(i, random.randint(1, 4), f"Contributor_{i}")
         for i in range(n_contributors)  # 5 contributors by default
     ]
     maintainers = [
@@ -116,22 +117,38 @@ def main():
 
     # Initialize time and experience history
     global timestep
-    timestep = 1
+    timestep = 0
     experience_history = {
         contributor.name: [contributor.experience] for contributor in contributors
     }
+    code_qal_history = [2.5]  # just a basic average to start with
     time_history = [0]
 
     log_and_print(
         f"\nStarting simulation with {len(issues)} issues and {len(contributors)} contributors with ACR : {use_acr} and Algorithm : {algorithm}.\n"
     )
 
-    # Setup for matplotlib animation
-    fig_cont_exp, ax_cont_exp = plt.subplots()
+    # # Setup for matplotlib animation
+    # fig_cont_exp, ax_cont_exp = plt.subplots()
+    # fig_code_qal, ax_code_qal = plt.subplots()
+    # lines_cont_exp = {
+    #     contributor.name: ax_cont_exp.plot([], [], label=contributor.name)[0]
+    #     for contributor in contributors
+    # }
+    # lines_code_qal = {
+
+    # }
+
+    fig, (ax_cont_exp, ax_code_qal) = plt.subplots(2, 1)
     lines_cont_exp = {
-        contributor.name: ax_cont_exp.plot([], [], label=contributor.name)[0]
+        contributor.name: ax_cont_exp.plot(
+            time_history, experience_history[contributor.name], label=contributor.name
+        )[0]
         for contributor in contributors
     }
+    lines_code_qal = ax_code_qal.plot(
+        time_history, code_qal_history, label="Average Code Quality", color="blue"
+    )
 
     def update(timestep):
 
@@ -221,9 +238,9 @@ def main():
                 selected_contributor.increase_experience(1)
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
-                    sim.update_pull_requests(int(pr_accepted))
+                    sim.update_pull_requests(pr_accepted)
                 except:
-                    sim.update_code_quality(random.randint(1, 5))
+                    sim.update_code_quality(random.randint(1, 3))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
                 merged_dir = os.path.join(project_dir, "pull_requests", "merged")
@@ -265,31 +282,52 @@ def main():
         time_history.append(timestep)
         for contributor in contributors:
             experience_history[contributor.name].append(contributor.experience)
+        code_qal_history.append(sim.avg_code_quality)
+        log(time_history), log(experience_history), log(code_qal_history)
 
-        # Update lines data
+        # Update contributor_exp metric lines data
         for contributor in contributors:
             lines_cont_exp[contributor.name].set_data(
                 time_history, experience_history[contributor.name]
             )
 
+        # Update code_quality metric line data
+        lines_code_qal[0].set_data(time_history, code_qal_history)
+
         # Draw the updated plot
         plt.draw()
         plt.pause(0.1)
 
+    # init metrics 1 plot
     init_plot(
         axis=ax_cont_exp,
         x_label="Time Step",
         y_label="Contributor Experience",
+        x_max=len(issues),
         y_max=max(contributor.experience for contributor in contributors),
         title="Contributor Experience Metric",
         lines=lines_cont_exp,
     )
+    init_plot(
+        axis=ax_code_qal,
+        x_label="Time Step",
+        y_label="Code Quality",
+        x_max=len(issues),
+        y_max=5,
+        title="Simulation Average Code Quality Metric",
+        lines=lines_code_qal,
+    )
+
+    # draw the initial plot
+    plt.draw()
+    plt.pause(0.1)
+
     # Loop through all the issues in the issues list
     # Review the pull requests
     pull_requests_dir = os.path.join(project_dir, "pull_requests")
     for issue in issues:
-        update(timestep)
         timestep += 1
+        update(timestep)
         # Print a separator for better readability
         print("\n", "-" * 100, "\n")
 

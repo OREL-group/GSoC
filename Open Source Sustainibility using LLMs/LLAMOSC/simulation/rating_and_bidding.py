@@ -42,8 +42,8 @@ def rate_contributors_for_issue(maintainer, github_discussion) -> str:
     Issue #{maintainer.current_task.id}: {open(maintainer.current_task.filepath).read()}
     Difficulty: {maintainer.current_task.difficulty}
 
-    The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bud high. If the matching_level is high, bid very low.     
-
+    The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bid higher than 5. If the matching_level is high, bid lower than 5.     
+    If experience is 5 in {{contributor_role}}, bid lesser than 3.
     {bid_parser.get_format_instructions()}
     Do nothing else.
     """

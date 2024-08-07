@@ -40,17 +40,22 @@ class MaintainerAgent:
             pr_content = pr_file.read()
 
         # Query OLLAMA to review the pull request content
-        prompt = f"""As a maintainer in an open source environment, your role is to 
-        review pull requests submitted by contributors. 
-        Here is a pull request description:\n{pr_content}\n
-        Based on the description, should this pull request be accepted, i.e does it accurately solve the given issue? 
-        Please provide a brief review. Only respond with 'approve' or 'reject'."""
+        prompt_code_review = f"""As a maintainer in an open source environment, your role is to 
+        review pull requests of the code submitted by contributors. 
+        Please provide a brief review of the code quality in the pull request {pr_content}."""
+        review_result = query_ollama(prompt=prompt_code_review)
+        log_and_print(f"Raw code quality review result: {review_result}")
 
-        review_result = query_ollama(prompt=prompt)
-        log_and_print(f"Review result: {review_result}")
+        prompt = f"""As an org admin with repository rights. it is your job to decide which pull 
+        requests should be merged.
+        Based on the following review of a pull request by a repository maintainer : {review_result},
+        decide where the merge the merge should be approved or rejected. 
+        Only give a 1 word response with 'approve' or 'reject'."""
 
-        if "approve" in review_result.lower():
-            code_quality = self.rate_code_quality(pr_content)
+        org_admin_result = query_ollama(prompt=prompt)
+
+        if "approve" in org_admin_result.lower():
+            code_quality = self.rate_code_quality(review_result)
             # Apply the diff to the local repository
             repo_apply_diff_and_commit(local_repo_dir, diff_file_path)
             # commit the changes made i.e applying the diff
@@ -60,20 +65,17 @@ class MaintainerAgent:
             self.unassign_task()
             return False
 
-    def rate_code_quality(self, pull_request_content):
+    def rate_code_quality(self, review_result):
         # Define the quality rating parser
         quality_parser = QualityRatingParser(
             regex=r"<(\d)>", output_keys=["rating"], default_output_key="rating"
         )
-        prompt_code_review = f"""As a maintainer in an open source environment, your role is to 
-        review the code quality of the code submitted by contributors. 
-        Please provide a brief review of the code quality in the pull request {pull_request_content}."""
-        review_result = query_ollama(prompt=prompt_code_review)
-        log_and_print(f"Raw code quality review result: {review_result}")
 
         # Query OLLAMA to rate the code quality
-        prompt_code_quality = f"""On a scale of 1 to 5, where 1 is very poor and 5 is excellent, provide a quality rating for the code based on the review {review_result}.
-        The rating should be unique and very reflective of the quality of the code. and how the given code solves the issue.
+        prompt_code_quality = f"""On a scale of 1 to 5, where 1 is very poor and 5 is excellent,
+        provide a quality rating for the code based on the review {review_result}.
+        The rating should be unique and very reflective of the quality of the code,
+        and how the given code solves the issue.
         {quality_parser.get_format_instructions()}"""
 
         review_result = query_ollama(prompt=prompt_code_quality)
@@ -88,4 +90,7 @@ class MaintainerAgent:
         )  # Default to random if parsing fails
 
         log_and_print(f"Parsed code quality rating: {rating}")
+        if type(rating) != int:
+            rating = random.randrange(2, 5)
+
         return rating
