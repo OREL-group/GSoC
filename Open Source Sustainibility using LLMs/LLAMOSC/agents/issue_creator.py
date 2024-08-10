@@ -15,13 +15,22 @@ class IssueCreatorAgent:
         self.name = name
 
     def create_issue(self, existing_issues, existing_code, issues_folder):
+
+        # replace issue objects with actual issue content
+        existing_issues = [open(issue.filepath).read() for issue in existing_issues]
+
+        # get only titles from existing issues
+        existing_issue_descs = [issue.split(". ", 2)[0] for issue in existing_issues]
+        log_and_print(f"Existing Issue Titles: {existing_issue_descs}")
         # Create prompt for generating the issue title
         title_prompt = f"""
         You are an experienced user of this project. Your task is to create a unique and creative title for a new issue based on the provided calculator project code:
         {existing_code}
         
-        Ensure that the issue is distinct from the abpve implemented existing_code and existing issues:
-        {existing_issues}
+        Ensure that the issue NOT COVERED in the above implemented existing_code.
+         And ensure that the functionality the issue is trying to add or the bug it is attempting to fix is 
+          COMPLETELY DISTINCT AND DIFFERENT THAN THAT OF THE existing issues given below :
+        {existing_issue_descs}
 
         Provide a unique title for the new issue. 
 
@@ -98,67 +107,68 @@ class IssueCreatorAgent:
         # issues_folder = "issues_folder"
         issue_filename = f"task_{len(existing_issues) + 1}.md"
         with open(os.path.join(issues_folder, issue_filename), "w") as issue_file:
-            # issue_file.write(
-            #     f"# {new_issue['title']}\n\n"
-            #     f"Description:\n{new_issue['description']}\n\n"
-            #     f"Checked Other Resources:\n{new_issue['checked_resources']}\n\n"
-            #     f"Example Code:\n```python\n{new_issue['example_code']}\n```\n\n"
-            #     f"System Info:\n{new_issue['system_info']}"
-            # )
             issue_file.write(final_issue)
-        return final_issue
+
+        # # Create the issue object
+        # # TODO: Better way to get issue difficulty
+        created_issue_object = Issue(
+            len(existing_issues) + 1,
+            (len(existing_issues) + 2) % 5,
+            os.path.join(issues_folder, issue_filename),
+        )
+        return created_issue_object
 
 
-def main():
-    # Initialize the IssueCreatorAgent
-    agent = IssueCreatorAgent(name="Issue Creator")
+# def main():
+#     # Initialize the IssueCreatorAgent
+#     agent = IssueCreatorAgent(name="Issue Creator")
 
-    # Read existing issues from the issues folder
-    issues = []
-    current_folder = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.join(
-        current_folder, "..", "..", "..", "..", "calculator_project"
-    )
-    repo_commit_current_changes(project_dir)
+#     # Read existing issues from the issues folder
+#     issues = []
+#     current_folder = os.path.dirname(os.path.abspath(__file__))
+#     project_dir = os.path.join(
+#         current_folder, "..", "..", "..", "..", "calculator_project"
+#     )
+#     repo_commit_current_changes(project_dir)
 
-    # Get the path to the issues folder
-    issues_parent_folder = os.path.join(project_dir, "issues")
-    issues_folder = os.path.join(issues_parent_folder, "pending")
-    # Loop through all the files in the issues folder
-    log_and_print("Reading issues from the issues folder...")
-    for filename in os.listdir(issues_folder):
-        # Create the file path
-        file_path = os.path.join(issues_folder, filename)
+#     # Get the path to the issues folder
+#     issues_parent_folder = os.path.join(project_dir, "issues")
+#     issues_folder = os.path.join(issues_parent_folder, "pending")
+#     # Loop through all the files in the issues folder
+#     log_and_print("Reading issues from the issues folder...")
+#     for filename in os.listdir(issues_folder):
+#         # Create the file path
+#         file_path = os.path.join(issues_folder, filename)
 
-        # Extract the issue id from the filename
-        issue_id = int(filename.split("_")[1].split(".")[0])
+#         # Extract the issue id from the filename
+#         issue_id = int(filename.split("_")[1].split(".")[0])
 
-        # Create the issue object
-        # TODO: Better way to get issue difficulty maybe % 5 at least
-        issue = Issue(issue_id, issue_id + 1, file_path)
+#         # Create the issue object
+#         # TODO: Better way to get issue difficulty maybe % 5 at least
+#         issue = Issue(issue_id, issue_id + 1, file_path)
 
-        # Add the issue to the issues list
-        issues.append(issue)
+#         # Add the issue to the issues list
+#         issues.append(issue)
 
-    log_and_print("Reading existing code from the toy_repo folder...")
-    # Read existing code from the calculator project
-    current_folder = os.path.dirname(__file__)
-    project_dir = os.path.join(
-        current_folder, "..", "..", "..", "..", "calculator_project"
-    )
+#     log_and_print("Reading existing code from the toy_repo folder...")
+#     # Read existing code from the calculator project
+#     current_folder = os.path.dirname(__file__)
+#     project_dir = os.path.join(
+#         current_folder, "..", "..", "..", "..", "calculator_project"
+#     )
 
-    existing_code = """"""
+#     existing_code = """"""
 
-    for root, _, files in os.walk(project_dir):
-        for file in files:
-            if file.endswith(".py"):
-                with open(os.path.join(root, file), "r") as code_file:
-                    existing_code += code_file.read() + "\n"
+#     for root, _, files in os.walk(project_dir):
+#         for file in files:
+#             if file.endswith(".py"):
+#                 with open(os.path.join(root, file), "r") as code_file:
+#                     existing_code += code_file.read() + "\n"
 
-    # Create a new issue based on the existing issues and code
-    new_issue = agent.create_issue(issues, existing_code, issues_folder)
-    log_and_print(f"New Issue Created: {new_issue}")
+#     # Create a new issue based on the existing issues and code
+#     new_issue = agent.create_issue(issues, existing_code, issues_folder)
+#     log_and_print(f"New Issue Created: {new_issue}")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

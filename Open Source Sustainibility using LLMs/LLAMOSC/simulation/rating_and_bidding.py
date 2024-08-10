@@ -66,8 +66,10 @@ def rate_contributors_for_issue(maintainer, github_discussion) -> str:
                 HumanMessage(content=bid_message),
             ]
         ).content
-
-        bid_value = int(bid_parser.parse(response)["bid"])
+        try:
+            bid_value = int(bid_parser.parse(response)["bid"])
+        except:
+            bid_value = 5
         contributor_id = (
             contributor_role.split(":")[1].strip().split(" ")[0].strip("()")
         )

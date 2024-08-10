@@ -23,6 +23,7 @@ from matplotlib.axes import Axes
 
 from LLAMOSC.agents.contributor import ContributorAgent
 from LLAMOSC.agents.maintainer import MaintainerAgent
+from LLAMOSC.agents.issue_creator import IssueCreatorAgent
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.sim import Simulation
 from LLAMOSC.utils import *
@@ -50,7 +51,7 @@ def main():
     parser.add_argument(
         "--maintainers", type=int, default=3, help="Number of maintainers"
     )
-    # parser.add_argument('--issues', type=int, default=10, help='Number of issues')
+    parser.add_argument("--issues", type=int, default=5, help="Number of issues")
     # parser.add_argument('--issues_filepaths', type=str, default='issues', help='Path to the issues folder')
     parser.add_argument(
         "--use_acr",
@@ -70,7 +71,7 @@ def main():
 
     n_contributors = args.contributors
     n_maintainers = args.maintainers
-    # n_issues = args.issues
+    n_issues = args.issues
     # n_tasks = args.tasks
     use_acr = args.use_acr
     algorithm = args.algorithm
@@ -96,11 +97,26 @@ def main():
         issue_id = int(filename.split("_")[1].split(".")[0])
 
         # Create the issue object
-        # TODO: Better way to get issue difficulty maybe % 5 atleast
-        issue = Issue(issue_id, issue_id + 1, file_path)
+        # TODO: Better way to get issue difficulty
+        issue = Issue(issue_id, (issue_id + 1) % 5, file_path)
 
         # Add the issue to the issues list
         issues.append(issue)
+
+    if len(issues) < n_issues:
+        issue_creator = IssueCreatorAgent(name="Issue Creator")
+        existing_code = """"""
+
+        for root, _, files in os.walk(project_dir):
+            for file in files:
+                if file.endswith(".py"):
+                    with open(os.path.join(root, file), "r") as code_file:
+                        existing_code += code_file.read() + "\n"
+
+        # create the required number of issues
+        for _ in range(len(issues) + 1, n_issues + 1):
+            issue = issue_creator.create_issue(issues, existing_code, issues_folder)
+            issues.append(issue)
 
     # Create required agents
     contributors = [
