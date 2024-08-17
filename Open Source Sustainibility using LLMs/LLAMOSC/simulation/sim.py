@@ -13,7 +13,7 @@ import random
 class Simulation:
     def __init__(self, contributors):
         self.contributors = contributors
-        self.avg_code_quality = 0
+        self.avg_code_quality = 4  # Initial code quality
         self.num_pull_requests = 0  # To keep track of the number of pull requests
         self.time_step = 0
 
@@ -26,10 +26,21 @@ class Simulation:
         # Increment the number of pull requests
         self.num_pull_requests += 1
 
+        log(f"Initial code quality: {self.avg_code_quality}")
+        log(f"Recieved new code quality: {new_quality}")
         # Calculate the new average
-        self.avg_code_quality = (
-            (self.avg_code_quality * (self.num_pull_requests - 1)) + new_quality
-        ) / self.num_pull_requests
+        if self.num_pull_requests == 1:
+
+            self.avg_code_quality = new_quality
+            # self.avg_code_quality = (self.avg_code_quality + new_quality) / 2
+            log(f"Number of pull requests: {self.num_pull_requests}")
+            log(f"New code quality: {self.avg_code_quality}")
+        else:
+            self.avg_code_quality = (
+                (self.avg_code_quality * (self.num_pull_requests - 1)) + new_quality
+            ) / self.num_pull_requests
+            log(f"Number of pull requests: {self.num_pull_requests}")
+            log(f"New code quality: {self.avg_code_quality}")
 
     # if function is called with maintainer means authoritarian algorithm
     def select_contributor_authoritarian(
@@ -49,7 +60,9 @@ class Simulation:
         )
 
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
-        bids = rate_contributors_for_issue(maintainer, discussion_history)
+        bids = rate_contributors_for_issue(
+            eligible_contributors, maintainer, discussion_history
+        )
 
         max_value = max(bids.values())
         highest_bidder_ids = [

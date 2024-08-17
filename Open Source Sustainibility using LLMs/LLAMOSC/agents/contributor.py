@@ -1,80 +1,19 @@
 import os
 import docker
 from datetime import datetime
+
 import tarfile
 import io
 import random
 
 from LLAMOSC.utils import *
+from LLAMOSC.simulation.bid_output_parser import QualityRatingParser
+from LLAMOSC.simulation.issue import Issue
+from langchain.schema import SystemMessage, HumanMessage
 
-# TODO : add personalization to the prompt to put story for each contributor
-# game_description = f"""Here is the topic for a Dungeons & Dragons game: {quest}.
-#         The characters are: {*character_names,}.
-#         The story is narrated by the storyteller, {storyteller_name}."""
-
-# player_descriptor_system_message = SystemMessage(
-#     content="You can add detail to the description of a Dungeons & Dragons player."
-# )
-
-
-# def generate_character_description(character_name):
-#     character_specifier_prompt = [
-#         player_descriptor_system_message,
-#         HumanMessage(
-#             content=f"""{game_description}
-#             Please reply with a creative description of the character, {character_name}, in {word_limit} words or less.
-#             Speak directly to {character_name}.
-#             Do not add anything else."""
-#         ),
-#     ]
-#     character_description = ChatOpenAI(temperature=1.0)(
-#         character_specifier_prompt
-#     ).content
-#     return character_description
-
-
-# def generate_character_system_message(character_name, character_description):
-#     return SystemMessage(
-#         content=(
-#             f"""{game_description}
-#     Your name is {character_name}.
-#     Your character description is as follows: {character_description}.
-#     You will propose actions you plan to take and {storyteller_name} will explain what happens when you take those actions.
-#     Speak in the first person from the perspective of {character_name}.
-#     For describing your own body movements, wrap your description in '*'.
-#     Do not change roles!
-#     Do not speak from the perspective of anyone else.
-#     Remember you are {character_name}.
-#     Stop speaking the moment you finish speaking from your perspective.
-#     Never forget to keep your response to {word_limit} words!
-#     Do not add anything else.
-#     """
-#         )
-#     )
-
-
-# character_descriptions = [
-#     generate_character_description(character_name) for character_name in character_names
-# ]
-# character_system_messages = [
-#     generate_character_system_message(character_name, character_description)
-#     for character_name, character_description in zip(
-#         character_names, character_descriptions
-#     )
-# ]
-
-# storyteller_specifier_prompt = [
-#     player_descriptor_system_message,
-#     HumanMessage(
-#         content=f"""{game_description}
-#         Please reply with a creative description of the storyteller, {storyteller_name}, in {word_limit} words or less.
-#         Speak directly to {storyteller_name}.
-#         Do not add anything else."""
-#     ),
-# ]
-# storyteller_description = ChatOpenAI(temperature=1.0)(
-#     storyteller_specifier_prompt
-# ).content
+community_description = (
+    "Our open-source community is focused on collaborative learning and innovation."
+)
 
 
 class ContributorAgent:
@@ -82,8 +21,103 @@ class ContributorAgent:
         self.id = id
         self.experience = experience
         self.available = True
+        self.motivation_level = type(int)  # 0 to 5
+        self.motivation_history = []
         self.name = name
-        self.assigned_issue = None
+        self.assigned_issue = type(Issue)
+
+        # Generate a personalized role and system message
+        self.role_description = self.generate_role_description()
+        log_and_print(
+            f"Generated role description for {self.name}:\n{self.role_description}\n"
+        )
+        self.system_message = self.generate_role_system_message(community_description)
+        log_and_print(
+            f"Generated system message for {self.name}:\n{self.system_message.content}\n"
+        )
+        self.motivation_level = self.generate_initial_motivation_level()
+        self.motivation_history.append(
+            self.motivation_level
+        )  # append initial motivation level
+
+    def generate_role_description(self, word_limit=50):
+        """
+        Generates a creative description for a role in the open-source community based on experience.
+        """
+        role_specifier_prompt = f"""
+        Welcome to our open-source community! This is a place where people of all backgrounds and 
+        experiences come together to collaborate, learn, and grow.
+        The role you are creating is Contributor, and the experience level is {self.experience}.
+        Your response should be one of "positive or negative or neutral" sentiment, NOT ALWAYS POSITIVE.
+        Some contributors can eb explorers, some can be lurkers, some can be potential leaders & mentors, 
+        some incentivized by funded programs, some just plain selfish. It is your job to pick one of these, 
+        not ALWAYS POSITIVE and do the following based on it. 
+        Please reply with a creative description and unique, different-for-everyone 
+        backstory of the role, Contributor {self.name}. 
+        Especially how they must have entered the community if they are a very low experience level (between 1 t 3)
+        and how involved they are in it now & why if they are at a high experience level.
+        Speak about the motivation to stay (this can be incentivized rarely as well)
+        and engage and how they contribute to the community considering their experience level.
+        Keep the description within {word_limit} words. Speak directly to {self.name}.
+        Do not add anything else.
+        """
+
+        role_description = query_ollama(role_specifier_prompt)
+        return role_description
+
+    def generate_role_system_message(self, community_description, word_limit=50):
+        """
+        Generates a system message for the role, guiding their interactions in the community based on their experience.
+        """
+        return SystemMessage(
+            content=(
+                f"""{community_description}
+        Your name is {self.name}.
+        Your role description is as follows: {self.role_description}.
+        You have {self.experience} experience in the field.
+        You will interact in the community as Contributor {self.name}, 
+        taking actions like commiting code via pull requests and contributing to discussions.
+        Speak in the first person from the perspective of Contributor {self.name}.
+        For describing your own body movements, wrap your description in '*'.
+        Do not change roles!
+        Do not speak from the perspective of anyone else.
+        Remember you are Contributor {self.name}.
+        Stop speaking the moment you finish speaking from your perspective.
+        Never forget to keep your response to {word_limit} words!
+        Do not add anything else.
+        """
+            )
+        )
+
+    def generate_initial_motivation_level(self):
+        """
+        Generates a motivation level for the contributor based on their role description by using parser.
+        """
+        # Define the motivation level parser
+        motivation_parser = QualityRatingParser(
+            regex=r"<(\d)>", output_keys=["rating"], default_output_key="rating"
+        )
+
+        # Query OLLAMA to generate the motivation level
+        prompt_motivation = f"""As a contributor in an open-source community, your role is to 
+        participate in the development process by solving assigned issues and creating pull requests. 
+        Based on your following role description: {self.role_description}, rate your motivation level from 0 to 10, 
+        where 0 is very low and 10 is very high. 
+        Your motivation level should be reflective of the role description you have created. 
+        For example, lurkers usually have low motivation whereas potential leaders have high motivation.
+        Explorers have medium motivation and so on.
+        {motivation_parser.get_format_instructions()}
+        Do nothing else.
+        """
+        motivation_level_desc = query_ollama(prompt=prompt_motivation)
+        try:
+            motivation_level = float(
+                motivation_parser.parse(motivation_level_desc)["rating"]
+            )
+        except:
+            motivation_level = 5  # neutral motivation level
+        log(f"Generated initial motivation level: {motivation_level}")
+        return motivation_level
 
     def eligible_for_issue(self, issue):
         return self.available and self.experience >= issue.difficulty
@@ -98,10 +132,95 @@ class ContributorAgent:
         self.assigned_issue = None
         self.available = True
 
-    def increase_experience(self, exp=1):
-        if self.experience < 5:
-            self.experience += exp  # Increase experience by 1
-        # maximum experience can be 5
+    def increase_experience(self, adding_exp=1, task_difficulty=5):
+        # Calculate the base experience increase
+        base_increase = min(5 - self.experience, adding_exp)
+
+        # Apply variability: experience increase could be a bit more or less than the base
+        variability = random.uniform(0.4, 0.6)  # Adjusted to ensure at least 0.5 change
+        variability_adjusted_increase = base_increase + variability
+
+        # Scale the increase based on task difficulty (optional: adjust scaling factor)
+        difficulty_adjusted_increase = variability_adjusted_increase * (
+            task_difficulty / 5
+        )
+
+        # Clip experience increase to ensure it does not exceed the max allowed experience
+        final_increase = min(difficulty_adjusted_increase, 5 - self.experience)
+
+        # Increase experience
+        self.experience += round(final_increase, 2)
+
+        # Optional: Print or log experience changes for debugging
+        print(f"Experience increased by: {round(final_increase, 2):.2f}")
+
+    def update_motivation_level(
+        self, success=True, bid_selected=False, task_difficulty=3, code_quality=4
+    ):
+        # Use the history of motivation to adjust the current motivation level
+        if len(self.motivation_history) > 0:
+            average_past_motivation = sum(self.motivation_history) / len(
+                self.motivation_history
+            )
+            # Adjust motivation increase/decrease based on past trends
+            motivation_trend = (self.motivation_level - average_past_motivation) * 0.2
+        else:
+            motivation_trend = 0
+
+        # If the contributor was not selected for the task
+        if not bid_selected:
+            # Decrease motivation based on not being selected
+            motivation_decrease = max(
+                min(self.motivation_level, 0.05 * task_difficulty), 0.5
+            )
+            self.motivation_level -= motivation_decrease
+            # Skip other updates related to success, task_difficulty, and code_quality
+        else:
+            # Adjust motivation based on whether the contributor's PR was merged
+            if success:
+                motivation_increase = max(
+                    min(10 - self.motivation_level, 0.1 * task_difficulty), 0.5
+                )
+                self.motivation_level += motivation_increase
+            else:
+                motivation_decrease = max(
+                    min(self.motivation_level, 0.1 * task_difficulty), 0.5
+                )
+                self.motivation_level -= motivation_decrease
+
+            # Adjust motivation based on code quality (0-5 scale)
+            if code_quality > 4:
+                motivation_increase = max(0.1 * (code_quality - 4), 0.5)
+                self.motivation_level += motivation_increase
+            elif code_quality < 2:
+                motivation_decrease = max(0.1 * (2 - code_quality), 0.5)
+                self.motivation_level -= motivation_decrease
+            else:  # Code quality between 2 and 4
+                if code_quality <= 3:
+                    motivation_decrease = max(0.05 * (3 - code_quality), 0.5)
+                    self.motivation_level -= motivation_decrease
+                elif code_quality > 3:
+                    motivation_increase = max(0.05 * (code_quality - 3), 0.5)
+                    self.motivation_level += motivation_increase
+
+        # Apply small random fluctuation to simulate real-life variability
+        fluctuation = random.uniform(0.4, 0.6)  # Ensures at least 0.5 change
+        self.motivation_level += (
+            fluctuation if random.choice([True, False]) else -fluctuation
+        )
+
+        # Incorporate historical trend adjustment
+        self.motivation_level += motivation_trend
+
+        # Clip motivation level to stay within 0 to 10
+        self.motivation_level = max(0, min(10, round(self.motivation_level, 2)))
+
+        # Track the history of motivation
+        self.motivation_history.append(self.motivation_level)
+        log("!!-------------------------------------------------!!")
+        log_and_print(
+            f"Motivation level for contributor {self.name}: {self.motivation_history}"
+        )
 
     def solve_issue(self, project_dir):
         if self.assigned_issue is not None:
@@ -246,7 +365,7 @@ class ContributorAgent:
             You have currently solved issue : {issue_content} and stored its result in the diff file. 
             Generate a pull request based on the following diff file: {diff_content}. 
             Please provide a brief description of the changes made.
-            Keep ypur answer to a maximum of 10 sentenecs and don't include any actual code in it.
+            Keep your answer to a maximum of 10 sentences and don't include any actual code in it.
             Use the following template for the pull request:
             Issue Summary: \n\n       Approach:    \n\n"""
 
@@ -329,7 +448,7 @@ class ContributorAgent:
             You have currently solved issue : {issue_content} and stored its result in the diff file. 
             Generate a pull request based on the following diff file: {diff_content}. 
             Please provide a brief description of the changes made.
-            Keep ypur answer to a maximum of 10 sentenecs and don't include any actual code in it.
+            Keep your answer to a maximum of 10 sentences and don't include any actual code in it.
             Use the following template for the pull request:
             Issue Summary: \n\n       Approach:    \n\n"""
 
@@ -353,6 +472,33 @@ class ContributorAgent:
             self.unassign_issue()
             return False
             exit(1)
+
+
+# # Example Usage
+# if __name__ == "__main__":
+
+#     # Create a ContributorAgent instance
+#     contributor = ContributorAgent(id=1, experience=4, name="John Doe")
+
+#     current_folder = os.path.dirname(os.path.abspath(__file__))
+#     project_dir = os.path.join(
+#         current_folder, "..", "..", "..", "..", "calculator_project"
+#     )
+
+#     # Assign a mock issue (assuming issue object with id and difficulty attributes)
+#     issue = type(
+#         "Issue",
+#         (object,),
+#         {
+#             "id": 101,
+#             "difficulty": 2,
+#             "filepath": "D:\Personal_Projects\GSoC_24\calculator_project_base_copy\issues\task_2.md",
+#         },
+#     )
+#     contributor.assign_issue(issue)
+
+#     # # Solve the issue
+#     # contributor.solve_issue_without_acr(project_dir)
 
 
 # c = ContributorAgent(1, 2, "John")

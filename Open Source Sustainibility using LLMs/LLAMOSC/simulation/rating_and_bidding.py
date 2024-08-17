@@ -26,7 +26,9 @@ from langchain.schema import SystemMessage, HumanMessage
 #     )
 
 
-def rate_contributors_for_issue(maintainer, github_discussion) -> str:
+def rate_contributors_for_issue(
+    eligible_contributors, maintainer, github_discussion
+) -> str:
 
     log_and_print(
         f"Choosing Contributor for Issue #{maintainer.current_task.id} based on the discussion.\n"
@@ -73,6 +75,24 @@ def rate_contributors_for_issue(maintainer, github_discussion) -> str:
         contributor_id = (
             contributor_role.split(":")[1].strip().split(" ")[0].strip("()")
         )
+        # Fetch the contributor's motivation level
+        contributor_motivation_level = next(
+            (
+                c.motivation_level
+                for c in eligible_contributors
+                if c.id == int(contributor_id)
+            ),
+            5,  # Default to 5 if not found
+        )
+
+        # Modify bid based on motivation level
+        bid_value = (
+            bid_value + (int(contributor_motivation_level) / 2) - 3
+        )  # Adjust scale to be between -2 and +2
+
+        # Ensure bid value remains within the 1-10 range
+        bid_value = max(1, min(10, bid_value))
+
         bids[contributor_id] = bid_value
 
     log_and_print(f"\nRatings for Issue #{maintainer.current_task.id}: {bids}\n")
@@ -183,6 +203,24 @@ def simulate_llm_bidding(eligible_contributors, issue, discussion_history):
         contributor_id = (
             contributor_role.split(":")[1].strip().split(" ")[0].strip("()")
         )
+        # Fetch the contributor's motivation level
+        contributor_motivation_level = next(
+            (
+                c.motivation_level
+                for c in eligible_contributors
+                if c.id == int(contributor_id)
+            ),
+            5,  # Default to 5 if not found
+        )
+
+        # Modify bid based on motivation level
+        bid_value = (
+            bid_value + (int(contributor_motivation_level) / 2) - 3
+        )  # Adjust scale to be between -2 and +2
+
+        # Ensure bid value remains within the 1-10 range
+        bid_value = max(1, min(10, bid_value))
+
         bids[contributor_id] = bid_value
 
     log_and_print(f"\nBids for Issue #{issue.id}: {bids}\n")

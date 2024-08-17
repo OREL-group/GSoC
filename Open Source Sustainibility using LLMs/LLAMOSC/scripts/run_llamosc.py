@@ -1,21 +1,27 @@
-# TODO : A script that combines all the functions of the LLAMOSC project
+# A script that combines all the functions of the LLAMOSC project
 # (currently in reviewed_pr_.. scripts and new ones)
-# TODO :to run the simulation with the options taken from user
-# like no of agents, no of issues, no of tasks, etc. - TODO done except for issue
-# TODO : automatically makes issues
-# TODO optional : dynamic like new issues as well
-# TODO : in average code quality show both current code quality and average code quality
+# to run the simulation with the options taken from user
 
-# TODO : add code quality metric, llm response and graph
-# TODO : begin personalization part
-
+# TODO : put reading issues part in a function and store both pending and solved
+# TODO optional : use above function to make dynamic like new issues in the middle of the simulation as well
+# TODO : put full run_simulation in a function that just takes args from here and plots everything
 # was working on reviewed_pr-auth - experience metric done rest remaining
+
+# TODO DOING
+# TODO : plot issues (pending,solved,moon-shot-earthshotetc) and
+# TODO : plot motivation_level metric
+
 
 # TODO : Make docker optional - TODO done.
 # TODO : takes options for choosing between authoritarian and decentralized - TODO done
-
 # TODO : add metrics - contributor experience & simulation issues - TODO done
-# TODO : stores data at every time step and prints graphical representation of the simulation with all metrics - doing, working code but after fiorst timestep plot is not nice
+# TODO : in average code quality show both current code quality and average code quality - TODO done
+# TODO : add code quality metric, llm response and graph - TODO done
+# TODO : parser args no of agents, no of issues, no of tasks, etc. - TODO done
+# TODO : automatically makes issues - TODO done issue_creator agent
+# TODO : personalization for each contributor - TODO done
+# TODO : add motivation_level metric - TODO done
+
 import shutil
 import random
 
@@ -81,6 +87,8 @@ def main():
     project_dir = os.path.join(
         current_folder, "..", "..", "..", "..", "calculator_project"
     )
+
+    # Clear the project directory
     repo_commit_current_changes(project_dir)
 
     # Get the path to the issues folder
@@ -139,22 +147,12 @@ def main():
         contributor.name: [contributor.experience] for contributor in contributors
     }
     code_qal_history = [2.5]  # just a basic average to start with
+    code_qal_curr_history = [2.5]  # just a basic average to start with
     time_history = [0]
 
     log_and_print(
         f"\nStarting simulation with {len(issues)} issues and {len(contributors)} contributors with ACR : {use_acr} and Algorithm : {algorithm}.\n"
     )
-
-    # # Setup for matplotlib animation
-    # fig_cont_exp, ax_cont_exp = plt.subplots()
-    # fig_code_qal, ax_code_qal = plt.subplots()
-    # lines_cont_exp = {
-    #     contributor.name: ax_cont_exp.plot([], [], label=contributor.name)[0]
-    #     for contributor in contributors
-    # }
-    # lines_code_qal = {
-
-    # }
 
     fig, (ax_cont_exp, ax_code_qal) = plt.subplots(2, 1)
     lines_cont_exp = {
@@ -163,9 +161,17 @@ def main():
         )[0]
         for contributor in contributors
     }
-    lines_code_qal = ax_code_qal.plot(
-        time_history, code_qal_history, label="Average Code Quality", color="blue"
-    )
+    lines_code_qal = {
+        "avg": ax_code_qal.plot(
+            time_history, code_qal_history, label="Average Code Quality", color="blue"
+        )[0],
+        "curr": ax_code_qal.plot(
+            time_history,
+            code_qal_curr_history,
+            label="Current Code Quality",
+            color="red",
+        )[0],
+    }
 
     def update(timestep):
 
@@ -220,6 +226,15 @@ def main():
 
         log(selected_contributor.name)
         # TODO : if no eligible contributors, loop until the issue is solved
+        # for other contributors who bid/rated but not selected
+
+        for other_contributor in contributors:
+            if other_contributor.id == selected_contributor.id:
+                continue
+            elif not other_contributor.eligible_for_issue(issue):
+                continue
+            other_contributor.update_motivation_level(bid_selected=False)
+
         selected_contributor.assign_issue(issue)
         task_solved = (
             selected_contributor.solve_issue(project_dir)
@@ -252,12 +267,13 @@ def main():
                     f"Maintainer {selected_maintainer.name} has merged pull request for Issue #{issue.id}.\n"
                 )
                 # increase experience of the contributor
-                selected_contributor.increase_experience(1)
+                selected_contributor.increase_experience(1, issue.difficulty)
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
-                    sim.update_pull_requests(pr_accepted)
+                    sim.update_code_quality(pr_accepted)
                 except:
-                    sim.update_code_quality(random.randint(1, 3))
+
+                    pr_accepted = sim.update_code_quality(random.randint(1, 3))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
                 merged_dir = os.path.join(project_dir, "pull_requests", "merged")
@@ -295,11 +311,24 @@ def main():
             f"\nSimulation metrics: Pull Requests = {sim.num_pull_requests} Average Code Quality = {sim.avg_code_quality}\n"
         )
 
+        # update selected_contributor motivation level
+        selected_contributor.update_motivation_level(
+            success=pr_accepted,
+            bid_selected=True,
+            task_difficulty=issue.difficulty,
+            code_quality=pr_accepted if pr_accepted else random.randrange(0, 3),
+        )
+
         # Append new experiences to history
         time_history.append(timestep)
         for contributor in contributors:
             experience_history[contributor.name].append(contributor.experience)
         code_qal_history.append(sim.avg_code_quality)
+        (
+            code_qal_curr_history.append(pr_accepted)
+            if pr_accepted
+            else code_qal_curr_history.append(random.randint(1, 3))
+        )
         log(time_history), log(experience_history), log(code_qal_history)
 
         # Update contributor_exp metric lines data
@@ -309,7 +338,8 @@ def main():
             )
 
         # Update code_quality metric line data
-        lines_code_qal[0].set_data(time_history, code_qal_history)
+        lines_code_qal["avg"].set_data(time_history, code_qal_history)
+        lines_code_qal["curr"].set_data(time_history, code_qal_curr_history)
 
         # Draw the updated plot
         plt.draw()
@@ -321,7 +351,7 @@ def main():
         x_label="Time Step",
         y_label="Contributor Experience",
         x_max=len(issues),
-        y_max=max(contributor.experience for contributor in contributors),
+        y_max=5,
         title="Contributor Experience Metric",
         lines=lines_cont_exp,
     )

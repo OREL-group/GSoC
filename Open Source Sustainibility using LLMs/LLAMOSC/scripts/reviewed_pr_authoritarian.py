@@ -119,7 +119,7 @@ def main():
                         f"Maintainer {selected_maintainer.name} has merged pull request for Issue #{issue.id}.\n"
                     )
                     # increase experience of the contributor
-                    selected_contributor.increase_experience(1)
+                    selected_contributor.increase_experience(1, issue.difficulty)
 
                     # make a "merged" folder in the pull_requests folder and move the merged pull request there
                     merged_dir = os.path.join(project_dir, "pull_requests", "merged")
