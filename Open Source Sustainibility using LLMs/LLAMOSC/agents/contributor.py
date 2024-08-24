@@ -17,7 +17,7 @@ community_description = (
 
 
 class ContributorAgent:
-    def __init__(self, id, experience, name):
+    def __init__(self, id, experience, name, testing=False):
         self.id = id
         self.experience = experience
         self.available = True
@@ -25,6 +25,15 @@ class ContributorAgent:
         self.motivation_history = []
         self.name = name
         self.assigned_issue = type(Issue)
+
+        if testing:
+            self.role_description = "This is a test role description."
+            self.system_message = SystemMessage(
+                content="This is a test system message."
+            )
+            self.motivation_level = random.randint(3, 10)
+            self.motivation_history.append(self.motivation_level)
+            return
 
         # Generate a personalized role and system message
         self.role_description = self.generate_role_description()
@@ -391,7 +400,7 @@ class ContributorAgent:
             return False
             exit(1)
 
-    def solve_issue_without_acr(self, project_dir):
+    def solve_issue_without_acr(self, project_dir, is_test=False):
         if self.assigned_issue is not None:
             task_id = self.assigned_issue.id
 
@@ -451,8 +460,10 @@ class ContributorAgent:
             Keep your answer to a maximum of 10 sentences and don't include any actual code in it.
             Use the following template for the pull request:
             Issue Summary: \n\n       Approach:    \n\n"""
-
-            pr_content = query_ollama(prompt=prompt)
+            if is_test:
+                pr_content = prompt
+            else:
+                pr_content = query_ollama(prompt=prompt)
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
             with open(pr_file_path, "w") as pr_file:
