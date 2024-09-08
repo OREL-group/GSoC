@@ -3,6 +3,8 @@
 
 This repository demonstrates the application of Reinforcement Learning(RL) using the Mesa agent-based modelling framework. These implementations were developed as part of my Summer Cohort 2024 project under Orthogonal Research and Education Laboratory(OREL).
 
+![](https://github.com/OREL-group/GSoC/blob/main/Open%20Source%20Sustainability%20using%20RL/resources/OSS_Model.gif)
+
 
 ## Getting Started
 
