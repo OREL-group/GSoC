@@ -84,7 +84,9 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
-        selected_contributor = sim.select_contributor_authoritarian(selected_maintainer)
+        selected_contributor = sim.select_contributor_authoritarian(
+            selected_maintainer
+        )[0]
         # Assign an issue from the available issues to the agent
         if selected_contributor:
             log(selected_contributor.name)

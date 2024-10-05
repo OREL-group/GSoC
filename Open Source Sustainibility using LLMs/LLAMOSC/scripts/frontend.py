@@ -302,13 +302,13 @@ class MyMainWindow(QMainWindow):
             for contributor in self.contributors
         }
 
-        self.active_discussion_console.append_colored_text(
-            "Initially"
-            + str(self.experience_history)
-            + "\n"
-            + str(self.motivation_history),
-            "white",
-        )
+        # self.active_discussion_console.append_colored_text(
+        #     "Initially"
+        #     + str(self.experience_history)
+        #     + "\n"
+        #     + str(self.motivation_history),
+        #     "white",
+        # )
 
         self.code_qal_history = [2.5]  # just a basic average to start with
         self.code_qal_curr_history = [2.5]  # just a basic average to start with
@@ -534,15 +534,15 @@ class MyMainWindow(QMainWindow):
         self.fig_cont_mot.tight_layout()
         self.plot_cont_motiv.draw()
 
-        self.pull_requests_console.append_colored_text(
-            self.log.text()
-            + "\n"
-            + "Finally"
-            + str(experience_history)
-            + "\n"
-            + str(motivation_history),
-            "green",
-        )
+        # self.pull_requests_console.append_colored_text(
+        #     self.log.text()
+        #     + "\n"
+        #     + "Finally"
+        #     + str(experience_history)
+        #     + "\n"
+        #     + str(motivation_history),
+        #     "green",
+        # )
 
         # Update code_quality metric line data
         self.lines_code_qal["avg"].set_data(time_history, code_qal_history)

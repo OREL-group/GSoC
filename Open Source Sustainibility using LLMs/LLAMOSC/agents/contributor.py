@@ -159,6 +159,7 @@ class ContributorAgent:
 
         # Increase experience
         self.experience += round(final_increase, 2)
+        self.experience = round(self.experience, 2)
 
         # Optional: Print or log experience changes for debugging
         print(f"Experience increased by: {round(final_increase, 2):.2f}")
@@ -292,32 +293,27 @@ class ContributorAgent:
 
             if not task_dirs:
                 log("No directories found for the given task ID.")
-                return
+            else:
+                # Sort the directories by their timestamp and select the most recent one
+                task_dirs.sort(
+                    key=lambda x: datetime.strptime(
+                        x.split("_")[1] + "_" + x.split("_")[2], "%Y-%m-%d_%H-%M-%S"
+                    ),
+                    reverse=True,
+                )
+                most_recent_dir = task_dirs[0]
 
-            # Sort the directories by their timestamp and select the most recent one
-            task_dirs.sort(
-                key=lambda x: datetime.strptime(
-                    x.split("_")[1] + "_" + x.split("_")[2], "%Y-%m-%d_%H-%M-%S"
-                ),
-                reverse=True,
-            )
-            most_recent_dir = task_dirs[0]
-
-            # Find the .diff file in the most recent directory
-            diff_file_path = None
-            recent_dir_files = (
-                container.exec_run(["ls", f"{output_dir}/{most_recent_dir}"])
-                .output.decode()
-                .split("\n")
-            )
-            for file_name in recent_dir_files:
-                if file_name.endswith(".diff"):
-                    diff_file_path = f"{output_dir}/{most_recent_dir}/{file_name}"
-                    break
-
-            if diff_file_path is None:
-                log("No .diff file found in the most recent directory.")
-                return
+                # Find the .diff file in the most recent directory
+                diff_file_path = None
+                recent_dir_files = (
+                    container.exec_run(["ls", f"{output_dir}/{most_recent_dir}"])
+                    .output.decode()
+                    .split("\n")
+                )
+                for file_name in recent_dir_files:
+                    if file_name.endswith(".diff"):
+                        diff_file_path = f"{output_dir}/{most_recent_dir}/{file_name}"
+                        break
 
             local_pull_requests_dir = os.path.join(project_dir, "pull_requests")
             if not os.path.exists(local_pull_requests_dir):
@@ -343,21 +339,26 @@ class ContributorAgent:
             local_diff_file_path = os.path.join(
                 local_pull_request_dir, f"{pull_request_name}.diff"
             )
+            if diff_file_path is None:
+                log("No .diff file found in the most recent directory.")
+                # Since there is no real diff file to copy, we will leave our diff file empty
+                with open(local_diff_file_path, "w") as diff_file:
+                    diff_file.write("")
+            else:
+                # Copy the file from container to local system using docker-py
+                bits, stat = container.get_archive(diff_file_path)
+                tar_stream = io.BytesIO(b"".join(bits))
+                with tarfile.open(fileobj=tar_stream) as tar:
+                    tar.extractall(path=local_pull_request_dir)
 
-            # Copy the file from container to local system using docker-py
-            bits, stat = container.get_archive(diff_file_path)
-            tar_stream = io.BytesIO(b"".join(bits))
-            with tarfile.open(fileobj=tar_stream) as tar:
-                tar.extractall(path=local_pull_request_dir)
+                # Rename the extracted file to the desired name
+                extracted_file_path = os.path.join(
+                    local_pull_request_dir, os.path.basename(diff_file_path)
+                )
+                os.rename(extracted_file_path, local_diff_file_path)
 
-            # Rename the extracted file to the desired name
-            extracted_file_path = os.path.join(
-                local_pull_request_dir, os.path.basename(diff_file_path)
-            )
-            os.rename(extracted_file_path, local_diff_file_path)
-
-            container.stop()
-            container.remove()
+                container.stop()
+                container.remove()
 
             # Make a pr.md file for in the pull_request folder
 
@@ -391,7 +392,11 @@ class ContributorAgent:
                 f"Contributor {self.name} has created pull request for Issue #{self.assigned_issue.id}.\n"
             )
             self.unassign_issue()
-            return True
+            return (
+                pr_content
+                + "\n Code Patch generated Fro the Pull Request : \n"
+                + diff_content
+            )
 
         except Exception as e:
             log_and_print(f"Error executing command in container: {e}")
@@ -476,7 +481,7 @@ class ContributorAgent:
                 f"Contributor {self.name} has created pull request for Issue #{self.assigned_issue.id}.\n"
             )
             self.unassign_issue()
-            return True
+            return pr_content
 
         else:
             log_and_print(f"Some error while trying to solve issue")

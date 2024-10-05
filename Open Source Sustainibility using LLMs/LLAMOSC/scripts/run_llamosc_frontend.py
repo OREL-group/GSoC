@@ -39,6 +39,7 @@ from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.agents.issue_creator import IssueCreatorAgent
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.sim import Simulation
+from LLAMOSC.simulation.rating_and_bidding import format_discussion_history
 
 from LLAMOSC.utils import (
     repo_commit_current_changes,
@@ -169,7 +170,7 @@ class SimulationApp(QWidget):
         n_contributors = int(self.contributors_input.text())
         n_maintainers = int(self.maintainers_input.text())
         n_issues = int(self.issues_input.text())
-        use_acr = self.acr_checkbox.isChecked()
+        self.use_acr = self.acr_checkbox.isChecked()
         test = self.test_checkbox.isChecked()
         algorithm = self.algorithm_selection.currentText()[0]
 
@@ -180,22 +181,18 @@ class SimulationApp(QWidget):
                 current_folder, "..", "..", "..", "..", "calculator_project"
             )
 
-        # testing
-        other = os.path.join(
-            current_folder, "..", "..", "..", "..", "calculator_project"
-        )
         self.progress_bar.setValue(0)
         self.log_output.setText(
-            "Starting simulation with the following parameters:\n"
-            f"Contributors: {n_contributors}\n"
-            f"Maintainers: {n_maintainers}\n"
-            f"Issues: {n_issues}\n"
-            f"Use ACR: {use_acr}\n"
-            f"Algorithm: {algorithm}\n"
-            f"Issues Path: {self.project_dir}"
+            "Starting simulation with the following parameters: "
+            f"Contributors: {n_contributors} "
+            f"Maintainers: {n_maintainers} "
+            f"Issues: {n_issues} "
+            f"Use ACR: {self.use_acr}\n "
+            f"Algorithm: {algorithm}\n "
+            f"Issues Path: {self.project_dir} "
         )
 
-        self.progress_bar.setValue(100)
+        self.progress_bar.setValue(90)
 
         console = Console()
 
@@ -290,7 +287,7 @@ class SimulationApp(QWidget):
 
         self.progress_bar.setValue(100)
         log_and_print(
-            f"\nStarting simulation with {len(issues)} issues and {len(self.contributors)} contributors with ACR : {use_acr} and Algorithm : {algorithm}.\n"
+            f"\nStarting simulation with {len(issues)} issues and {len(self.contributors)} contributors with ACR : {self.use_acr} and Algorithm : {algorithm}.\n"
         )
 
         self.issues_history = {
@@ -387,6 +384,7 @@ class SimulationApp(QWidget):
             self.simulation_window.solved_labels[category].setText(
                 f"{category.replace('_', ' ').title()}: {self.issues_history['solved'][category]}"
             )
+        QtTest.QTest.qWait(1000)
 
         for issue in issues:
             timestep += 1
@@ -410,9 +408,13 @@ class SimulationApp(QWidget):
     ):
         # Update the timestep counter
         self.simulation_window.timestep_counter.setText(str(timestep))
-
         # Example of updating logs or other UI elements
         self.simulation_window.log.setText(f"Simulation timestep: {timestep}")
+
+        # start with all contributors in available state
+        for i in range(self.simulation_window.stick_figure_app.num_stick_figures):
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
+        QtTest.QTest.qWait(1000)
 
         issues_folder = os.path.join(issues_parent_folder, "pending")
         issues_pending = len(os.listdir(issues_folder))
@@ -442,7 +444,21 @@ class SimulationApp(QWidget):
         )
         selected_maintainer.allot_task(issue)
 
+        num_eligible_contributors = len(
+            [
+                contributor
+                for contributor in self.contributors
+                if contributor.eligible_for_issue(issue)
+            ]
+        )
+        # display eligible contributors
+        for i in range(num_eligible_contributors):
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 1)
+        QtTest.QTest.qWait(1000)
         if is_test:
+            # put eligible contributors in discussion state
+            for i in range(num_eligible_contributors):
+                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 2)
             selected_contributor = random.choice(
                 [
                     maintainer
@@ -455,24 +471,69 @@ class SimulationApp(QWidget):
                 + "\n"
                 + f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
             )
+            # put one contributor in busy state and all others in available state
+            self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
+            for i in range(
+                1, self.simulation_window.stick_figure_app.num_stick_figures
+            ):
+                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
         else:
             if self.algorithm_selection == "d":
-                selected_contributor = self.sim.select_contributor_decentralized(issue)
+                # put eligible contributors in discussion state
+                for i in range(num_eligible_contributors):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i, 2
+                    )
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_decentralized(issue)
+                )
+                formatted_history = format_discussion_history(discussion_history)
+                self.simulation_window.active_discussion_console.append_colored_text(
+                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
+                    color="white",
+                )
+                # put one contributor in busy state and all others in available state
+                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
+                for i in range(
+                    1, self.simulation_window.stick_figure_app.num_stick_figures
+                ):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i, 4
+                    )
                 self.simulation_window.log.setText(
                     self.simulation_window.log.text()
                     + "\n"
                     + f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
                 )
+
             else:
-                selected_contributor = self.sim.select_contributor_authoritarian(
-                    selected_maintainer
+                # put eligible contributors in discussion state
+                for i in range(num_eligible_contributors):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i, 2
+                    )
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_authoritarian(selected_maintainer)
                 )
+                formatted_history = format_discussion_history(discussion_history)
+                self.simulation_window.active_discussion_console.append_colored_text(
+                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
+                    color="white",
+                )
+                # put one contributor in busy state and all others in available state
+                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
+                for i in range(
+                    1, self.simulation_window.stick_figure_app.num_stick_figures
+                ):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i, 4
+                    )
                 self.simulation_window.log.setText(
                     self.simulation_window.log.text()
                     + "\n"
                     + f"Selected contributor {selected_contributor.name} by maintainer rating all contributors in an authoritarian manner."
                 )
-
+        QtTest.QTest.qWait(1000)
         for other_contributor in self.contributors:
             if other_contributor.id == selected_contributor.id:
                 continue
@@ -488,9 +549,15 @@ class SimulationApp(QWidget):
         selected_contributor.assign_issue(issue)
         task_solved = (
             selected_contributor.solve_issue(self.project_dir)
-            if self.acr_checkbox and not is_test
+            if self.use_acr and not is_test
             else selected_contributor.solve_issue_without_acr(self.project_dir, is_test)
         )
+
+        self.simulation_window.pull_requests_console.append_colored_text(
+            f"\n\n\nPull Request Created for Issue #{issue.id} by contributor {selected_contributor.name}:\n {task_solved}",
+            color="green",
+        )
+        QtTest.QTest.qWait(1000)
 
         pull_requests_dir = os.path.join(self.project_dir, "pull_requests")
         if task_solved:
@@ -515,7 +582,7 @@ class SimulationApp(QWidget):
                 pr_accepted = random.randint(2, 5)
                 selected_maintainer.unassign_task()
             else:
-                selected_maintainer.review_pull_request(
+                pr_accepted = selected_maintainer.review_pull_request(
                     pull_request_dir, self.project_dir
                 )
 
@@ -550,7 +617,7 @@ class SimulationApp(QWidget):
                     self.simulation_window.solved_labels[category].setText(
                         f"{category.replace('_', ' ').title()}: {self.issues_history['solved'][category]}"
                     )
-
+                QtTest.QTest.qWait(1000)
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
                 merged_dir = os.path.join(self.project_dir, "pull_requests", "merged")
                 os.makedirs(merged_dir, exist_ok=True)
@@ -615,14 +682,12 @@ class SimulationApp(QWidget):
             self.motivation_history,
         )
 
-        # Example of updating stick figure positions or other plots
-        # This assumes that stick figures or plots have methods to update themselves
+        # legend 1-eligible 2 - disucssion 3 -busy 4 - available / all?
+        # put all back in available state
         for i in range(self.simulation_window.stick_figure_app.num_stick_figures):
-            self.simulation_window.stick_figure_app.set_stick_figure_position(
-                i, timestep % len(self.simulation_window.stick_figure_app.rects)
-            )
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
 
-        # Timer to simulate actual working
+        # Timer to display
         QtTest.QTest.qWait(1000)
 
 
