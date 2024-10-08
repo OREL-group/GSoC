@@ -78,7 +78,7 @@ class Simulation:
         log_and_print(
             f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with maintainer's rating of {max_value}\n"
         )
-        return selected_contributor
+        return selected_contributor, discussion_history
 
     # if function is called with issue instead of maintainer means decentralized algorithm
     def select_contributor_decentralized(self, issue: Issue):
@@ -112,4 +112,4 @@ class Simulation:
         log_and_print(
             f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with a bid of {max_value}\n"
         )
-        return selected_contributor
+        return selected_contributor, discussion_history

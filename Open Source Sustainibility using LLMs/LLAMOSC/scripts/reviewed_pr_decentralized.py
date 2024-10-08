@@ -80,7 +80,7 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
-        selected_contributor = sim.select_contributor_decentralized(issue)
+        selected_contributor = sim.select_contributor_decentralized(issue)[0]
         # Assign an issue from the available issues to the agent
         if selected_contributor:
             # TODO : if no eligible contributors, loop until the issue is solved

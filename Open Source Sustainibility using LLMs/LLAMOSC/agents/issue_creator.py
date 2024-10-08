@@ -96,8 +96,8 @@ class IssueCreatorAgent:
         You are an experienced user of this project, and want to help improve it with features and identifying bugs. Your task is to create new, creative, and distinct issues for a calculator project based on the provided code.
 #         Here is the current state of the project:
 #         {existing_code}
-        Using the following data {new_issue}, write a issue in MARKDOWN ONLY that can be added to the project's issue tracker. Include the title, description, example code, checked resources, and system information in the appropriate sections.
-        Here is an existing issue for reference:
+        Combine the following data only {new_issue}, write a issue in MARKDOWN ONLY that can be added to the project's issue tracker. Include the title, description, example code, checked resources, and system information in the appropriate sections.
+        Here is an existing issue for reference that you only use for format reference AND NOT USE ANY OF ITS CONTENT:
         {existing_issues[0]}
         The entire issue should be less than 300 words.
         """

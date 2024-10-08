@@ -13,7 +13,31 @@ replacementCode = """class Calculator:
         return a * b
 
     def divide(self, a, b):
-        return a / b"""
+        return a / b
+
+    def sin(self, a):
+        # not implemneted please fix sin
+        return
+
+    def cos(self, a):
+        # not implemneted please fix cos
+        return
+
+    def power(self, a, b):
+        # not implemneted please fix power a^b or a**b
+        return
+
+    def exponential(self, a):
+        # not implemneted please fix exponential
+        return
+
+    def log(self, a):
+        # not implemneted please fix log
+        return
+
+    def sqrt(self, a):
+        # not implemneted please fix sqrt rooting square rooting
+        return"""
 
 current_folder = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.join(current_folder, "..", "..", "..", "..", "calculator_project")

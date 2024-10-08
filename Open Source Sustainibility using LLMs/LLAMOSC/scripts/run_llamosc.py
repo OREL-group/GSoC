@@ -210,11 +210,11 @@ def main():
         )
         selected_maintainer.allot_task(issue)
         if algorithm == "d":
-            selected_contributor = sim.select_contributor_decentralized(issue)
+            selected_contributor = sim.select_contributor_decentralized(issue)[0]
         else:
             selected_contributor = sim.select_contributor_authoritarian(
                 selected_maintainer
-            )
+            )[0]
 
         # Assign an issue from the available issues to the agent
         if not selected_contributor:
