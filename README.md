@@ -1,17 +1,17 @@
 ## Google Summer of Code Projects
-### GSoC 2024
+### GSoC 2025
 
 Updates and Admin: 
 - [Github Project Board](https://github.com/orgs/OREL-group/projects/15): Issues, tasks, and updates for GSoC 2024
 
 #### Current Projects
+   
+## DevoGraph  
+The DevoWorm group has developed an open-source Graph neural network (GNN) framework for embryogenetic data called DevoGraph. Developmental GNNs (D-GNNs) allow us to characterize a growing network that undergoes shape transformations along with increases in size. This is ultimately important for understanding formation of the connectome and the origins of embodied behavior. For this year’s project, the successful applicant will work on extending our two outcomes from last year. The first direction involves working with Neural Developmental Programs to build growing neural networks. This provides a means to model the function of embryogenetic networks, developing connectomes, and other growth processes. The second direction involves working with hyper graph representations, enabling multiscale modeling from a network perspective. We aim to tie our D-GNN work into the group’s ongoing theoretical and computational work. As such, this project will require the ability to work with mathematical models and associated algorithms. Knowledge of graph and/or network theory is helpful, but not required.   
 
-5.1 [VR/XR for distributed research](https://neurostars.org/t/gsoc-2024-project-idea-5-1-virtual-reality-for-distributed-research-175-h/28250)
-
-* archive of assets created during GSoC 2023 [Zenodo](https://zenodo.org/records/10046243). Your project can either improve upon these assets, or address one of the points in the project description (__Replicate a famous experimental paradigm (e.g. Morris Water Maze) where the subject can interact with both the environment and stimuli__ or __Replicate scientific knowledge or biological processes in a unique way. Possible applications include a navigable brain or organism atlas)__.
-
-5.2 [Open-source Sustainability](https://neurostars.org/t/gsoc-2024-project-idea-5-2-open-source-community-sustainability-350-h/28251)
-
+## Open-source Community Sustainability
+Open-source communities are only as powerful as their ability to collectively complete tasks and projects. One way to enable the functional capacity of such a community is to model the collective behavioral and cognitive aspects of day-to-day project engagement. Your current involvement will involve the maintenance, development, and further implementation of two models from past years: a Reinforcement Learning model, and a hybrid Agent-based/Large Language Model. The candidate will build an analytical model that incorporates features such as general feedback loops (recurrent relationships) and causal loops (reciprocal causality). This might be in the form of a traditional boxes and arrows (input-output) model, or something more exotic such as Reinforcement Learning.   
+   
 <P>
     <IMG align="center" height = "150" width = "150" SRC="https://github.com/OREL-group/GSoC/blob/main/Media/GSoC.png">
 </P>
