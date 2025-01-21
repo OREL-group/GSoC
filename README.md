@@ -28,3 +28,5 @@ Open-source communities are only as powerful as their ability to collectively co
 * [GSOC History & Alumni](https://www.jopro.org/mentoring-programs/google-summer-of-code-orel-devoworm)
   
 * [Intorduction to LLAMOSC (OREL Medium)](https://medium.com/orel-group/midpoint-milestone-introducing-the-llamosc-framework-dc3b7d33bf8a)
+  
+* [Developing Adaptive Neural Networks (OREL Medium)](https://medium.com/orel-group/developing-adaptive-neural-networks-growing-graphs-for-dynamic-data-representation-286d9ad6c24c)
