@@ -25,4 +25,6 @@ Open-source communities are only as powerful as their ability to collectively co
   
 * Prior GSoC projects have lead to: [DevoLearn](https://github.com/DevoLearn/devolearn), [Developmental Braitenberg Vehicles](https://github.com/OREL-group/dBV), [Contextual Geometric Structures](https://github.com/Orthogonal-Research-Lab/CGS), [Open-source Collective Behavior and Ethics](https://github.com/OREL-group/GSoC/tree/main/Open%20Source%20Ethics), [D-GNNs](https://github.com/DevoLearn/DevoGraph), [Digital Microspheres](https://github.com/devoworm/GSoC-2022/tree/main/Digital-Microsphere).
 
-* [GSOC History & Alumni](https://www.jopro.org/mentoring-programs/google-summer-of-code-orel-devoworm) 
+* [GSOC History & Alumni](https://www.jopro.org/mentoring-programs/google-summer-of-code-orel-devoworm)
+  
+* [Intorduction to LLAMOSC (OREL Medium)](https://medium.com/orel-group/midpoint-milestone-introducing-the-llamosc-framework-dc3b7d33bf8a)
