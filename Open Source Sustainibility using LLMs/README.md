@@ -95,8 +95,6 @@ python Open Source Sustainibility using LLMs\Environment_Creation\create_toy_rep
 
 This will create an empty calculator_project directory where the main `OREL-group/GSoC` repository was cloned.
 
-### Certainly! Here's how you can rewrite Step 3 in the `README.md` to instruct users to download the files from the GitHub repository and place them correctly.
-
 ### Step 3: Download and Extract `calculator_project`
 
 1. **Download `calculator_project` files from the GitHub repository:**
