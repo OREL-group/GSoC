@@ -228,13 +228,23 @@ These metrics help in evaluating the impact of various practices and their level
 
 ## Future Work
 
-- Enhancing agent reasoning with more sophisticated LLM capabilities.
-- Improving UI visualization for real-time tracking.
-- Expanding support for multiple open-source projects.
-
+- **Collaborative Issue Solving:** Implement collaboration algorithms to enable multiple agents to work together on a single issue, simulating complex teamwork dynamics. [Issue Link](https://github.com/OREL-group/GSoC/issues/64)
+- **Dynamic Issue Creation:** Utilize `IssueCreatorAgent` to dynamically generate new issues during simulation, better mimicking evolving open-source projects. [Issue Link](https://github.com/OREL-group/GSoC/issues/63)
+- **ConversationSpace (Slack Simulation):** Introduce `ConversationSpace` to replicate real-time team communications, enhancing the realism of agent interaction. [Issue Link](https://github.com/OREL-group/GSoC/issues/60)
+- **RAG Integration:** Add Retrieval-Augmented Generation capabilities to both `ConversationSpace` and GitHub Discussions for more context-aware, relevant agent interactions. [Issue Link](https://github.com/OREL-group/GSoC/issues/62)
+- **Engagement Metrics:** Incorporate metrics based on `ConversationSpace` to analyze interaction quality and collaboration levels. [Issue Link](https://github.com/OREL-group/GSoC/issues/61)
 
 ## References 
 
-- For [decentralized](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_bidding) and [authoritarian](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_authoritarian) algorithm approaches : [Langchain Use Cases : Agent Simulations](https://python.langchain.com.cn/docs/use_cases/agent_simulations/)
-- For information about [benevelont-dictator](http://oss-watch.ac.uk/resources/benevolentdictatorgovernancemodel) and [meritocratic](http://oss-watch.ac.uk/resources/meritocraticgovernancemodel) open-source goverenance models : http://oss-watch.ac.uk/resources/ 
-- This environment is based on a paper "AutoCodeRover: Autonomous Program Improvement" and it's open-source code implementation [on github](https://github.com/nus-apr/auto-code-rover) has been used as a dependency in my project .
+## References
+
+- Shanahan, M., McDonell, K., & Reynolds, L. (2023, May 25). *Role-Play with Large Language Models*. [arXiv.org](https://arxiv.org/abs/2305.16960)
+
+- Xi, Z., Chen, W., Guo, X., He, W., Ding, Y., Hong, B., Zhang, M., Wang, J., Jin, S., Zhou, E., Zheng, R., Fan, X., Wang, X., Xiong, L., Zhou, Y., Wang, W., Jiang, C., Zou, Y., Liu, X., … Gui, T. (2023, September 14). *The Rise and Potential of Large Language Model Based Agents: A Survey*. [arXiv.org](https://arxiv.org/abs/2309.07864)
+
+- The **CodeSpace Environment** is based on the paper *“AutoCodeRover: Autonomous Program Improvement”* and its open-source code implementation [on Github](https://github.com/nus-apr/auto-code-rover), which has been used as a dependency in this project.
+
+- For decentralized and authoritarian algorithm approaches: [Langchain Use Cases - Agent Simulations](https://docs.langchain.com/docs/use-cases/agent-simulations/)
+
+- For information about **benevolent-dictator** and **meritocratic** open-source governance models: [OSS Watch - Governance Models](http://oss-watch.ac.uk/resources/)
+
