@@ -41,6 +41,10 @@ LLAMOSC integrates multiple capabilities to automate and optimize open-source co
         - Distributed decision-making among contributors.
         - Contributors bid on tasks based on their suitability and experience.
 
+4. **Metrics and Trends Visualization**:
+    - Visualizes different metrics throughout the simulation at each time step.
+    - Includes **tracking** of contributor experience levels, code quality trends, and motivation levels to provide comprehensive insights into the dynamics of the open-source community.
+
 ### Accomplishments of LLAMOSC so far
 
 - **Preliminary Design and Implementation**:
@@ -54,6 +58,15 @@ LLAMOSC integrates multiple capabilities to automate and optimize open-source co
 - **Multi-Agent Decision Making**:
     - Simulated governance models used in open-source projects.
     - Developed algorithms for both centralized (authoritarian) and decentralized (meritocratic) task allocation.
+    - ### Accomplishments of LLAMOSC so far
+    - 
+- **Graphical User Interface**:
+    - Developed an intuitive graphical interface for inputting data and visualizing real-time updates of metrics within the LLAMOSC framework.
+    - Enhanced the user experience by making complex metric visualizations easily accessible and actionable.
+ 
+### Demo 
+![LLAMOSC Simulation GUI](https://github.com/user-attachments/assets/91ccaf5c-ff2f-4391-9618-273aaaef493c)
+You can find the full demo at https://youtu.be/NuKh1i70X8Q .
 
 ## Installation instructions
 
@@ -136,26 +149,90 @@ OREL-GSoC/
 │       └───Assets
 ```
 
-## Running the relevant scripts 
+## Running the LLAMOSC Graphical User Interface
 
-### Running the Authoritarian Algorithm
+To set up and run the LLAMOSC simulation, follow these steps:
 
-The authoritarian algorithm is a decision-making algorithm used in Multi Agent Decision Making (MADM) systems. It handles situations where there is a single decision-maker, known as the "authoritarian agent," who makes decisions on behalf of a group of agents. More information can be found in `Open Source Sustainibility using LLMs\Multi_Agent_Decision_Making\README.md`
+### Prerequisites
 
-To run the authoritarian algorithm using the LLAMOSC framework, make sure you navigate to the root directory of the LLAMOSC package and use the following command:
+Ensure you have Python installed and the required dependencies set up.
 
-```bash
-python .\LLAMOSC\scripts\reviewed_pr_authoritatian.py
-```
-### Running the Decentralized Algorithm
+### Steps to Run:
 
-The decentralized algorithm is a decision-making algorithm used in Multi Agent Decision Making (MADM) systems. It allows for distributed decision-making among multiple agents, eliminating the need for a single decision-maker. More information can be found in `Open Source Sustainibility using LLMs\Multi_Agent_Decision_Making\README.md`.
+1. **Clear Previous Simulation Data**
 
-To run the decentralized algorithm using the LLAMOSC framework, make sure you navigate to the root directory of the LLAMOSC package and use the following command:
+   ```sh
+   python .\LLAMOSC\scripts\clear_calculator_project.py
+   ```
 
-```bash
-python .\LLAMOSC\scripts\reviewed_pr_decentralized.py
-```
+   This command removes earlier simulation data to ensure a fresh run.
+
+2. **Start the Simulation GUI**
+
+   ```sh
+   python .\LLAMOSC\scripts\run_llamosc_frontend.py
+   ```
+
+   Running this command will open the LLAMOSC Simulation interface.
+
+### Simulation UI Explanation
+
+The LLAMOSC Simulation GUI consists of multiple input fields and options:
+![LLAMOSC Simulation GUI Page 1](https://github.com/user-attachments/assets/1ea12821-0188-48d1-9bfd-0c7832cfe511)
+
+- **Number of Contributors:** Specify the number of contributor agents in the simulation.
+- **Number of Maintainers:** Define how many maintainers will oversee the project.
+- **Number of Issues:** Set the number of issues that the agents will work on.
+- **Use ACR:** (Optional) Enables AutoCodeRover functionality. This can be left unchecked to run the simulation without using AutoCodeRover as a dependency.
+- **Testing Mode:** If enabled, the simulation will run without requiring an Ollama LLM setup (this should be checked for debugging and non-LLM execution).
+- **Decision-Making Algorithm:** Choose between Authoritarian (Benevolent Dictatator) or Decentralized (Meritocratic) decision-making.
+- **Select Issues Path:** Choose path of the main `calculator_project` folder (take care not to choose the `issues` subfolder).
+- **Start Simulation Button:** Begins the simulation.
+
+### Running the Simulation
+
+- Click **Start Simulation** and watch the agents interact with issues in real-time.
+- Monitor the **terminal logs** to observe agent creation, discussion, and issue resolution.
+  ![Terminal Logs](https://github.com/user-attachments/assets/09768b29-07b3-4cd1-9a92-49ef779a0504)
+- At this point agents are created.
+  ![Starting Main GUI Window](https://github.com/user-attachments/assets/2f6440e0-11cc-47d5-b963-6277e886242a)
+- Watch the main simulation window (opened via PyGUI) which will visualize the interactions.
+![LLAMOSC Simulation GUI](https://github.com/user-attachments/assets/3d5af289-b95a-44bf-8f74-ef50fc280853)
+
+## Understanding the LLAMOSC Simulation Framework
+The simulation is based on the following structure:
+
+### **1. Simulated Environment**
+The framework mimics an open-source environment with:
+
+- **Code Spaces:** Representing code repositories of projects where issues arise, and the **pull requests** that are submitted by the contributors to solve the issues are displayed here.
+- **Discussion Spaces:** Simulating **active discussion** for communication and decision-making among contributors.
+
+### **2. Agent Roles**
+- **Issue Creator Agents:** Generate and submit issues based on the codebase (powered by LLMs).
+- **Contributor Agents:** Work on resolving issues (powered by LLMs and AutoCodeRover).
+- **Maintainer Agents:** Review contributions and approve/reject them based on quality (powered by LLMs).
+
+### **3. Decision-Making & Evaluation Metrics**
+The simulation assesses different metrics such as:
+
+- **Code Quality** (based on the pull requests submitted)
+- **Contributor Experience** (how contributor experience is imapcted by issues that are closed)
+- **Contributor Motivation** (how well agents interact and based on their initial level as well)
+
+These metrics help in evaluating the impact of various practices and their level of sustainibility of open-source communities.
+
+## Additional Resources
+
+- **Project Report:** Read more about LLAMOSC in the detailed GSoC 2024 report: [Sarrah's Blog](https://github.com/sarrah-basta/blogs/blob/gh-pages/_posts/2024-08-24-GSoC_'24_OREL_INCF_Project_Report.md)
+
+## Future Work
+
+- Enhancing agent reasoning with more sophisticated LLM capabilities.
+- Improving UI visualization for real-time tracking.
+- Expanding support for multiple open-source projects.
+
+
 ## References 
 
 - For [decentralized](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_bidding) and [authoritarian](https://python.langchain.com.cn/docs/use_cases/agent_simulations/multiagent_authoritarian) algorithm approaches : [Langchain Use Cases : Agent Simulations](https://python.langchain.com.cn/docs/use_cases/agent_simulations/)
