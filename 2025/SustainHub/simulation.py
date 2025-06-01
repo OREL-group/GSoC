@@ -10,7 +10,7 @@ class Simulation:
             Maintainer("Alice"),
             Contributor("Bob"),
             Innovator("Charlie"),
-            KnowledgeCurator("Dana")
+            KnowledgeCurator("Vidhi")
         ]
         self.task_queue = [generate_task() for _ in range(5)]
 
