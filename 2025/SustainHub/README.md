@@ -5,7 +5,7 @@ This project simulates an open-source community with different agent roles and t
 
 ### How to run the simulation
 
-1. **Clone the repository** (if you haven’t already):
+1. **Clone the repository** 
 
     ```bash
     git clone https://github.com/OREL-group/GSoC
