@@ -4,7 +4,7 @@ class BaseAgent:
         self.role = role
         self.expertise_level = "Apprentice"
         self.task_load = 0
-        self.success_rate = 0.5  # initial average performance
+        self.success_rate = 0.5  # avg performance
 
     def assign_task(self, task):
         self.task_load += 1
