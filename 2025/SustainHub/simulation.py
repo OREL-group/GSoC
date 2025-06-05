@@ -12,7 +12,7 @@ class Simulation:
             Innovator("Charlie"),
             KnowledgeCurator("Vidhi")
         ]
-        self.task_queue = [generate_task() for _ in range(5)]
+        self.task_queue = [generate_task() for _ in range(7)]
 
     def assign_tasks(self):
         for task in self.task_queue:
