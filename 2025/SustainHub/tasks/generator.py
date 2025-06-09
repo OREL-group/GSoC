@@ -1,8 +1,11 @@
 import random
 
-TASK_TYPES = ["bug_fix", "feature", "docs"]
+class Task:
+    def __init__(self, task_type, difficulty):
+        self.task_type = task_type
+        self.difficulty = difficulty
 
 def generate_task():
-    task_type = random.choice(TASK_TYPES)
-    difficulty = random.choice(["easy", "medium", "hard"])
-    return {"type": task_type, "difficulty": difficulty}
+    task_type = random.choice(["bug", "feature", "docs"])
+    difficulty = random.randint(1, 5)
+    return Task(task_type, difficulty)
