@@ -5,19 +5,20 @@ class MABAllocator:
     def __init__(self, agents, exploration_factor=0.2):
         self.agents = agents
         self.exploration_factor = exploration_factor
-        
+
+    """Select an agent using Thompson Sampling (a Bayesian MAB approach)"""
+    
     def select_agent(self, task):
-        """Select an agent using Thompson Sampling (a Bayesian MAB approach)"""
         task_type = task.task_type
         
-        # If we're exploring, choose randomly
+        # If we're exploring then random
         if np.random.random() < self.exploration_factor:
             available_agents = [a for a in self.agents if a.task_load < a.max_load]
             if available_agents:
                 return np.random.choice(available_agents)
             return None
         
-        # Otherwise, Thompson Sampling
+        #  thompson sampling
         max_sample = -1
         best_agent = None
         
