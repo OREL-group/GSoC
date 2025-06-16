@@ -36,16 +36,27 @@ class Simulation:
                 success = random.random() > 0.3  # 70% success rate for demo
                 agent.complete_task(success, task_type)
                 print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
+
+    def print_agent_stats(self):
+        print("\n🔍 Agent Stats After Step:")
+        for agent in self.agents:
+            print(f"\n👤 {agent.name}:")
+            for i, task_type in enumerate(["bug", "feature", "docs"]):
+                total = agent.total_counts[i]
+                success = agent.success_counts[i]
+                fail = total - success
+                success_rate = (success / total * 100) if total > 0 else 0
+                print(f"   {task_type.capitalize()}: {success} Success / {fail} Fail | Success Rate: {success_rate:.1f}%")
     
     def run(self, steps=5):
         print("Simulation starting...\n")
         for step in range(steps):
             print(f"\n--- Step {step + 1} ---")
-            # Generate new tasks each step
             self.task_queue = [generate_task() for _ in range(3)]
             self.assign_tasks()
             self.simulate_task_completion()
+            self.print_agent_stats()
 
 if __name__ == "__main__":
     sim = Simulation()
-    sim.run()
+    sim.run(steps=25)  
