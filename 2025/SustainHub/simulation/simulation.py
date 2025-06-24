@@ -1,16 +1,35 @@
 from agents.contributor import Contributor
-from agents.maintainer import Maintainer  # Maintainer won't take tasks
+from agents.maintainer import Maintainer
 from tasks.generator import generate_task
 from tasks.mab import MABAllocator
 import random
+import json
+import os
+
+SAVE_FILE = "data/trained_agents.json"
 
 class Simulation:
     def __init__(self):
-        # 10 contributors (C1 to C10)
-        self.agents = [Contributor(f"C{i}") for i in range(1, 11)]
-        self.maintainer = Maintainer("Alice")  # Maintainer does not perform tasks
+        self.agents = self.load_agents()
+        self.maintainer = Maintainer("Alice")
         self.task_queue = [generate_task() for _ in range(7)]
         self.mab_allocator = MABAllocator(self.agents)
+
+    def load_agents(self):
+        agents = [Contributor(f"C{i}") for i in range(1, 11)]
+        if os.path.exists(SAVE_FILE):
+            with open(SAVE_FILE, 'r') as f:
+                saved_data = json.load(f)
+                for agent in agents:
+                    if agent.name in saved_data:
+                        agent.load_from_dict(saved_data[agent.name])
+        return agents
+
+    def save_agents(self):
+        data = {agent.name: agent.to_dict() for agent in self.agents}
+        os.makedirs("data", exist_ok=True)
+        with open(SAVE_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
 
     def assign_tasks(self):
         for task in self.task_queue:
@@ -23,10 +42,9 @@ class Simulation:
 
     def simulate_task_completion(self):
         for agent in self.agents:
-            if agent.task_load > 0:
-                # Simulate completing a task (random task_type to simulate environment variability)
-                task_type = random.choice(["bug", "feature", "docs"])
-                success = random.random() > 0.3  # 70% chance of success
+            while agent.task_load > 0 and agent.current_tasks:
+                task_type = agent.current_tasks.pop(0)  # ✅ Real assigned task
+                success = random.random() > 0.3         # 70% success chance
                 agent.complete_task(success, task_type)
                 print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
 
@@ -57,6 +75,8 @@ class Simulation:
             self.assign_tasks()
             self.simulate_task_completion()
             self.print_agent_stats()
+        self.save_agents()
+
 
 if __name__ == "__main__":
     sim = Simulation()
