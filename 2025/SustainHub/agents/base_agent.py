@@ -1,7 +1,9 @@
 import numpy as np
 import json
+from agents.sarsa import SARSAAgentLogic
 
 TASK_TYPES = ["bug", "feature", "docs"]
+ACTIONS = ["retry", "ask_peer", "code_fix"]  # Example SARSA actions
 
 class BaseAgent:
     def __init__(self, name, role):
@@ -12,8 +14,11 @@ class BaseAgent:
         self.success_counts = np.zeros(3)
         self.total_counts = np.zeros(3)
         self.rewards = []
-        self.current_tasks = []  # Tracks assigned tasks
+        self.current_tasks = []  # Tracks assigned task types
         self.expertise_level = 1
+
+        # SARSA logic initialized
+        self.sarsa = SARSAAgentLogic(agent_name=name, actions=ACTIONS)
 
     def assign_task(self, task):
         if self.task_load < self.max_load:
@@ -36,14 +41,25 @@ class BaseAgent:
             reward = self.calculate_reward(task_type)
         else:
             reward = -1
+
         self.rewards.append({
             "task_type": task_type,
             "success": success,
             "reward": reward
         })
 
+        # === SARSA update ===
+        self.act_and_learn(task_type, reward)
+
+    def act_and_learn(self, task_type, reward):
+        state = (task_type,)
+        action = self.sarsa.choose_action(state)
+        next_state = (task_type,)
+        next_action = self.sarsa.choose_action(next_state)
+        self.sarsa.update(state, action, reward, next_state, next_action)
+
     def calculate_reward(self, task_type):
-        # Default: 1 for any success
+        # Default reward
         return 1
 
     def get_success_rate(self, task_type):
