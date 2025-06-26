@@ -43,10 +43,18 @@ class Simulation:
     def simulate_task_completion(self):
         for agent in self.agents:
             while agent.task_load > 0 and agent.current_tasks:
-                task_type = agent.current_tasks.pop(0)  # ✅ Real assigned task
-                success = random.random() > 0.3         # 70% success chance
-                agent.complete_task(success, task_type)
-                print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
+                task_type = agent.current_tasks[0]  # Peek without popping
+                success = random.random() > 0.3     # 70% success chance
+
+                # ✅ Only log completion if task was actually done
+                task_done = agent.complete_task(success, task_type)
+
+                if task_done:
+                    print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
+                
+                # ✅ Remove task only if actually completed
+                if task_done:
+                    agent.current_tasks.pop(0)
 
     def infer_role(self, agent):
         task_counts = agent.total_counts
