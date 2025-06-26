@@ -1,33 +1,70 @@
-## Usage
+# 🌱 SustainHub
 
-This project simulates an open-source community with different agent roles and task assignments using reinforcement learning techniques like Multi-Armed Bandits (MAB) for task allocation.
+**SustainHub** is a Reinforcement Learning–powered simulation for studying and enhancing the sustainability of open-source communities. It models real-world OSS dynamics through a combination of **Multi-Armed Bandits (MAB)** for task allocation and **SARSA** for agent-level learning and decision-making.
 
-### How to run the simulation
+The system is built around four specialized agents representing common roles in OSS: **Maintainer**, **Contributor**, **Innovator**, and **Knowledge Curator**.
 
-1. **Clone the repository**
+---
 
-    ```bash
-    git clone https://github.com/OREL-group/GSoC.git
-    cd GSoC/2025/SustainHub
-    ```
+## 🎯 Objectives
 
-2. **Make sure you have Python 3 installed** (preferably 3.7 or higher).
+- Simulate task allocation and agent behavior in OSS environments.
+- Optimize contributor engagement using MAB and SARSA.
+- Promote sustainable collaboration through intelligent agent decisions.
+- Track community health via custom metrics like **Harmony Index** and **Resilience Quotient**.
 
-3. **Install required dependencies** (if any, e.g., numpy):
+---
 
-    ```bash
-    pip install numpy
-    ```
+## 🧠 Key Components
 
-4. **Run the simulation script:**
+### 🔁 Multi-Armed Bandit (MAB)
 
-    ```bash
-    python3 simulation.py
-    ```
+Used by the **Maintainer** to allocate tasks to agents. MAB uses **Thompson Sampling** to balance exploration and exploitation based on agent performance on different task types.
 
-### What happens during the simulation
+> 📄 See: `mab.py`
 
-- Agents represent different community roles: Maintainer, Contributor, Innovator, and Knowledge Curator.
-- Tasks (bugs, features, documentation) are assigned to agents.
-- The assignment is dynamically improved by leveraging Multi-Armed Bandit algorithms, allowing agents to learn and optimize task success rates.
-- The simulation outputs task assignments and whether tasks were completed successfully step-by-step.
+### 🧬 SARSA Learning
+
+Each agent (Contributor, Innovator, Knowledge Curator) uses **SARSA** to learn optimal actions from interaction history — enabling them to improve their task responses over time.
+
+> 📄 See: `sarsa.py`
+
+---
+
+## 👥 Agent Roles
+
+| Agent            | Description |
+|------------------|-------------|
+| 🧑‍🔧 **Maintainer**         | Allocates tasks using a MAB-based strategy that adapts over time. |
+| 🐛 **Contributor**        | Specializes in bug fixes; learns which bugs to tackle using SARSA. |
+| 🌟 **Innovator**          | Builds new features; learns how to prioritize ideas effectively. |
+| 📚 **Knowledge Curator**  | Improves documentation; learns how to respond to doc-related tasks. |
+
+---
+
+## ⚙️ How It Works
+
+1. **Maintainer** uses MAB to assign tasks to available agents.
+2. Each agent (Contributor, Innovator, Curator) learns using the SARSA algorithm:
+   - States can include current load, last task success, etc.
+   - Actions include accepting/rejecting or prioritizing tasks.
+3. Task outcomes are scored, affecting the reward signal.
+4. Harmony and Resilience metrics are tracked and logged.
+
+---
+
+## 📈 Metrics Tracked
+
+- ✅ Task success rate per agent type
+- 🤝 Collaboration harmony between agents
+- 🔁 Adaptability of agent choices over episodes
+- ⚖️ Resilience to overload or contributor dropout
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/yourusername/sustainhub.git
+cd sustainhub
+pip install -r requirements.txt
