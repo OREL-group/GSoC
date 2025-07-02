@@ -44,7 +44,7 @@ class Simulation:
         for agent in self.agents:
             while agent.task_load > 0 and agent.current_tasks:
                 task_type = agent.current_tasks[0]  # Peek without popping
-                success = random.random() > 0.3     # 70% success chance
+                success = random.random() > 0.3     # 70% success chances
 
                 # ✅ Only log completion if task was actually done
                 task_done = agent.complete_task(success, task_type)
