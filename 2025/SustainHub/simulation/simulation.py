@@ -6,7 +6,10 @@ import random
 import json
 import os
 
-SAVE_FILE = "data/trained_agents.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
+SAVE_FILE = os.path.join(DATA_DIR, "trained_agents.json")
+
 
 class Simulation:
     def __init__(self):
@@ -27,7 +30,7 @@ class Simulation:
 
     def save_agents(self):
         data = {agent.name: agent.to_dict() for agent in self.agents}
-        os.makedirs("data", exist_ok=True)
+        os.makedirs(DATA_DIR, exist_ok=True)
         with open(SAVE_FILE, 'w') as f:
             json.dump(data, f, indent=2)
 
@@ -46,14 +49,15 @@ class Simulation:
                 task_type = agent.current_tasks[0]  # Peek without popping
                 success = random.random() > 0.3     # 70% success chances
 
-                # ✅ Only log completion if task was actually done
-                task_done = agent.complete_task(success, task_type)
+                if hasattr(agent, "act_and_learn"):
+                    # For SARSA agents
+                    agent.act_and_learn(task_type, success)
+                else:
+                    print(f"⚠️ {agent.name} skipped the task '{task_type}' → reward: 0")
 
+                task_done = agent.complete_task(success, task_type)
                 if task_done:
                     print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
-                
-                # ✅ Remove task only if actually completed
-                if task_done:
                     agent.current_tasks.pop(0)
 
     def infer_role(self, agent):

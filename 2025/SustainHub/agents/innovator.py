@@ -16,4 +16,4 @@ class Innovator(BaseAgent):
 
         self.sarsa.update(state, action, reward, next_state, next_action)
 
-        print(f"💡 {self.name} used action '{action}' for {task_type} → reward: {reward}")
+       # print(f"💡 {self.name} used action '{action}' for {task_type} → reward: {reward}")
