@@ -5,7 +5,8 @@ from tasks.mab import MABAllocator
 import random
 import json
 import os
-import matplotlib.pyplot as plt  # ✅ New
+
+from graph import plot_sarsa_agents  # ✅ Call graph code separately
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
@@ -47,11 +48,10 @@ class Simulation:
     def simulate_task_completion(self):
         for agent in self.agents:
             while agent.task_load > 0 and agent.current_tasks:
-                task_type = agent.current_tasks[0]  # Peek without popping
-                success = random.random() > 0.3     # 70% success chance
+                task_type = agent.current_tasks[0]
+                success = random.random() > 0.3  # 70% success chance
 
                 if hasattr(agent, "act_and_learn"):
-                    # For SARSA agents
                     agent.act_and_learn(task_type, success)
                 else:
                     print(f"⚠️ {agent.name} skipped the task '{task_type}' → reward: 0")
@@ -80,41 +80,6 @@ class Simulation:
                 success_rate = (success / total * 100) if total > 0 else 0
                 print(f"   {task_type.capitalize()}: {success:.0f} Success / {fail:.0f} Fail | Success Rate: {success_rate:.1f}%")
 
-    def plot_results(self):
-        os.makedirs(DATA_DIR, exist_ok=True)
-
-        sarsa_agents = [a for a in self.agents if hasattr(a, "sarsa") and hasattr(a, "rewards_history")]
-
-        if not sarsa_agents:
-            print("No SARSA agents found to visualize.")
-            return
-
-        num_agents = len(sarsa_agents)
-        fig, axs = plt.subplots(num_agents, 2, figsize=(12, 4 * num_agents))
-        if num_agents == 1:
-            axs = [axs]  # Handle single-agent case
-
-        for idx, agent in enumerate(sarsa_agents):
-            # 📈 Rewards per step
-            rewards = agent.rewards_history
-            axs[idx][0].plot(range(len(rewards)), rewards, marker='o', linestyle='-', color='blue')
-            axs[idx][0].set_title(f"{agent.name} - Reward Over Steps")
-            axs[idx][0].set_xlabel("Step")
-            axs[idx][0].set_ylabel("Reward")
-            axs[idx][0].grid(True)
-
-            # 📊 Action frequencies
-            actions = agent.sarsa.action_counts
-            axs[idx][1].bar(actions.keys(), actions.values(), color=['green', 'red'])
-            axs[idx][1].set_title(f"{agent.name} - Action Frequency")
-            axs[idx][1].set_ylabel("Count")
-
-        plt.tight_layout()
-        full_path = os.path.join(DATA_DIR, "sarsa_agents_summary.png")
-        plt.savefig(full_path)
-        plt.show()
-        print(f"📊 Plots saved to: {full_path}")
-
     def run(self, steps=10):
         print("Simulation starting...\n")
         for step in range(steps):
@@ -124,9 +89,4 @@ class Simulation:
             self.simulate_task_completion()
             self.print_agent_stats()
         self.save_agents()
-        self.plot_results()
-
-
-if __name__ == "__main__":
-    sim = Simulation()
-    sim.run(steps=10)
+        plot_sarsa_agents(self.agents, DATA_DIR)  # ✅ Plots reward and action summary

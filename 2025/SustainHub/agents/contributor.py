@@ -6,6 +6,7 @@ class Contributor(BaseAgent):
         super().__init__(name, "Contributor")
         self.sarsa = SARSAAgentLogic(agent_name=name)
         self.rewards_history = []
+        self.cumulative_rewards = []
 
     def calculate_reward(self, task_type):
         return 3 if task_type == "bug" else 1
@@ -19,5 +20,12 @@ class Contributor(BaseAgent):
 
         self.sarsa.update(state, action, reward, next_state, next_action)
 
+        # 🟦 Track rewards
         self.rewards_history.append(reward)
         self.sarsa.action_counts[action] = self.sarsa.action_counts.get(action, 0) + 1
+
+        # 🟠 Track cumulative rewards
+        if self.cumulative_rewards:
+            self.cumulative_rewards.append(self.cumulative_rewards[-1] + reward)
+        else:
+            self.cumulative_rewards.append(reward)

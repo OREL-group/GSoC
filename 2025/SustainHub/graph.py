@@ -1,0 +1,41 @@
+# graph.py
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+TASK_TYPES = ["bug", "feature", "docs"]
+
+def plot_sarsa_agents(agents, save_dir):
+    os.makedirs(save_dir, exist_ok=True)
+
+    sarsa_agents = [a for a in agents if hasattr(a, "sarsa") and sum(a.total_counts) > 0]
+
+    if not sarsa_agents:
+        print("No SARSA agents with task history found to visualize.")
+        return
+
+    # ✅ Success Rate Heatmap
+    success_matrix = []
+    agent_labels = []
+
+    for agent in sarsa_agents:
+        success_row = []
+        for i in range(len(TASK_TYPES)):
+            total = agent.total_counts[i]
+            success = agent.success_counts[i]
+            rate = (success / total * 100) if total > 0 else 0
+            success_row.append(rate)
+        success_matrix.append(success_row)
+        agent_labels.append(agent.name)
+
+    plt.figure(figsize=(10, max(4, len(sarsa_agents) * 0.6)))
+    sns.heatmap(success_matrix, annot=True, fmt=".1f", cmap="YlGnBu",
+                xticklabels=TASK_TYPES, yticklabels=agent_labels)
+    plt.title("Success Rate (%) per Task Type for SARSA Agents")
+    plt.xlabel("Task Type")
+    plt.ylabel("Agent")
+    heatmap_path = os.path.join(save_dir, "success_rate_heatmap.png")
+    plt.tight_layout()
+    plt.savefig(heatmap_path)
+    plt.show()
+    print(f"✅ Success rate heatmap saved to: {heatmap_path}")
