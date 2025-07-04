@@ -5,7 +5,6 @@ from tasks.mab import MABAllocator
 import random
 import json
 import os
-
 from graph import plot_sarsa_agents  # ✅ Call graph code separately
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +20,7 @@ class Simulation:
         self.mab_allocator = MABAllocator(self.agents)
 
     def load_agents(self):
-        agents = [Contributor(f"C{i}") for i in range(1, 11)]
+        agents = [Contributor(f"C{i}") for i in range(1, 16)]
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, 'r') as f:
                 saved_data = json.load(f)
