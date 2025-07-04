@@ -12,9 +12,11 @@ class SARSAAgentLogic:
         self.epsilon = epsilon  # Exploration rate
         self.q_table = {}
 
-        # Save path inside SustainHub/data/
-        self.path = os.path.join(os.path.dirname(__file__), "..", "data", f"qtable_{agent_name}.json")
-        self.path = os.path.abspath(self.path)
+        # ✅ Track how many times each action is chosen
+        self.action_counts = {a: 0 for a in self.actions}
+
+        # Path to save Q-table
+        self.path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", f"qtable_{agent_name}.json"))
 
         self._load_q_table()
 
@@ -37,9 +39,13 @@ class SARSAAgentLogic:
         self.q_table.setdefault(state_str, {a: 0.0 for a in self.actions})
 
         if random.random() < self.epsilon:
-            return random.choice(self.actions)
+            action = random.choice(self.actions)
         else:
-            return max(self.q_table[state_str], key=self.q_table[state_str].get)
+            action = max(self.q_table[state_str], key=self.q_table[state_str].get)
+
+        # ✅ Increment count here too (just in case you want centralized tracking)
+        self.action_counts[action] += 1
+        return action
 
     def update(self, state, action, reward, next_state, next_action):
         s, a = str(state), action
@@ -53,4 +59,5 @@ class SARSAAgentLogic:
 
         new_q = q_current + self.alpha * (reward + self.gamma * q_next - q_current)
         self.q_table[s][a] = new_q
+
         self._save_q_table()
