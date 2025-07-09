@@ -5,8 +5,8 @@ from tasks.mab import MABAllocator
 import random
 import json
 import os
-from graph import plot_sarsa_agents  # ✅ Call graph code separately
-from simulation.metrics import compute_harmony_index  # ✅ NEW: Harmony Index
+from graph import plot_sarsa_agents  #  Call graph code separately
+from simulation.metrics import compute_harmony_index  #  NEW: Harmony Index
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
@@ -80,7 +80,7 @@ class Simulation:
                 success_rate = (success / total * 100) if total > 0 else 0
                 print(f"   {task_type.capitalize()}: {success:.0f} Success / {fail:.0f} Fail | Success Rate: {success_rate:.1f}%")
 
-        # 🧘 Harmony Index Output
+        # Harmony Index Output
         harmony_index = compute_harmony_index(self.agents)
         print(f"\n🧘 Harmony Index: {harmony_index}")
 
@@ -93,4 +93,4 @@ class Simulation:
             self.simulate_task_completion()
             self.print_agent_stats()
         self.save_agents()
-        plot_sarsa_agents(self.agents, DATA_DIR)  # ✅ Visualize Rewards, Actions
+        plot_sarsa_agents(self.agents, DATA_DIR)  #  Visualize Rewards, Actions
