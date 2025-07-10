@@ -5,7 +5,7 @@ import seaborn as sns
 
 TASK_TYPES = ["bug", "feature", "docs"]
 
-def plot_sarsa_agents(agents, save_dir):
+def plot_sarsa_agents(agents, save_dir, harmony_index_history=None):
     os.makedirs(save_dir, exist_ok=True)
 
     sarsa_agents = [a for a in agents if hasattr(a, "sarsa") and sum(a.total_counts) > 0]
@@ -39,3 +39,23 @@ def plot_sarsa_agents(agents, save_dir):
     plt.savefig(heatmap_path)
     plt.show()
     print(f"✅ Success rate heatmap saved to: {heatmap_path}")
+
+    # ✅ Harmony Index Line Plot
+    if harmony_index_history:
+        plot_harmony_index_over_time(harmony_index_history, save_dir)
+
+
+def plot_harmony_index_over_time(harmony_values, save_dir):
+    steps = list(range(1, len(harmony_values) + 1))
+    plt.figure(figsize=(8, 5))
+    plt.plot(steps, harmony_values, marker="o", color="teal", linewidth=2)
+    plt.title("Harmony Index Over Simulation Steps")
+    plt.xlabel("Simulation Step")
+    plt.ylabel("Harmony Index")
+    plt.ylim(0, 1)  # Keep it normalized
+    plt.grid(True)
+    path = os.path.join(save_dir, "harmony_index_over_time.png")
+    plt.tight_layout()
+    plt.savefig(path)
+    plt.show()
+    print(f"✅ Harmony Index trend saved to: {path}")
