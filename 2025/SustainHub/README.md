@@ -8,57 +8,53 @@ The system is built around four specialized agents representing common roles in 
 
 ## Objectives
 
-- Simulate task allocation and agent behavior in OSS environments.
-- Optimize contributor engagement using MAB and SARSA.
-- Promote sustainable collaboration through intelligent agent decisions.
-- Track community health via custom metrics like Harmony Index and Resilience Quotient.
+- Simulate dynamic OSS task allocation and contributor behavior
+- Optimize engagement using MAB (global) and SARSA (local)
+- Promote sustainable collaboration through adaptive decision-making
+- Track community health using metrics like Harmony Index and Resilience Quotient
 
 ---
 
 ## Key Components
 
 ### Multi-Armed Bandit (MAB)
+Used by the Maintainer to assign tasks. MAB uses Thompson Sampling to learn which agents perform best on which task types over time.
 
-Used by the Maintainer to allocate tasks to agents. MAB uses Thompson Sampling to balance exploration and exploitation based on agent performance on different task types.
-
-> See: `mab.py`
+> Source: `tasks/mab.py`
 
 ### SARSA Learning
+Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task responses based on rewards and past experiences.
 
-Each agent (Contributor, Innovator, Knowledge Curator) uses SARSA to learn optimal actions from interaction history — enabling them to improve their task responses over time.
-
-> See: `sarsa.py`
+> Source: `agents/sarsa.py`
 
 ---
 
 ## Agent Roles
 
-| Agent               | Description |
-|---------------------|-------------|
-| Maintainer          | Allocates tasks using a MAB-based strategy that adapts over time. |
-| Contributor         | Specializes in bug fixes; learns which bugs to tackle using SARSA. |
-| Innovator           | Builds new features; learns how to prioritize ideas effectively. |
-| Knowledge Curator   | Improves documentation; learns how to respond to doc-related tasks. |
+| Agent             | Specialization                        |
+|------------------|----------------------------------------|
+| Maintainer        | Allocates tasks using MAB strategy     |
+| Contributor       | Fixes bugs and learns via SARSA        |
+| Innovator         | Develops features with adaptive logic  |
+| Knowledge Curator | Handles documentation and curation     |
 
 ---
 
 ## How It Works
 
-1. Maintainer uses MAB to assign tasks to available agents.
-2. Each agent (Contributor, Innovator, Curator) learns using the SARSA algorithm:
-   - States can include current load, last task success, etc.
-   - Actions include accepting/rejecting or prioritizing tasks.
-3. Task outcomes are scored, affecting the reward signal.
-4. Harmony and Resilience metrics are tracked and logged.
+1. The Maintainer selects agents using the MAB allocator.
+2. Agents accept/reject tasks and learn actions via SARSA.
+3. Task outcomes provide rewards to guide future decisions.
+4. Community health is tracked through Harmony Index and Resilience Quotient.
 
 ---
 
-## Metrics Tracked
+## Tracked Metrics
 
-- Task success rate per agent type
-- Collaboration harmony between agents
-- Adaptability of agent choices over episodes
-- Resilience to overload or contributor dropout
+- Task success rate (per agent and per task type)
+- Harmony Index: evaluates collaboration smoothness and fairness
+- Resilience Quotient (coming soon): measures robustness under stress
+- Heatmaps and line charts for success, harmony, and trends
 
 ---
 
