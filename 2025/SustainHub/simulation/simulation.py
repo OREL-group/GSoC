@@ -84,7 +84,7 @@ class Simulation:
         # ✅ Compute and log Harmony Index
         harmony_index = compute_harmony_index(self.agents)
         self.harmony_history.append(harmony_index)
-        print(f"\n🧘 Harmony Index: {harmony_index}")
+        print(f"\n Harmony Index: {harmony_index}")
 
     def run(self, steps=10):
         print("Simulation starting...\n")
