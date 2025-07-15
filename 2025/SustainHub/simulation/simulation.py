@@ -5,8 +5,8 @@ from tasks.mab import MABAllocator
 import random
 import json
 import os
-from graph import plot_sarsa_agents  # ✅ Graph visualizations
-from simulation.metrics import compute_harmony_index  # ✅ Harmony metric
+from graph import plot_sarsa_agents  # Graph visualizations
+from simulation.metrics import compute_harmony_index  # Harmony metric
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
@@ -19,7 +19,7 @@ class Simulation:
         self.maintainer = Maintainer("Alice")
         self.task_queue = [generate_task() for _ in range(7)]
         self.mab_allocator = MABAllocator(self.agents)
-        self.harmony_history = []  # ✅ Store harmony index per step
+        self.harmony_history = []  # Store harmony index per step
 
     def load_agents(self):
         agents = [Contributor(f"C{i}") for i in range(1, 16)]
@@ -81,7 +81,7 @@ class Simulation:
                 success_rate = (success / total * 100) if total > 0 else 0
                 print(f"   {task_type.capitalize()}: {success:.0f} Success / {fail:.0f} Fail | Success Rate: {success_rate:.1f}%")
 
-        # ✅ Compute and log Harmony Index
+        # Compute and log Harmony Index
         harmony_index = compute_harmony_index(self.agents)
         self.harmony_history.append(harmony_index)
         print(f"\n Harmony Index: {harmony_index}")
@@ -97,5 +97,5 @@ class Simulation:
 
         self.save_agents()
 
-        # ✅ Pass harmony index history to the graph
+        # Pass harmony index history to the graph
         plot_sarsa_agents(self.agents, DATA_DIR, harmony_index_history=self.harmony_history)
