@@ -1,5 +1,3 @@
-# simulation/metrics.py
-
 def compute_harmony_index(agents):
     """
     Compute Harmony Index based on:
