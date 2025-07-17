@@ -20,6 +20,7 @@ class Simulation:
         self.task_queue = [generate_task() for _ in range(7)]
         self.mab_allocator = MABAllocator(self.agents)
         self.harmony_history = []
+        self.rq_history = []  # ✅ RQ history for plotting
         self.dropped_task_log = []  # Track dropped and reassigned tasks
 
     def load_agents(self):
@@ -99,7 +100,6 @@ class Simulation:
             agent.reassigned_tasks = 0
 
             print(f"❌ {agent.name} DROPPED OUT ")
-            # print(f"❌ {agent.name} DROPPED OUT  — {agent.dropped_tasks} tasks lost")
 
             for task_type in agent.current_tasks:
                 self.dropped_task_log.append({
@@ -134,6 +134,7 @@ class Simulation:
                 success_rate = (success / total * 100) if total > 0 else 0
                 print(f"   {task_type.capitalize()}: {success:.0f} Success / {fail:.0f} Fail | Success Rate: {success_rate:.1f}%")
 
+    # Optional: Resilience Recovery Log
     """
     def print_resilience_log(self):
         if not self.dropped_task_log:
@@ -150,7 +151,8 @@ class Simulation:
                 else:
                     print(f" Reassigned to {entry['reassigned_to']} →  Pending")
             else:
-                print(" No agent reassigned the task")  """
+                print(" No agent reassigned the task")
+    """
 
     def run(self, steps=10):
         print("Simulation starting...\n")
@@ -158,7 +160,6 @@ class Simulation:
             print(f"\n--- Step {step + 1} ---")
             self.task_queue = [generate_task() for _ in range(3)]
 
-            # Before simulating dropout, record current harmony and success
             harmony = compute_harmony_index(self.agents)
             self.harmony_history.append(harmony)
 
@@ -173,13 +174,14 @@ class Simulation:
             self.simulate_task_completion()
             self.print_agent_stats()
 
-            # Compute Resilience Quotient
             dropout_count = len([a for a in self.agents if getattr(a, 'inactive', False)])
             RQ = compute_resilience_quotient(self.agents, avg_success, harmony, dropout_count)
             print(f"\n Resilience Quotient: {RQ}")
             print(f" Harmony Index: {harmony}")
 
-            # self.print_resilience_log()
+            self.rq_history.append(RQ)  # ✅ Crucial for graph
+
+            # self.print_resilience_log()  # Optional: enable to debug task recovery
 
         self.save_agents()
-        plot_sarsa_agents(self.agents, DATA_DIR, harmony_index_history=self.harmony_history)
+        plot_sarsa_agents(self.agents, DATA_DIR, harmony_index_history=self.harmony_history, rq_history=self.rq_history)
