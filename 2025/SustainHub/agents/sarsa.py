@@ -12,7 +12,7 @@ class SARSAAgentLogic:
         self.epsilon = epsilon  # Exploration rate
         self.q_table = {}
 
-        # ✅ Track how many times each action is chosen
+        # Track how many times each action is chosen
         self.action_counts = {a: 0 for a in self.actions}
 
         # Path to save Q-table
