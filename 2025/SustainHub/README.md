@@ -55,6 +55,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 - Harmony Index: evaluates collaboration smoothness and fairness
 - Resilience Quotient (coming soon): measures robustness under stress
 - Heatmaps and line charts for success, harmony, and trends
+- Resilience Quotient 
 
 ---
 
