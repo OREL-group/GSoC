@@ -78,26 +78,26 @@ agent_entry.grid(row=0, column=3)
 
 # Run button
 run_button = tk.Button(input_frame, text="▶ Run", font=("Helvetica", 12, "bold"),
-                       bg="#3498db", fg="white", padx=15, pady=5, command=run_simulation)
+                       bg="#3498db", fg="black", padx=15, pady=5, command=run_simulation)
 run_button.grid(row=0, column=4, padx=20)
 
 # Action Buttons
 button_frame = tk.Frame(root, bg="#eaf4f4")
 button_frame.pack(pady=5)
 
-clear_button = tk.Button(button_frame, text="🧹 Clear Logs", font=("Helvetica", 11), command=clear_logs,
-                         bg="#f39c12", fg="white", padx=15, pady=4)
+clear_button = tk.Button(button_frame, text=" Clear Logs", font=("Helvetica", 11), command=clear_logs,
+                         bg="#f39c12", fg="black", padx=15, pady=4)
 clear_button.pack(side=tk.LEFT, padx=10)
 
-save_button = tk.Button(button_frame, text="💾 Save Logs", font=("Helvetica", 11), command=save_logs,
-                        bg="#27ae60", fg="white", padx=15, pady=4)
+save_button = tk.Button(button_frame, text=" Save Logs", font=("Helvetica", 11), command=save_logs,
+                        bg="#27ae60", fg="black", padx=15, pady=4)
 save_button.pack(side=tk.LEFT, padx=10)
 
 # Output Frame
 output_frame = tk.Frame(root, bg="#eaf4f4")
 output_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
-output_label = tk.Label(output_frame, text="📜 Simulation Output Log", font=("Helvetica", 15, "bold"), bg="#eaf4f4", fg="#1c2833")
+output_label = tk.Label(output_frame, text=" Simulation Output Log", font=("Helvetica", 15, "bold"), bg="#eaf4f4", fg="#1c2833")
 output_label.pack(anchor="w", padx=12)
 
 output_text = scrolledtext.ScrolledText(
