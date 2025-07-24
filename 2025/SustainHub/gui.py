@@ -47,22 +47,20 @@ def save_logs():
             file.write(log)
         messagebox.showinfo("Saved", f"Logs saved to {file_path}")
 
-# ----------------------
+
 # GUI Setup
-# ----------------------
 root = tk.Tk()
-root.title("🌱 SustainHub Simulation")
+root.title(" SustainHub Simulation")
 root.geometry("950x720")
 root.resizable(False, False)
 root.configure(bg="#eaf4f4")
 
 # Title
-title = tk.Label(root, text="🌱 SustainHub Simulation Tool", font=("Helvetica", 22, "bold"), bg="#eaf4f4", fg="#2e4053")
+title = tk.Label(root, text=" SustainHub Simulation Tool", font=("Helvetica", 22, "bold"), bg="#eaf4f4", fg="#2e4053")
 title.pack(pady=20)
 
-# ----------------------
+
 # Input Frame
-# ----------------------
 input_frame = tk.Frame(root, bg="#eaf4f4")
 input_frame.pack(pady=10)
 
@@ -83,9 +81,7 @@ run_button = tk.Button(input_frame, text="▶ Run", font=("Helvetica", 12, "bold
                        bg="#3498db", fg="white", padx=15, pady=5, command=run_simulation)
 run_button.grid(row=0, column=4, padx=20)
 
-# ----------------------
 # Action Buttons
-# ----------------------
 button_frame = tk.Frame(root, bg="#eaf4f4")
 button_frame.pack(pady=5)
 
@@ -97,9 +93,7 @@ save_button = tk.Button(button_frame, text="💾 Save Logs", font=("Helvetica", 
                         bg="#27ae60", fg="white", padx=15, pady=4)
 save_button.pack(side=tk.LEFT, padx=10)
 
-# ----------------------
 # Output Frame
-# ----------------------
 output_frame = tk.Frame(root, bg="#eaf4f4")
 output_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
