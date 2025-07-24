@@ -14,7 +14,8 @@ SAVE_FILE = os.path.join(DATA_DIR, "trained_agents.json")
 
 
 class Simulation:
-    def __init__(self):
+    def __init__(self, agent_count):  # ✅ Accept dynamic number of agents
+        self.agent_count = agent_count
         self.agents = self.load_agents()
         self.maintainer = Maintainer("Alice")
         self.task_queue = [generate_task() for _ in range(7)]
@@ -24,7 +25,7 @@ class Simulation:
         self.dropped_task_log = []  # Track dropped and reassigned tasks
 
     def load_agents(self):
-        agents = [Contributor(f"C{i}") for i in range(1, 16)]
+        agents = [Contributor(f"C{i}") for i in range(1, self.agent_count + 1)]
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, 'r') as f:
                 saved_data = json.load(f)
@@ -43,7 +44,6 @@ class Simulation:
         for task in self.task_queue:
             selected_agent = self.mab_allocator.select_agent(task)
 
-            # Skip inactive agents
             while selected_agent and getattr(selected_agent, "inactive", False):
                 selected_agent = self.mab_allocator.select_agent(task)
 
@@ -51,7 +51,6 @@ class Simulation:
                 selected_agent.reassigned_tasks = getattr(selected_agent, "reassigned_tasks", 0) + 1
                 print(f"Assigned {task.task_type} task to {selected_agent.name}")
 
-                # Check if task was dropped previously
                 for entry in self.dropped_task_log:
                     if entry["task_type"] == task.task_type and entry["reassigned_to"] is None:
                         entry["reassigned_to"] = selected_agent.name
@@ -80,7 +79,6 @@ class Simulation:
                 if task_done:
                     print(f"{agent.name} completed a {task_type} task {'successfully' if success else 'unsuccessfully'}")
 
-                    # Update dropped task log if it matches
                     for entry in self.dropped_task_log:
                         if (
                             entry["task_type"] == task_type and
