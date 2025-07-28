@@ -62,6 +62,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 ## How to run this
 - clone the repository
 - click and run the gui.py
+- this helps you view the user interface
 
 ## Installation
 
