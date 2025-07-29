@@ -69,4 +69,4 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 ```bash
 git clone https://github.com/yourusername/sustainhub.git
 cd sustainhub
-pip install -r requirements.txt
+
