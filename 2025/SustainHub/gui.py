@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import io
 import sys
-import os
+import random
 
-# Redirect stdout to Text widget
+# Redirect stdout to text widget
 class RedirectText(io.StringIO):
     def __init__(self, text_area):
         super().__init__()
@@ -28,6 +28,11 @@ class SustainHubApp:
         self.root.title("SustainHub Simulation — GitHub Style")
         self.root.geometry("1200x800")
         self.root.configure(bg="#0d1117")
+
+        self.agent_widgets = []
+        self.task_widgets = []
+        self.canvas_size = 600
+        self.agent_radius = 10
 
         self.build_ui()
 
@@ -58,7 +63,6 @@ class SustainHubApp:
         notebook = ttk.Notebook(self.root)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Style
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('TNotebook.Tab', background="#161b22", foreground="#c9d1d9", font=("Helvetica", 10))
@@ -66,12 +70,15 @@ class SustainHubApp:
 
         self.log_tab = tk.Frame(notebook, bg="#0d1117")
         self.graph_tab = tk.Frame(notebook, bg="#0d1117")
+        self.viz_tab = tk.Frame(notebook, bg="#0d1117")
 
         notebook.add(self.log_tab, text="📝 Logs")
         notebook.add(self.graph_tab, text="📊 Graphs")
+        notebook.add(self.viz_tab, text="🎯 Visualizer")
 
         self.build_log_tab()
         self.build_graph_tab()
+        self.build_viz_tab()
 
     def build_log_tab(self):
         config_frame = tk.Frame(self.log_tab, bg="#161b22")
@@ -118,6 +125,10 @@ class SustainHubApp:
         tk.Button(btn_frame, text="💾 Save Graph", command=self.save_graph,
                   bg="#238636", fg="white", font=("Helvetica", 10)).pack(pady=5)
 
+    def build_viz_tab(self):
+        self.canvas = tk.Canvas(self.viz_tab, width=self.canvas_size, height=self.canvas_size, bg="#0d1117", highlightthickness=0)
+        self.canvas.pack(padx=20, pady=20)
+
     def redirect_stdout(self):
         sys.stdout = RedirectText(self.output_text)
 
@@ -137,21 +148,57 @@ class SustainHubApp:
         self.root.update_idletasks()
 
         sim = Simulation(agent_count=agents)
-        sim.run(steps=steps)
+        result = sim.run(steps=steps)
 
-        self.plot_sample_graph(steps)
-        self.status_var.set("✅ Simulation completed successfully.")
+        if result:
+            self.plot_graph(result)
+            self.animate_agents(steps, agents)
+            self.status_var.set("✅ Simulation completed successfully.")
+        else:
+            self.status_var.set("⚠️ Simulation returned no data.")
 
-    def plot_sample_graph(self, steps):
+    def plot_graph(self, result):
         self.ax.clear()
-        self.ax.set_title("Simulation Sample Output", color="white")
+        self.ax.set_title("Agent Reward over Steps", color="white")
         self.ax.set_facecolor("#161b22")
         self.ax.tick_params(colors='white')
         self.ax.spines[:].set_color('white')
 
-        # Dummy plot for demonstration
-        self.ax.plot(range(steps), [i**0.5 for i in range(steps)], marker='o', color="#58a6ff")
+        self.ax.plot(result["steps"], result["rewards"], marker='o', color="#58a6ff", label="Reward")
+        self.ax.set_xlabel("Steps", color="white")
+        self.ax.set_ylabel("Reward", color="white")
+        self.ax.legend(facecolor="#0d1117", edgecolor="white", labelcolor="white")
         self.canvas.draw()
+
+    def animate_agents(self, steps, agents):
+        self.canvas.delete("all")
+        width, height = self.canvas_size, self.canvas_size
+
+        positions = [(random.randint(50, width-50), random.randint(50, height-50)) for _ in range(agents)]
+        tasks = [(random.randint(50, width-50), random.randint(50, height-50)) for _ in range(agents//2)]
+
+        agent_objs = []
+        for x, y in positions:
+            circle = self.canvas.create_oval(x-10, y-10, x+10, y+10, fill="#58a6ff", outline="")
+            agent_objs.append((circle, x, y))
+
+        for x, y in tasks:
+            self.canvas.create_rectangle(x-5, y-5, x+5, y+5, fill="#f9c74f", outline="")
+
+        def move_step(step):
+            if step >= steps:
+                return
+
+            for i, (circle, x, y) in enumerate(agent_objs):
+                tx, ty = tasks[i % len(tasks)]
+                new_x = x + (tx - x) * 0.2
+                new_y = y + (ty - y) * 0.2
+                self.canvas.move(circle, new_x - x, new_y - y)
+                agent_objs[i] = (circle, new_x, new_y)
+
+            self.root.after(500, lambda: move_step(step + 1))
+
+        move_step(0)
 
     def save_logs(self):
         content = self.output_text.get(1.0, tk.END).strip()
