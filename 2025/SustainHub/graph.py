@@ -13,7 +13,7 @@ def plot_sarsa_agents(agents, save_dir, harmony_index_history=None, rq_history=N
         print("No SARSA agents with task history found to visualize.")
         return
 
-    # ✅ Success Rate Heatmap
+    # Success Rate Heatmap
     success_matrix = []
     agent_labels = []
 
@@ -39,11 +39,11 @@ def plot_sarsa_agents(agents, save_dir, harmony_index_history=None, rq_history=N
     plt.show()
     print(f"✅ Success rate heatmap saved to: {heatmap_path}")
 
-    # ✅ Harmony Index Line Plot
+    # Harmony Index Line Plot
     if harmony_index_history:
         plot_harmony_index_over_time(harmony_index_history, save_dir)
 
-    # ✅ Resilience Quotient Line Plot
+    # Resilience Quotient Line Plot
     if rq_history:
         plot_resilience_quotient_over_time(rq_history, save_dir)
 

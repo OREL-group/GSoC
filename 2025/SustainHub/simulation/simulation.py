@@ -14,14 +14,14 @@ SAVE_FILE = os.path.join(DATA_DIR, "trained_agents.json")
 
 
 class Simulation:
-    def __init__(self, agent_count):  # ✅ Accept dynamic number of agents
+    def __init__(self, agent_count):  # Accept dynamic number of agents
         self.agent_count = agent_count
         self.agents = self.load_agents()
         self.maintainer = Maintainer("Alice")
         self.task_queue = [generate_task() for _ in range(7)]
         self.mab_allocator = MABAllocator(self.agents)
         self.harmony_history = []
-        self.rq_history = []  # ✅ RQ history for plotting
+        self.rq_history = []  # RQ history for plotting
         self.dropped_task_log = []  # Track dropped and reassigned tasks
 
     def load_agents(self):
