@@ -177,7 +177,7 @@ class Simulation:
             print(f"\n Resilience Quotient: {RQ}")
             print(f" Harmony Index: {harmony}")
 
-            self.rq_history.append(RQ)  # ✅ Crucial for graph
+            self.rq_history.append(RQ)  #  Crucial for graph
 
             # self.print_resilience_log()  # Optional: enable to debug task recovery
 
