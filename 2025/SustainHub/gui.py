@@ -7,7 +7,7 @@ import io
 import sys
 import random
 
-# Redirect stdout to text widget
+# Redirect stdout to text widget....
 class RedirectText(io.StringIO):
     def __init__(self, text_area):
         super().__init__()
