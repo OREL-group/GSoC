@@ -7,7 +7,7 @@ import io
 import sys
 import random
 
-# Redirect stdout to text widget....
+# Redirect stdout to text widget
 class RedirectText(io.StringIO):
     def __init__(self, text_area):
         super().__init__()
@@ -38,7 +38,7 @@ class SustainHubApp:
 
     def build_ui(self):
         self.status_var = tk.StringVar()
-        self.status_var.set(" Ready to simulate")
+        self.status_var.set("🟢 Ready to simulate")
 
         self.build_header()
         self.build_tabs()
@@ -129,6 +129,9 @@ class SustainHubApp:
         self.canvas = tk.Canvas(self.viz_tab, width=self.canvas_size, height=self.canvas_size, bg="#0d1117", highlightthickness=0)
         self.canvas.pack(padx=20, pady=20)
 
+        tk.Button(self.viz_tab, text="🦎 Launch NetLogo", font=("Helvetica", 11),
+                  command=self.launch_netlogo_viz, bg="#238636", fg="white").pack(pady=10)
+
     def redirect_stdout(self):
         sys.stdout = RedirectText(self.output_text)
 
@@ -150,25 +153,8 @@ class SustainHubApp:
         sim = Simulation(agent_count=agents)
         result = sim.run(steps=steps)
 
-        if result:
-            self.plot_graph(result)
-            self.animate_agents(steps, agents)
-            self.status_var.set("✅ Simulation completed successfully.")
-        else:
-            self.status_var.set("⚠️ Simulation returned no data.")
-
-    def plot_graph(self, result):
-        self.ax.clear()
-        self.ax.set_title("Agent Reward over Steps", color="white")
-        self.ax.set_facecolor("#161b22")
-        self.ax.tick_params(colors='white')
-        self.ax.spines[:].set_color('white')
-
-        self.ax.plot(result["steps"], result["rewards"], marker='o', color="#58a6ff", label="Reward")
-        self.ax.set_xlabel("Steps", color="white")
-        self.ax.set_ylabel("Reward", color="white")
-        self.ax.legend(facecolor="#0d1117", edgecolor="white", labelcolor="white")
-        self.canvas.draw()
+        self.animate_agents(steps, agents)
+        self.status_var.set("✅ Simulation completed successfully.")
 
     def animate_agents(self, steps, agents):
         self.canvas.delete("all")
@@ -199,6 +185,25 @@ class SustainHubApp:
             self.root.after(500, lambda: move_step(step + 1))
 
         move_step(0)
+
+    def launch_netlogo_viz(self):
+        try:
+            from netlogo_integration import NetLogoVisualizer
+
+            agents = [{
+                "name": f"C{i+1}",
+                "role": "Contributor"
+            } for i in range(int(self.agent_entry.get()))]
+
+            visualizer = NetLogoVisualizer(agent_data=agents)
+            visualizer.setup_agents()
+            visualizer.run_steps(10)
+            visualizer.close()
+
+            self.status_var.set("🦎 NetLogo visualization completed")
+        except Exception as e:
+            messagebox.showerror("NetLogo Error", str(e))
+            self.status_var.set("❌ NetLogo failed")
 
     def save_logs(self):
         content = self.output_text.get(1.0, tk.END).strip()
