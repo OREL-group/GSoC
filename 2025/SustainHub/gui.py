@@ -38,7 +38,7 @@ class SustainHubApp:
 
     def build_ui(self):
         self.status_var = tk.StringVar()
-        self.status_var.set("🟢 Ready to simulate")
+        self.status_var.set(" Ready to simulate")
 
         self.build_header()
         self.build_tabs()
