@@ -14,15 +14,18 @@ SAVE_FILE = os.path.join(DATA_DIR, "trained_agents.json")
 
 
 class Simulation:
-    def __init__(self, agent_count):  # Accept dynamic number of agents
+    def __init__(self, agent_count, tasks_per_step=3, dropouts_per_step=0):
         self.agent_count = agent_count
+        self.tasks_per_step = tasks_per_step
+        self.dropouts_per_step = dropouts_per_step
         self.agents = self.load_agents()
         self.maintainer = Maintainer("Alice")
-        self.task_queue = [generate_task() for _ in range(7)]
+        self.task_queue = []
         self.mab_allocator = MABAllocator(self.agents)
         self.harmony_history = []
-        self.rq_history = []  # RQ history for plotting
-        self.dropped_task_log = []  # Track dropped and reassigned tasks
+        self.rq_history = []
+        self.dropped_task_log = []
+
 
     def load_agents(self):
         agents = [Contributor(f"C{i}") for i in range(1, self.agent_count + 1)]
@@ -152,32 +155,52 @@ class Simulation:
                 print(" No agent reassigned the task")
     """
 
-    def run(self, steps=10):
+    def run(self, steps=5):
         print("Simulation starting...\n")
+
         for step in range(steps):
             print(f"\n--- Step {step + 1} ---")
-            self.task_queue = [generate_task() for _ in range(3)]
 
+            # ⛔ Dropout agents per step
+            self.simulate_dropout(count=self.dropouts_per_step)
+
+            # ✅ Generate new tasks and ADD to the queue (don't overwrite)
+            new_tasks = [generate_task() for _ in range(self.tasks_per_step)]
+            self.task_queue.extend(new_tasks)
+
+            # ✅ Assign tasks to agents from queue
+            self.assign_tasks()
+
+            # ✅ Simulate task completion
+            self.simulate_task_completion()
+
+            # ✅ Compute harmony index
             harmony = compute_harmony_index(self.agents)
             self.harmony_history.append(harmony)
 
+            # ✅ Compute average success rate (for resilience quotient)
             success_rates = [
                 sum(agent.success_counts) / sum(agent.total_counts)
                 for agent in self.agents if sum(agent.total_counts) > 0
             ]
             avg_success = sum(success_rates) / len(success_rates) if success_rates else 0
 
-            self.simulate_dropout(count=2)
-            self.assign_tasks()
-            self.simulate_task_completion()
+            # ✅ Count dropout agents
+            dropout_count = len([a for a in self.agents if getattr(a, 'inactive', False)])
+
+            # ✅ Compute resilience quotient
+            rq = compute_resilience_quotient(self.agents, avg_success, harmony, dropout_count)
+            self.rq_history.append(rq)
+
+            # ✅ Print agent stats
             self.print_agent_stats()
 
-            dropout_count = len([a for a in self.agents if getattr(a, 'inactive', False)])
-            RQ = compute_resilience_quotient(self.agents, avg_success, harmony, dropout_count)
-            print(f"\n Resilience Quotient: {RQ}")
-            print(f" Harmony Index: {harmony}")
+            # ✅ Log metrics
+            print(f"\n Resilience Quotient: {rq:.3f}")
+            print(f" Harmony Index: {harmony:.3f}")
 
-            self.rq_history.append(RQ)  #  Crucial for graph
+        print("\nSimulation completed.")
+
 
             # self.print_resilience_log()  # Optional: enable to debug task recovery
 

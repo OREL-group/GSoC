@@ -84,26 +84,41 @@ class SustainHubApp:
         config_frame = tk.Frame(self.log_tab, bg="#161b22")
         config_frame.pack(fill=tk.X, pady=10, padx=10)
 
+        # Steps Entry
         tk.Label(config_frame, text="Steps:", font=("Helvetica", 11), bg="#161b22", fg="#c9d1d9").pack(side=tk.LEFT, padx=10)
-        self.step_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9",
-                                   insertbackground="#c9d1d9")
+        self.step_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9", insertbackground="#c9d1d9")
         self.step_entry.insert(0, "7")
         self.step_entry.pack(side=tk.LEFT)
 
+        # Agents Entry
         tk.Label(config_frame, text="Agents:", font=("Helvetica", 11), bg="#161b22", fg="#c9d1d9").pack(side=tk.LEFT, padx=10)
-        self.agent_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9",
-                                    insertbackground="#c9d1d9")
+        self.agent_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9", insertbackground="#c9d1d9")
         self.agent_entry.insert(0, "10")
         self.agent_entry.pack(side=tk.LEFT)
 
+        # Tasks Per Step Entry
+        tk.Label(config_frame, text="Tasks/Step:", font=("Helvetica", 11), bg="#161b22", fg="#c9d1d9").pack(side=tk.LEFT, padx=10)
+        self.task_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9", insertbackground="#c9d1d9")
+        self.task_entry.insert(0, "3")
+        self.task_entry.pack(side=tk.LEFT)
+
+        # Dropouts Per Step Entry
+        tk.Label(config_frame, text="Dropouts/Step:", font=("Helvetica", 11), bg="#161b22", fg="#c9d1d9").pack(side=tk.LEFT, padx=10)
+        self.dropout_entry = tk.Entry(config_frame, font=("Consolas", 11), width=6, bg="#0d1117", fg="#c9d1d9", insertbackground="#c9d1d9")
+        self.dropout_entry.insert(0, "2")
+        self.dropout_entry.pack(side=tk.LEFT)
+
+        # Run Button
         tk.Button(config_frame, text="▶ Run", font=("Helvetica", 11, "bold"), bg="#238636", fg="red",
-                  command=self.run_simulation).pack(side=tk.LEFT, padx=15)
+                command=self.run_simulation).pack(side=tk.LEFT, padx=15)
 
+        # Save Logs Button
         tk.Button(config_frame, text="💾 Save Logs", font=("Helvetica", 10), command=self.save_logs,
-                  bg="#2d333b", fg="red").pack(side=tk.RIGHT, padx=10)
+                bg="#2d333b", fg="red").pack(side=tk.RIGHT, padx=10)
 
+        # Output Text Area
         self.output_text = scrolledtext.ScrolledText(self.log_tab, wrap=tk.WORD, font=("Courier New", 11),
-                                                     bg="#010409", fg="#3fb950", insertbackground="white")
+                                                    bg="#010409", fg="#3fb950", insertbackground="white")
         self.output_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
         self.output_text.config(state=tk.DISABLED)
 
@@ -136,6 +151,7 @@ class SustainHubApp:
         sys.stdout = RedirectText(self.output_text)
 
     def run_simulation(self):
+        # Clear previous output
         self.output_text.config(state=tk.NORMAL)
         self.output_text.delete(1.0, tk.END)
         self.output_text.config(state=tk.DISABLED)
@@ -143,17 +159,38 @@ class SustainHubApp:
         try:
             steps = int(self.step_entry.get())
             agents = int(self.agent_entry.get())
+            tasks_per_step = int(self.task_entry.get())
+            dropouts_per_step = int(self.dropout_entry.get())
         except ValueError:
-            messagebox.showerror("Input Error", "Steps and Agents must be integers.")
+            messagebox.showerror("Input Error", "All fields must be integers.")
             return
 
+        # Update status
         self.status_var.set("⏳ Running simulation...")
         self.root.update_idletasks()
 
-        sim = Simulation(agent_count=agents)
-        result = sim.run(steps=steps)
+        # Redirect stdout to GUI output
+        sys.stdout = RedirectText(self.output_text)
+        self.output_text.config(state=tk.NORMAL)
 
+        # Create Simulation instance with all parameters
+        sim = Simulation(
+            agent_count=agents,
+            tasks_per_step=tasks_per_step,
+            dropouts_per_step=dropouts_per_step
+        )
+
+        # Run the simulation
+        sim.run(steps=steps)
+
+        # Restore stdout
+        sys.stdout = sys.__stdout__
+        self.output_text.config(state=tk.DISABLED)
+
+        # Animate agent behavior (optional visualization)
         self.animate_agents(steps, agents)
+
+        # Final status update
         self.status_var.set("✅ Simulation completed successfully.")
 
     def animate_agents(self, steps, agents):
