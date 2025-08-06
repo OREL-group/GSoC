@@ -161,41 +161,41 @@ class Simulation:
         for step in range(steps):
             print(f"\n--- Step {step + 1} ---")
 
-            # ⛔ Dropout agents per step
+            # Dropout agents per step
             self.simulate_dropout(count=self.dropouts_per_step)
 
-            # ✅ Generate new tasks and ADD to the queue (don't overwrite)
+            # Generate new tasks and ADD to the queue (don't overwrite)
             new_tasks = [generate_task() for _ in range(self.tasks_per_step)]
             self.task_queue.extend(new_tasks)
 
-            # ✅ Assign tasks to agents from queue
+            # Assign tasks to agents from queue
             self.assign_tasks()
 
-            # ✅ Simulate task completion
+            # Simulate task completion
             self.simulate_task_completion()
 
-            # ✅ Compute harmony index
+            # Compute harmony index
             harmony = compute_harmony_index(self.agents)
             self.harmony_history.append(harmony)
 
-            # ✅ Compute average success rate (for resilience quotient)
+            # Compute average success rate (for resilience quotient)
             success_rates = [
                 sum(agent.success_counts) / sum(agent.total_counts)
                 for agent in self.agents if sum(agent.total_counts) > 0
             ]
             avg_success = sum(success_rates) / len(success_rates) if success_rates else 0
 
-            # ✅ Count dropout agents
+            # Count dropout agents
             dropout_count = len([a for a in self.agents if getattr(a, 'inactive', False)])
 
-            # ✅ Compute resilience quotient
+            # Compute resilience quotient
             rq = compute_resilience_quotient(self.agents, avg_success, harmony, dropout_count)
             self.rq_history.append(rq)
 
-            # ✅ Print agent stats
+            # Print agent stats
             self.print_agent_stats()
 
-            # ✅ Log metrics
+            # Log metrics
             print(f"\n Resilience Quotient: {rq:.3f}")
             print(f" Harmony Index: {harmony:.3f}")
 
