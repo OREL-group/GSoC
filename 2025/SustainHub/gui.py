@@ -180,7 +180,7 @@ class SustainHubApp:
             dropouts_per_step=dropouts_per_step
         )
 
-        # Run the simulation
+        # Run the simulation...
         sim.run(steps=steps)
 
         # Restore stdout
