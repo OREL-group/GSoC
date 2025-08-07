@@ -6,7 +6,7 @@ The system is built around four specialized agents representing common roles in 
 
 ---
 
-## Objectives
+## 🎯 Objectives
 
 - Simulate dynamic OSS task allocation and contributor behavior
 - Optimize engagement using MAB (global) and SARSA (local)
@@ -15,32 +15,32 @@ The system is built around four specialized agents representing common roles in 
 
 ---
 
-## Key Components
+## 🧠 Key Components
 
 ### Multi-Armed Bandit (MAB)
 Used by the Maintainer to assign tasks. MAB uses Thompson Sampling to learn which agents perform best on which task types over time.
 
-> Source: `tasks/mab.py`
+> 📁 Source: `tasks/mab.py`
 
 ### SARSA Learning
 Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task responses based on rewards and past experiences.
 
-> Source: `agents/sarsa.py`
+> 📁 Source: `agents/sarsa.py`
 
 ---
 
-## Agent Roles
+## 👥 Agent Roles
 
 | Agent             | Specialization                        |
 |------------------|----------------------------------------|
-| Maintainer        | Allocates tasks using MAB strategy     |
-| Contributor       | Fixes bugs and learns via SARSA        |
-| Innovator         | Develops features with adaptive logic  |
-| Knowledge Curator | Handles documentation and curation     |
+| **Maintainer**        | Allocates tasks using MAB strategy     |
+| **Contributor**       | Fixes bugs and learns via SARSA        |
+| **Innovator**         | Develops features with adaptive logic  |
+| **Knowledge Curator** | Handles documentation and curation     |
 
 ---
 
-## How It Works
+## ⚙️ How It Works
 
 1. The Maintainer selects agents using the MAB allocator.
 2. Agents accept/reject tasks and learn actions via SARSA.
@@ -49,24 +49,41 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 ---
 
-## Tracked Metrics
+## 📊 Tracked Metrics
 
-- Task success rate (per agent and per task type)
-- Harmony Index: evaluates collaboration smoothness and fairness
-- Resilience Quotient (coming soon): measures robustness under stress
-- Heatmaps and line charts for success, harmony, and trends
-- Resilience Quotient 
+- **Task Success Rate** (per agent and per task type)
+- **Harmony Index**: Evaluates collaboration smoothness and fairness
+- **Resilience Quotient** *(coming soon)*: Measures robustness under stress
+- **Visualizations**: Heatmaps and line charts for performance trends
 
 ---
 
-## How to run this
-- clone the repository
-- click and run the gui.py
-- this helps you view the user interface.
+## 📈 New Simulation Controls (UI Sliders)
 
-## Installation
+SustainHub now includes interactive UI sliders for more dynamic experimentation:
+
+| Control             | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| **Dropouts per Step** | Sets the number of agents that leave the system in each simulation step, modeling contributor churn. |
+| **Tasks per Step**    | Controls how many new tasks are introduced per step, simulating workload variations. |
+
+### 🔍 Benefits:
+- Simulate realistic OSS conditions (e.g., workload spikes, contributor dropout)
+- Analyze sustainability under different stress scenarios
+- Tune task-agent balance for optimal performance
+- Visualize impact of community changes over time
+
+> These controls enhance exploratory analysis and make SustainHub ideal for both **research** and **education**.
+
+---
+
+## ▶️ How to Run
+
+1. Clone the repository
+2. Navigate to the directory
+3. Run the GUI
 
 ```bash
 git clone https://github.com/yourusername/sustainhub.git
 cd sustainhub
-
+python gui.py
