@@ -6,7 +6,7 @@ The system is built around four specialized agents representing common roles in 
 
 ---
 
-## 🎯 Objectives
+## Objectives
 
 - Simulate dynamic OSS task allocation and contributor behavior
 - Optimize engagement using MAB (global) and SARSA (local)
@@ -15,7 +15,7 @@ The system is built around four specialized agents representing common roles in 
 
 ---
 
-## 🧠 Key Components
+## Key Components
 
 ### Multi-Armed Bandit (MAB)
 Used by the Maintainer to assign tasks. MAB uses Thompson Sampling to learn which agents perform best on which task types over time.
@@ -40,7 +40,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 1. The Maintainer selects agents using the MAB allocator.
 2. Agents accept/reject tasks and learn actions via SARSA.
@@ -49,7 +49,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 ---
 
-## 📊 Tracked Metrics
+## Tracked Metrics
 
 - **Task Success Rate** (per agent and per task type)
 - **Harmony Index**: Evaluates collaboration smoothness and fairness
@@ -58,7 +58,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 ---
 
-## 📈 New Simulation Controls (UI Sliders)
+## New Simulation Controls (UI Sliders)
 
 SustainHub now includes interactive UI sliders for more dynamic experimentation:
 
@@ -67,7 +67,7 @@ SustainHub now includes interactive UI sliders for more dynamic experimentation:
 | **Dropouts per Step** | Sets the number of agents that leave the system in each simulation step, modeling contributor churn. |
 | **Tasks per Step**    | Controls how many new tasks are introduced per step, simulating workload variations. |
 
-### 🔍 Benefits:
+### Benefits:
 - Simulate realistic OSS conditions (e.g., workload spikes, contributor dropout)
 - Analyze sustainability under different stress scenarios
 - Tune task-agent balance for optimal performance
@@ -77,7 +77,7 @@ SustainHub now includes interactive UI sliders for more dynamic experimentation:
 
 ---
 
-## ▶️ How to Run
+## ▶ How to Run
 
 1. Clone the repository
 2. Navigate to the directory
