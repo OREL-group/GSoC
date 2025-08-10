@@ -77,7 +77,7 @@ SustainHub now includes interactive UI sliders for more dynamic experimentation:
 
 ---
 
-## ▶ How to Run
+## ▶ How to Run 
 
 1. Clone the repository
 2. Navigate to the directory
