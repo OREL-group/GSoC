@@ -151,7 +151,7 @@ class Simulation:
                     print(f" Reassigned to {entry['reassigned_to']} →  Failed to complete")
                 else:
                     print(f" Reassigned to {entry['reassigned_to']} →  Pending")
-            else:
+            else: 
                 print(" No agent reassigned the task")
     """
 
