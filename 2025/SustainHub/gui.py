@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext
-from simulation.simulation import Simulation
+import matplotlib
+matplotlib.use("TkAgg")  # Set backend BEFORE importing pyplot
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from simulation.simulation import Simulation
 import io
 import sys
 import random
+
 
 # Redirect stdout to text widget
 class RedirectText(io.StringIO):
@@ -21,6 +24,7 @@ class RedirectText(io.StringIO):
 
     def flush(self):
         pass
+
 
 class SustainHubApp:
     def __init__(self, root):
@@ -52,7 +56,7 @@ class SustainHubApp:
                  bg="#161b22", fg="#c9d1d9").pack(side=tk.LEFT, padx=20, pady=10)
 
         footer = tk.Label(self.root, text="Powered by SustainHub • GitHub Themed UI • GSoC 2025",
-                         font=("Helvetica", 9), bg="#0d1117", fg="#6e7681")
+                          font=("Helvetica", 9), bg="#0d1117", fg="#6e7681")
         footer.pack(side=tk.BOTTOM, pady=5)
 
         status_bar = tk.Label(self.root, textvariable=self.status_var, bd=1, relief=tk.FLAT, anchor=tk.W,
@@ -109,26 +113,34 @@ class SustainHubApp:
         self.dropout_entry.pack(side=tk.LEFT)
 
         # Run Button
-        tk.Button(config_frame, text="▶ Run", font=("Helvetica", 11, "bold"), bg="#238636", fg="red",
-                command=self.run_simulation).pack(side=tk.LEFT, padx=15)
+        tk.Button(config_frame, text="▶ Run", font=("Helvetica", 11, "bold"), bg="#238636", fg="white",
+                  command=self.run_simulation).pack(side=tk.LEFT, padx=15)
 
         # Save Logs Button
         tk.Button(config_frame, text="💾 Save Logs", font=("Helvetica", 10), command=self.save_logs,
-                bg="#2d333b", fg="red").pack(side=tk.RIGHT, padx=10)
+                  bg="#2d333b", fg="white").pack(side=tk.RIGHT, padx=10)
 
         # Output Text Area
         self.output_text = scrolledtext.ScrolledText(self.log_tab, wrap=tk.WORD, font=("Courier New", 11),
-                                                    bg="#010409", fg="#3fb950", insertbackground="white")
+                                                     bg="#010409", fg="#3fb950", insertbackground="white")
         self.output_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
         self.output_text.config(state=tk.DISABLED)
 
     def build_graph_tab(self):
-        self.figure = plt.Figure(figsize=(10, 5), dpi=100, facecolor='#0d1117')
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_title("Simulation Graph", color="white")
-        self.ax.set_facecolor("#161b22")
-        self.ax.tick_params(colors='white')
-        self.ax.spines[:].set_color('white')
+        # 3 subplot layout
+        self.figure, (self.ax_harmony, self.ax_rq, self.ax_ro) = plt.subplots(
+            3, 1, figsize=(10, 8), dpi=100, facecolor='#0d1117'
+        )
+
+        for ax in (self.ax_harmony, self.ax_rq, self.ax_ro):
+            ax.set_facecolor("#161b22")
+            ax.tick_params(colors='white')
+            for spine in ax.spines.values():
+                spine.set_color('white')
+
+        self.ax_harmony.set_title("Harmony Index", color="white")
+        self.ax_rq.set_title("RQ", color="white")
+        self.ax_ro.set_title("Reassignment Overhead (RO)", color="white")
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.graph_tab)
         self.canvas.draw()
@@ -141,8 +153,8 @@ class SustainHubApp:
                   bg="#238636", fg="white", font=("Helvetica", 10)).pack(pady=5)
 
     def build_viz_tab(self):
-        self.canvas = tk.Canvas(self.viz_tab, width=self.canvas_size, height=self.canvas_size, bg="#0d1117", highlightthickness=0)
-        self.canvas.pack(padx=20, pady=20)
+        self.canvas_viz = tk.Canvas(self.viz_tab, width=self.canvas_size, height=self.canvas_size, bg="#0d1117", highlightthickness=0)
+        self.canvas_viz.pack(padx=20, pady=20)
 
         tk.Button(self.viz_tab, text="🦎 Launch NetLogo", font=("Helvetica", 11),
                   command=self.launch_netlogo_viz, bg="#238636", fg="white").pack(pady=10)
@@ -165,36 +177,58 @@ class SustainHubApp:
             messagebox.showerror("Input Error", "All fields must be integers.")
             return
 
-        # Update status
         self.status_var.set("⏳ Running simulation...")
         self.root.update_idletasks()
 
-        # Redirect stdout to GUI output
         sys.stdout = RedirectText(self.output_text)
         self.output_text.config(state=tk.NORMAL)
 
-        # Create Simulation instance with all parameters
         sim = Simulation(
             agent_count=agents,
             tasks_per_step=tasks_per_step,
             dropouts_per_step=dropouts_per_step
         )
 
-        # Run the simulation...
         sim.run(steps=steps)
 
-        # Restore stdout
+        # Get histories
+        harmony_history = getattr(sim, "harmony_history", [])
+        rq_history = getattr(sim, "rq_history", [])
+        ro_history = getattr(sim, "ro_history", [])
+
+        # Update graphs
+        self.update_graphs(harmony_history, rq_history, ro_history)
+
         sys.stdout = sys.__stdout__
         self.output_text.config(state=tk.DISABLED)
 
-        # Animate agent behavior (optional visualization)
         self.animate_agents(steps, agents)
-
-        # Final status update
         self.status_var.set("✅ Simulation completed successfully.")
 
+    def update_graphs(self, harmony, rq, ro):
+        self.ax_harmony.clear()
+        self.ax_rq.clear()
+        self.ax_ro.clear()
+
+        self.ax_harmony.plot(harmony, color="cyan")
+        self.ax_harmony.set_title("Harmony Index", color="white")
+
+        self.ax_rq.plot(rq, color="orange")
+        self.ax_rq.set_title("RQ", color="white")
+
+        self.ax_ro.plot(ro, color="magenta")
+        self.ax_ro.set_title("Reassignment Overhead (RO)", color="white")
+
+        for ax in (self.ax_harmony, self.ax_rq, self.ax_ro):
+            ax.set_facecolor("#161b22")
+            ax.tick_params(colors='white')
+            for spine in ax.spines.values():
+                spine.set_color('white')
+
+        self.canvas.draw()
+
     def animate_agents(self, steps, agents):
-        self.canvas.delete("all")
+        self.canvas_viz.delete("all")
         width, height = self.canvas_size, self.canvas_size
 
         positions = [(random.randint(50, width-50), random.randint(50, height-50)) for _ in range(agents)]
@@ -202,23 +236,21 @@ class SustainHubApp:
 
         agent_objs = []
         for x, y in positions:
-            circle = self.canvas.create_oval(x-10, y-10, x+10, y+10, fill="#58a6ff", outline="")
+            circle = self.canvas_viz.create_oval(x-10, y-10, x+10, y+10, fill="#58a6ff", outline="")
             agent_objs.append((circle, x, y))
 
         for x, y in tasks:
-            self.canvas.create_rectangle(x-5, y-5, x+5, y+5, fill="#f9c74f", outline="")
+            self.canvas_viz.create_rectangle(x-5, y-5, x+5, y+5, fill="#f9c74f", outline="")
 
         def move_step(step):
             if step >= steps:
                 return
-
             for i, (circle, x, y) in enumerate(agent_objs):
                 tx, ty = tasks[i % len(tasks)]
                 new_x = x + (tx - x) * 0.2
                 new_y = y + (ty - y) * 0.2
-                self.canvas.move(circle, new_x - x, new_y - y)
+                self.canvas_viz.move(circle, new_x - x, new_y - y)
                 agent_objs[i] = (circle, new_x, new_y)
-
             self.root.after(500, lambda: move_step(step + 1))
 
         move_step(0)
@@ -226,17 +258,11 @@ class SustainHubApp:
     def launch_netlogo_viz(self):
         try:
             from netlogo_integration import NetLogoVisualizer
-
-            agents = [{
-                "name": f"C{i+1}",
-                "role": "Contributor"
-            } for i in range(int(self.agent_entry.get()))]
-
+            agents = [{"name": f"C{i+1}", "role": "Contributor"} for i in range(int(self.agent_entry.get()))]
             visualizer = NetLogoVisualizer(agent_data=agents)
             visualizer.setup_agents()
             visualizer.run_steps(10)
             visualizer.close()
-
             self.status_var.set("🦎 NetLogo visualization completed")
         except Exception as e:
             messagebox.showerror("NetLogo Error", str(e))
@@ -258,6 +284,7 @@ class SustainHubApp:
         if path:
             self.figure.savefig(path, facecolor='#0d1117')
             self.status_var.set("📈 Graph saved")
+
 
 if __name__ == "__main__":
     root = tk.Tk()

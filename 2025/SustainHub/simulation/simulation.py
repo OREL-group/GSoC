@@ -6,7 +6,7 @@ import random
 import json
 import os
 from graph import plot_sarsa_agents
-from simulation.metrics import compute_harmony_index, compute_resilience_quotient
+from simulation.metrics import compute_harmony_index, compute_resilience_quotient, calculate_reassignment_overhead
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
@@ -24,8 +24,10 @@ class Simulation:
         self.mab_allocator = MABAllocator(self.agents)
         self.harmony_history = []
         self.rq_history = []
+        self.ro_history = []  # NEW metric tracking
         self.dropped_task_log = []
-
+        self.total_tasks_assigned_step = 0
+        self.total_reassigned_tasks_step = 0
 
     def load_agents(self):
         agents = [Contributor(f"C{i}") for i in range(1, self.agent_count + 1)]
@@ -44,6 +46,10 @@ class Simulation:
             json.dump(data, f, indent=2)
 
     def assign_tasks(self):
+        # Track totals for RO calculation
+        self.total_tasks_assigned_step = len(self.task_queue)
+        self.total_reassigned_tasks_step = 0
+
         for task in self.task_queue:
             selected_agent = self.mab_allocator.select_agent(task)
 
@@ -51,7 +57,10 @@ class Simulation:
                 selected_agent = self.mab_allocator.select_agent(task)
 
             if selected_agent and selected_agent.assign_task(task):
+                # Increment reassignment counters
+                self.total_reassigned_tasks_step += 1
                 selected_agent.reassigned_tasks = getattr(selected_agent, "reassigned_tasks", 0) + 1
+
                 print(f"Assigned {task.task_type} task to {selected_agent.name}")
 
                 for entry in self.dropped_task_log:
@@ -135,74 +144,49 @@ class Simulation:
                 success_rate = (success / total * 100) if total > 0 else 0
                 print(f"   {task_type.capitalize()}: {success:.0f} Success / {fail:.0f} Fail | Success Rate: {success_rate:.1f}%")
 
-    # Optional: Resilience Recovery Log
-    """
-    def print_resilience_log(self):
-        if not self.dropped_task_log:
-            return
-
-        print("\n Task Recovery Log:")
-        for entry in self.dropped_task_log:
-            print(f" Task '{entry['task_type']}' was originally assigned to {entry['original_agent']}")
-            if entry["reassigned_to"]:
-                if entry["completion_status"] == "Success":
-                    print(f" Reassigned to {entry['reassigned_to']} →  Successfully completed")
-                elif entry["completion_status"] == "Fail":
-                    print(f" Reassigned to {entry['reassigned_to']} →  Failed to complete")
-                else:
-                    print(f" Reassigned to {entry['reassigned_to']} →  Pending")
-            else: 
-                print(" No agent reassigned the task")
-    """
-
     def run(self, steps=5):
         print("Simulation starting...\n")
 
         for step in range(steps):
             print(f"\n--- Step {step + 1} ---")
 
-            # Dropout agents per step
             self.simulate_dropout(count=self.dropouts_per_step)
 
-            # Generate new tasks and ADD to the queue (don't overwrite)
             new_tasks = [generate_task() for _ in range(self.tasks_per_step)]
             self.task_queue.extend(new_tasks)
 
-            # Assign tasks to agents from queue
             self.assign_tasks()
-
-            # Simulate task completion
             self.simulate_task_completion()
 
-            # Compute harmony index
             harmony = compute_harmony_index(self.agents)
             self.harmony_history.append(harmony)
 
-            # Compute average success rate (for resilience quotient)
             success_rates = [
                 sum(agent.success_counts) / sum(agent.total_counts)
                 for agent in self.agents if sum(agent.total_counts) > 0
             ]
             avg_success = sum(success_rates) / len(success_rates) if success_rates else 0
-
-            # Count dropout agents
             dropout_count = len([a for a in self.agents if getattr(a, 'inactive', False)])
 
-            # Compute resilience quotient
             rq = compute_resilience_quotient(self.agents, avg_success, harmony, dropout_count)
             self.rq_history.append(rq)
 
-            # Print agent stats
-            self.print_agent_stats()
+            # Compute RO
+            ro_value = calculate_reassignment_overhead(self.total_reassigned_tasks_step, self.total_tasks_assigned_step)
+            self.ro_history.append(ro_value)
 
-            # Log metrics
-            print(f"\n Resilience Quotient: {rq:.3f}")
-            print(f" Harmony Index: {harmony:.3f}")
+            self.print_agent_stats()
+            print(f"\nRO: {ro_value:.3f}")
+            print(f"RQ: {rq:.3f}")
+            print(f"Harmony: {harmony:.3f}")
 
         print("\nSimulation completed.")
 
-
-            # self.print_resilience_log()  # Optional: enable to debug task recovery
-
         self.save_agents()
-        plot_sarsa_agents(self.agents, DATA_DIR, harmony_index_history=self.harmony_history, rq_history=self.rq_history)
+        plot_sarsa_agents(
+            self.agents,
+            DATA_DIR,
+            harmony_index_history=self.harmony_history,
+            rq_history=self.rq_history,
+            ro_history=self.ro_history
+        )

@@ -1,11 +1,13 @@
 def compute_harmony_index(agents):
     """
-    Compute Harmony Index based on:
+    Compute Harmony Index (HI) based on:
     1. Task distribution balance
     2. Success rates
     3. Load distribution fairness
-    """
 
+    Returns:
+        float: HI value between 0 and 1
+    """
     import numpy as np
 
     task_success_rates = []
@@ -40,8 +42,10 @@ def compute_resilience_quotient(agents, previous_success_rate, previous_harmony,
         0.4 * Task Reallocation Efficiency +
         0.3 * Success Rate Recovery +
         0.3 * Harmony Stability
-    """
 
+    Returns:
+        float: RQ value between 0 and 1
+    """
     import numpy as np
 
     # Task Reallocation Efficiency
@@ -72,3 +76,21 @@ def compute_resilience_quotient(agents, previous_success_rate, previous_harmony,
     # Final score
     RQ = 0.4 * TRE + 0.3 * SRR + 0.3 * HS
     return round(RQ, 3)
+
+
+def calculate_reassignment_overhead(num_reassigned: int, total_tasks: int) -> float:
+    """
+    Calculate Reassignment Overhead (RO)
+
+    RO = (Number of reassigned tasks) / (Total tasks assigned)
+
+    Args:
+        num_reassigned (int): Number of tasks that were reassigned.
+        total_tasks (int): Total number of tasks assigned.
+
+    Returns:
+        float: RO value between 0 and 1
+    """
+    if total_tasks == 0:
+        return 0.0
+    return round(num_reassigned / total_tasks, 3)
