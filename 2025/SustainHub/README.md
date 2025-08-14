@@ -11,7 +11,7 @@ The system is built around four specialized agents representing common roles in 
 - Simulate dynamic OSS task allocation and contributor behavior
 - Optimize engagement using MAB (global) and SARSA (local)
 - Promote sustainable collaboration through adaptive decision-making
-- Track community health using metrics like Harmony Index and Resilience Quotient
+- Track community health using metrics like Harmony Index, Resilience Quotient, and Reassignment Overhead
 
 ---
 
@@ -32,7 +32,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 ## 👥 Agent Roles
 
 | Agent             | Specialization                        |
-|------------------|----------------------------------------|
+|-------------------|---------------------------------------|
 | **Maintainer**        | Allocates tasks using MAB strategy     |
 | **Contributor**       | Fixes bugs and learns via SARSA        |
 | **Innovator**         | Develops features with adaptive logic  |
@@ -44,21 +44,62 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 1. The Maintainer selects agents using the MAB allocator.
 2. Agents accept/reject tasks and learn actions via SARSA.
-3. Task outcomes provide rewards to guide future decisions.
-4. Community health is tracked through Harmony Index and Resilience Quotient.
+3. Tasks may be **reassigned** if an agent cannot complete them (tracked via RO).
+4. Task outcomes provide rewards to guide future decisions.
+5. Community health is tracked through Harmony Index, Resilience Quotient, and Reassignment Overhead.
 
 ---
 
-## Tracked Metrics
+## 📊 Tracked Metrics
 
-- **Task Success Rate** (per agent and per task type)
-- **Harmony Index**: Evaluates collaboration smoothness and fairness
-- **Resilience Quotient** *(coming soon)*: Measures robustness under stress
-- **Visualizations**: Heatmaps and line charts for performance trends
+### **Harmony Index (HI)**
+- **Measures**: Balance in task distribution and success rates.
+- **Formula**:  
+  \[
+  HI = 0.6 \times \text{Avg Success Rate} + 0.4 \times \frac{1}{1 + \text{Load Variance}}
+  \]
+- **Range**: `0` (poor balance) → `1` (perfect balance)  
+> 📁 `metrics.compute_harmony_index`
 
 ---
 
-## New Simulation Controls (UI Sliders)
+### **Resilience Quotient (RQ)**
+- **Measures**: Recovery from disruptions like agent dropouts.
+- **Formula**:  
+  \[
+  RQ = 0.4 \times TRE + 0.3 \times SRR + 0.3 \times HS
+  \]
+  - **TRE**: Task Reallocation Efficiency  
+  - **SRR**: Success Rate Recovery  
+  - **HS**: Harmony Stability  
+- **Range**: `0` (low resilience) → `1` (high resilience)  
+> 📁 `metrics.compute_resilience_quotient`
+
+---
+
+### **Reassignment Overhead (RO)**
+- **Measures**: Frequency of task reassignments.
+- **Formula**:  
+  \[
+  RO = \frac{\text{Reassigned Tasks}}{\text{Total Tasks Assigned}}
+  \]
+- **Low RO** = Efficient allocation, **High RO** = Frequent reassignments.  
+> 📁 `metrics.calculate_reassignment_overhead`
+
+---
+
+### **Task Success Rate**
+- **Measures**: % of tasks completed successfully.
+- **Formula**:  
+  \[
+  SR = \frac{\text{Successful Tasks}}{\text{Total Tasks Assigned}}
+  \]
+- High SR means better role-task matching.
+mance trends.
+
+---
+
+## 🎛 New Simulation Controls (UI Sliders)
 
 SustainHub now includes interactive UI sliders for more dynamic experimentation:
 
@@ -72,8 +113,6 @@ SustainHub now includes interactive UI sliders for more dynamic experimentation:
 - Analyze sustainability under different stress scenarios
 - Tune task-agent balance for optimal performance
 - Visualize impact of community changes over time
-
-> These controls enhance exploratory analysis and make SustainHub ideal for both **research** and **education**.
 
 ---
 
