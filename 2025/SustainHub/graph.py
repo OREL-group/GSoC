@@ -13,7 +13,7 @@ def plot_sarsa_agents(agents, save_dir, harmony_index_history=None, rq_history=N
         print("No SARSA agents with task history found to visualize.")
         return
 
-    #Success Rate Heatmap
+    #Success Rate Heatmap.
     success_matrix = []
     agent_labels = []
 
