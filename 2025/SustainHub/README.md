@@ -50,7 +50,7 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 ---
 
-## 📊 Tracked Metrics
+## Tracked Metrics
 
 ### **Harmony Index (HI)**
 - **Measures**: Balance in task distribution and success rates.
