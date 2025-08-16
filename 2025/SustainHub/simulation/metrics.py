@@ -89,7 +89,7 @@ def calculate_reassignment_overhead(num_reassigned: int, total_tasks: int) -> fl
         total_tasks (int): Total number of tasks assigned.
 
     Returns:
-        float: RO value between 0 and 1
+        float: RO value between 0 and 1 
     """
     if total_tasks == 0:
         return 0.0
