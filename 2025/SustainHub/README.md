@@ -2,7 +2,7 @@
 
 **SustainHub** is a Reinforcement Learning–powered simulation for studying and enhancing the sustainability of open-source communities. It models real-world OSS dynamics through a combination of Multi-Armed Bandits (MAB) for task allocation and SARSA for agent-level learning and decision-making.
 
-The system is built around four specialized agents representing common roles in OSS: Maintainer, Contributor, Innovator, and Knowledge Curator. 
+The system is built around four specialized agents representing common roles in OSS: Maintainer, Contributor, Innovator, and Knowledge Curator.  
 
 ---
 
