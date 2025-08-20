@@ -123,6 +123,6 @@ SustainHub now includes interactive UI sliders for more dynamic experimentation:
 3. Run the GUI
 
 ```bash
-git clone https://github.com/yourusername/sustainhub.git
+git clone https://github.com/yourusername/sustainhub.git 
 cd sustainhub
 python gui.py
