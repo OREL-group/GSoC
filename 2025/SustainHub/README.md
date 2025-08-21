@@ -33,10 +33,10 @@ Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task r
 
 | Agent             | Specialization                        |
 |-------------------|---------------------------------------|
-| **Maintainer**        | Allocates tasks using MAB strategy     |
-| **Contributor**       | Fixes bugs and learns via SARSA        |
-| **Innovator**         | Develops features with adaptive logic  |
-| **Knowledge Curator** | Handles documentation and curation     |
+| **Maintainer**        | Allocates tasks using MAB strategy.     |
+| **Contributor**       | Fixes bugs and learns via SARSA.        |
+| **Innovator**         | Develops features with adaptive logic.  |
+| **Knowledge Curator** | Handles documentation and curation.     |
 
 ---
 
