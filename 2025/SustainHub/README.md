@@ -1,128 +1,189 @@
 # SustainHub
 
-**SustainHub** is a Reinforcement Learning–powered simulation for studying and enhancing the sustainability of open-source communities. It models real-world OSS dynamics through a combination of Multi-Armed Bandits (MAB) for task allocation and SARSA for agent-level learning and decision-making.
+**SustainHub** is a Reinforcement Learning–driven simulation framework for modeling, analyzing, and improving the sustainability of **open-source communities (OSS)**.  
 
-The system is built around four specialized agents representing common roles in OSS: Maintainer, Contributor, Innovator, and Knowledge Curator.  
+The system captures realistic OSS dynamics using a **dual-layer reinforcement learning approach**:  
+1. **Multi-Armed Bandits (MAB)** for global task allocation and role matching.  
+2. **SARSA (State–Action–Reward–State–Action)** for local agent decision-making and task handling.  
 
----
-
-## Objectives
-
-- Simulate dynamic OSS task allocation and contributor behavior
-- Optimize engagement using MAB (global) and SARSA (local)
-- Promote sustainable collaboration through adaptive decision-making
-- Track community health using metrics like Harmony Index, Resilience Quotient, and Reassignment Overhead
+Through this design, SustainHub provides insights into **fairness, adaptability, resilience, and efficiency** in collaborative communities.  
 
 ---
 
-## Key Components
+## 1. Project Motivation
 
-### Multi-Armed Bandit (MAB)
-Used by the Maintainer to assign tasks. MAB uses Thompson Sampling to learn which agents perform best on which task types over time.
+Open-source ecosystems rely on distributed collaboration, but they face sustainability challenges such as:  
+- Uneven workload distribution leading to burnout.  
+- Contributor dropouts and churn.  
+- Inefficiencies in task allocation.  
+- Knowledge silos reducing long-term engagement.  
 
-> 📁 Source: `tasks/mab.py`
-
-### SARSA Learning
-Each learning agent (Contributor, Innovator, Curator) uses SARSA to adapt task responses based on rewards and past experiences.
-
-> 📁 Source: `agents/sarsa.py`
+SustainHub addresses these issues by simulating OSS communities as **agent-based models** that balance **efficiency (tasks completed)** and **sustainability (fairness, adaptability, inclusivity)**.  
 
 ---
 
-## 👥 Agent Roles
+## 2. Objectives
 
-| Agent             | Specialization                        |
-|-------------------|---------------------------------------|
-| **Maintainer**        | Allocates tasks using MAB strategy.     |
-| **Contributor**       | Fixes bugs and learns via SARSA.        |
-| **Innovator**         | Develops features with adaptive logic.  |
-| **Knowledge Curator** | Handles documentation and curation.     |
-
----
-
-## How It Works
-
-1. The Maintainer selects agents using the MAB allocator.
-2. Agents accept/reject tasks and learn actions via SARSA.
-3. Tasks may be **reassigned** if an agent cannot complete them (tracked via RO).
-4. Task outcomes provide rewards to guide future decisions.
-5. Community health is tracked through Harmony Index, Resilience Quotient, and Reassignment Overhead.
+- Simulate realistic OSS task allocation and contributor behavior.  
+- Balance **exploration (testing new contributors)** and **exploitation (using proven contributors)**.  
+- Model individual learning and role specialization through SARSA.  
+- Track community sustainability with **quantitative health metrics**.  
+- Provide interactive experimentation through a GUI with simulation controls and visualizations.  
 
 ---
 
-## Tracked Metrics
+## 3. Reinforcement Learning Framework
 
-### **Harmony Index (HI)**
-- **Measures**: Balance in task distribution and success rates.
+### 3.1 Multi-Armed Bandits (MAB)
+
+- **Role**: Used by the **Maintainer** to allocate tasks among available agents.  
+- **Algorithm**: **Thompson Sampling** is applied to model the **exploration–exploitation tradeoff**.  
+- **Mechanism**:  
+  - Agents = levers in the bandit problem.  
+  - Tasks = pulls on levers.  
+  - Success/failure of task completion = observed reward.  
+
+- **Benefits**:  
+  - Ensures fairness by giving opportunities to less-used agents.  
+  - Prevents stagnation by encouraging exploration.  
+  - Adapts to evolving agent performance over time.  
+
+---
+
+### 3.2 SARSA (State–Action–Reward–State–Action)
+
+- **Role**: Governs how individual agents respond to assigned tasks.  
+- **Algorithm**: On-policy **Temporal Difference (TD) learning** method.  
+- **State Representation**: Defined by  
+  - Task type (bug, feature, documentation, other)  
+  - Current workload (light, moderate, heavy)  
+  - Historical success rate  
+
+- **Actions**:  
+  - Accept and attempt task.  
+  - Skip task (idle).  
+  - Attempt task outside specialization.  
+
+- **Reward System**:  
+  - +3 for success in specialized tasks.  
+  - +1 for success in non-specialized tasks.  
+  - 0 for skipping tasks.  
+  - −1 for failed tasks.  
+
+- **Advantages**:  
+  - Encourages specialization while allowing flexibility.  
+  - Penalizes idleness and failures.  
+  - Models real OSS behavior where contributors adapt over time.  
+
+---
+
+### 3.3 Synergy of MAB and SARSA
+
+- **MAB (Global Layer)**: Decides **who gets the task** based on role performance.  
+- **SARSA (Local Layer)**: Decides **how the assigned agent responds** to the task.  
+
+This layered reinforcement learning system ensures:  
+- Fair global allocation of tasks.  
+- Adaptive local agent learning and behavior refinement.  
+- More realistic modeling of OSS collaboration.  
+
+---
+
+## 4. Agents
+
+SustainHub models four specialized agent types, reflecting common OSS roles.  
+
+| Agent Type        | Specialization                  | Reward (Success)     | Reward (Failure / Skip) |
+|-------------------|---------------------------------|----------------------|--------------------------|
+| **Maintainer**        | Allocates tasks using MAB        | Indirect via efficiency | — |
+| **Contributor**       | Bug fixing and stability         | +3 (bugs), +1 (others) | −1 / 0 |
+| **Innovator**         | Feature design and implementation| +3 (features), +1 (others) | −1 / 0 |
+| **Knowledge Curator** | Documentation and knowledge mgmt | +3 (docs), +1 (others) | −1 / 0 |
+
+### Why these agents?
+- **Maintainer**: Ensures efficiency and fairness in task allocation.  
+- **Contributor**: Keeps the project stable by resolving bugs.  
+- **Innovator**: Drives growth by adding new features.  
+- **Knowledge Curator**: Maintains documentation, ensuring accessibility and long-term engagement.  
+
+Together, they capture the **division of labor and collaboration patterns** in OSS.  
+
+---
+
+## 5. Community Health Metrics
+
+SustainHub introduces three quantitative metrics to measure sustainability:
+
+### 5.1 Harmony Index (HI)
+- **Purpose**: Captures workload balance and task success rate.  
 - **Formula**:  
   \[
   HI = 0.6 \times \text{Avg Success Rate} + 0.4 \times \frac{1}{1 + \text{Load Variance}}
-  \]
-- **Range**: `0` (poor balance) → `1` (perfect balance)  
-> 📁 `metrics.compute_harmony_index`
+  \]  
+- **Range**: 0 (imbalanced) → 1 (perfect balance).  
+- **Insight**: High HI indicates fairness and prevents burnout.  
 
 ---
 
-### **Resilience Quotient (RQ)**
-- **Measures**: Recovery from disruptions like agent dropouts.
+### 5.2 Resilience Quotient (RQ)
+- **Purpose**: Measures adaptability during disruptions (dropouts, workload spikes).  
 - **Formula**:  
   \[
   RQ = 0.4 \times TRE + 0.3 \times SRR + 0.3 \times HS
-  \]
-  - **TRE**: Task Reallocation Efficiency  
-  - **SRR**: Success Rate Recovery  
-  - **HS**: Harmony Stability  
-- **Range**: `0` (low resilience) → `1` (high resilience)  
-> 📁 `metrics.compute_resilience_quotient`
+  \]  
+  - TRE = Task Reallocation Efficiency  
+  - SRR = Success Rate Recovery  
+  - HS = Harmony Stability  
+
+- **Range**: 0 (low) → 1 (high resilience).  
+- **Insight**: High RQ = system can recover smoothly from disruptions.  
 
 ---
 
-### **Reassignment Overhead (RO)**
-- **Measures**: Frequency of task reassignments.
+### 5.3 Reassignment Overhead (RO)
+- **Purpose**: Tracks inefficiency caused by reassigning tasks.  
 - **Formula**:  
   \[
   RO = \frac{\text{Reassigned Tasks}}{\text{Total Tasks Assigned}}
-  \]
-- **Low RO** = Efficient allocation, **High RO** = Frequent reassignments.  
-> 📁 `metrics.calculate_reassignment_overhead`
+  \]  
+- **Range**: 0 (efficient) → 1 (highly inefficient).  
+- **Insight**: Lower RO means effective first-time task allocation.  
 
 ---
 
-### **Task Success Rate**
-- **Measures**: % of tasks completed successfully.
-- **Formula**:  
-  \[
-  SR = \frac{\text{Successful Tasks}}{\text{Total Tasks Assigned}}
-  \]
-- High SR means better role-task matching.
-mance trends.
+## 6. Graphical User Interface (GUI)
+
+Implemented in **Tkinter** with GitHub-inspired dark theme. Divided into three tabs:
+
+### 6.1 Logs Tab
+- Configure simulation parameters: steps, agents, tasks per step, dropouts per step.  
+- Real-time textual logs in a terminal-like style.  
+- Export logs as `.txt`.  
+
+### 6.2 Graphs Tab
+- Interactive performance graphs for **HI, RQ, and RO** using Matplotlib.  
+- Export graphs as `.png` files.  
+- Color-coded metrics for clarity.  
+
+### 6.3 Visualizer Tab
+- Agents visualized as **blue circles** and tasks as **yellow squares**.  
+- Animated movements simulate task allocation and completion.  
+- Optional **NetLogo integration** for advanced visualizations.  
 
 ---
 
-## 🎛 New Simulation Controls (UI Sliders)
+## 7. Simulation Controls
 
-SustainHub now includes interactive UI sliders for more dynamic experimentation:
+- **Tasks per Step**: Simulates workload variation.  
+- **Dropouts per Step**: Models contributor churn.  
 
-| Control             | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| **Dropouts per Step** | Sets the number of agents that leave the system in each simulation step, modeling contributor churn. |
-| **Tasks per Step**    | Controls how many new tasks are introduced per step, simulating workload variations. |
-
-### Benefits:
-- Simulate realistic OSS conditions (e.g., workload spikes, contributor dropout)
-- Analyze sustainability under different stress scenarios
-- Tune task-agent balance for optimal performance
-- Visualize impact of community changes over time
+These controls allow stress-testing of OSS dynamics under different conditions.  
 
 ---
 
-## ▶ How to Run 
+## 8. How to Run
 
-1. Clone the repository
-2. Navigate to the directory
-3. Run the GUI
-
-```bash
-git clone https://github.com/yourusername/sustainhub.git 
-cd sustainhub
-python gui.py
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/yourusername/sustainhub.git
+   cd sustainhub
