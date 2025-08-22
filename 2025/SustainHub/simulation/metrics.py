@@ -4,7 +4,7 @@ def compute_harmony_index(agents):
     1. Task distribution balance
     2. Success rates
     3. Load distribution fairness
-
+ 
     Returns:
         float: HI value between 0 and 1
     """
