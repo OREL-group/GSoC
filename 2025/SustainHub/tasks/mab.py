@@ -1,3 +1,4 @@
+# Implement MAB for task allocation
 import numpy as np
 from scipy.stats import beta
 
