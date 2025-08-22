@@ -42,7 +42,7 @@ def compute_resilience_quotient(agents, previous_success_rate, previous_harmony,
         0.4 * Task Reallocation Efficiency +
         0.3 * Success Rate Recovery +
         0.3 * Harmony Stability
-
+  
     Returns:
         float: RQ value between 0 and 1
     """
