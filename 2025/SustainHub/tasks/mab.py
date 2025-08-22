@@ -1,4 +1,6 @@
-# Implement MAB for task allocation
+
+#Multi-Armed-Bandits for Task Allocation
+
 import numpy as np
 from scipy.stats import beta
 
