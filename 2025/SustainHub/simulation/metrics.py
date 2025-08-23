@@ -81,7 +81,7 @@ def compute_resilience_quotient(agents, previous_success_rate, previous_harmony,
 def calculate_reassignment_overhead(num_reassigned: int, total_tasks: int) -> float:
     """
     Calculate Reassignment Overhead (RO)
-
+   
     RO = (Number of reassigned tasks) / (Total tasks assigned)
 
     Args:
