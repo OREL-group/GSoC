@@ -177,7 +177,7 @@ Implemented in **Tkinter** with GitHub-inspired dark theme. Divided into three t
 - **Tasks per Step**: Simulates workload variation.  
 - **Dropouts per Step**: Models contributor churn.  
 
-These controls allow stress-testing of OSS dynamics under different conditions.  
+These controls allow stress-testing of OSS dynamics under different conditions.    
 
 ---
 
