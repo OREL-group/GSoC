@@ -10,7 +10,7 @@ Through this design, SustainHub provides insights into **fairness, adaptability,
 
 ---
 # SustainHub File Structure
-
+```
 SustainHub
 
 ┣ 📂agents
@@ -41,6 +41,7 @@ SustainHub
 ┣ 📜gui.py
 ┣ 📜main.py
 ┗ 📜netlogo_integration.py
+```
 ---
 
 ## 1. Project Motivation
