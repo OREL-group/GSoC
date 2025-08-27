@@ -11,38 +11,36 @@ Through this design, SustainHub provides insights into **fairness, adaptability,
 ---
 # SustainHub File Structure
 
-2025/SustainHub
-├── agents
-│ ├── init.py
-│ ├── base_agent.py
-│ ├── contributor.py
-│ ├── innovator.py
-│ ├── knowledge_curator.py
-│ ├── maintainer.py
-│ └── sarsa.py
-│
-├── simulation
-│ ├── init.py
-│ ├── metrics.py
-│ ├── persistence.py
-│ └── simulation.py
-│
-├── tasks
-│ ├── init.py
-│ ├── bug_fix.py
-│ ├── docs.py
-│ ├── feature.py
-│ └── generator.py
-│ └── mab.py
-│
-├── README.md
-├── graph.py
-├── gui.py
-├── main.py
-└── netlogo_integration.py
+SustainHub
 
-Copy code
+┣ 📂agents
+┃ ┣ 📜__init__.py
+┃ ┣ 📜base_agent.py
+┃ ┣ 📜contributor.py
+┃ ┣ 📜innovator.py
+┃ ┣ 📜knowledge_curator.py
+┃ ┣ 📜maintainer.py
+┃ ┗ 📜sarsa.py
 
+┣ 📂simulation
+┃ ┣ 📜__init__.py
+┃ ┣ 📜metrics.py
+┃ ┣ 📜persistence.py
+┃ ┗ 📜simulation.py
+
+┣ 📂tasks
+┃ ┣ 📜__init__.py
+┃ ┣ 📜bug_fix.py
+┃ ┣ 📜docs.py
+┃ ┣ 📜feature.py
+┃ ┣ 📜generator.py
+┃ ┗ 📜mab.py
+
+┣ 📜README.md
+┣ 📜graph.py
+┣ 📜gui.py
+┣ 📜main.py
+┗ 📜netlogo_integration.py
 ---
 
 ## 1. Project Motivation
