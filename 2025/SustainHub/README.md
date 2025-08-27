@@ -163,7 +163,7 @@ SustainHub introduces three quantitative metrics to measure sustainability:
 - **Purpose**: Measures adaptability during disruptions (dropouts, workload spikes).  
 - **Formula**:  
   \[
-  RQ = 0.4 \times TRE + 0.3 \times SRR + 0.3 \times HS
+  RQ = 0.4 * TRE + 0.3 * SRR + 0.3 * HS
   \]  
   - TRE = Task Reallocation Efficiency  
   - SRR = Success Rate Recovery  
@@ -178,7 +178,7 @@ SustainHub introduces three quantitative metrics to measure sustainability:
 - **Purpose**: Tracks inefficiency caused by reassigning tasks.  
 - **Formula**:  
   \[
-  RO = \frac{\text{Reassigned Tasks}}{\text{Total Tasks Assigned}}
+ RO = ReassignedTasks / TotalTasksAssigned
   \]  
 - **Range**: 0 (efficient) → 1 (highly inefficient).  
 - **Insight**: Lower RO means effective first-time task allocation.  
