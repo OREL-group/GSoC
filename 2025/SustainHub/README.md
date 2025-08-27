@@ -152,7 +152,7 @@ SustainHub introduces three quantitative metrics to measure sustainability:
 - **Purpose**: Captures workload balance and task success rate.  
 - **Formula**:  
   \[
-  HI = 0.6 \times \text{Avg Success Rate} + 0.4 \times \frac{1}{1 + \text{Load Variance}}
+  HI = 0.6 * AvgSuccessRate + 0.4 * ( 1 / (1 + LoadVariance) )
   \]  
 - **Range**: 0 (imbalanced) → 1 (perfect balance).  
 - **Insight**: High HI indicates fairness and prevents burnout.  
@@ -326,7 +326,7 @@ All screenshots and plots should be placed in the **`images/`** folder located i
 ![Graph Popups](images/sucess_heatmap.png)  
 
 1. **Main GUI Window with Logs**  
-   ![GUI with Logs](images/logs.png)  
+   ![GUI with Logs](images/Logs.png)  
 
 2. **Three Graph Popups (Metrics)**  
    - Harmony Index  ![Graph Popups](images/Harmony_Index.png)  
