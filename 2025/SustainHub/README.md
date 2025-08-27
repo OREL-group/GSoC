@@ -356,7 +356,7 @@ All screenshots and plots should be placed in the **`images/`** folder located i
    - Reassignment Overhead  ![Graph Popups](images/RO.png)  
 
 ### B. data folder
- - Harmony Index  ![Graph Popups](images/qdata.png) 
+ - data ![Graph Popups](images/qdata.png) 
 
 **Note:** In terminal mode (`main.py`), there is **no visualization tab** and **parameters must be edited manually** in the code.  
 **Note:** The above images are just sample images. Your actual output will differ but should be more or less the same.
