@@ -208,10 +208,14 @@ Implemented in **Tkinter** with GitHub-inspired dark theme. Divided into three t
 
 ## 7. Simulation Controls
 
-- **Tasks per Step**: Simulates workload variation.  
-- **Dropouts per Step**: Models contributor churn. 
-- **Number of Steps**: 
-- **Number of Agents per run**:  
+- **Tasks per Step**: Defines how many tasks are generated or assigned in each simulation step. This simulates workload variation and helps analyze how agents handle different levels of demand.  
+
+- **Dropouts per Step**: Models contributor churn by removing a certain number of agents per step. This allows testing the system’s resilience when contributors leave.  
+
+- **Number of Steps**: Specifies the total number of iterations the simulation will run. A higher number of steps allows long-term behavior and sustainability patterns to emerge.  
+
+- **Number of Agents per Run**: Determines how many agents are initialized at the start of each simulation run. This affects collaboration dynamics and the diversity of agent strategies.  
+
 
 These controls allow stress-testing of OSS dynamics under different conditions.    
 
@@ -219,8 +223,94 @@ These controls allow stress-testing of OSS dynamics under different conditions.
 
 ## 8. How to Run
 
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/yourusername/sustainhub.git
-   cd SustainHub 
+You can run SustainHub either through the **Graphical User Interface (GUI)** or directly via scripts.  
+Follow the steps below based on your operating system.
+
+---
+
+### Step 1: Fork the Repository
+1. Go to the [SustainHub GitHub repository](https://github.com/yourusername/sustainhub).  
+2. Click on **Fork** (top-right) to create a copy under your GitHub account.  
+
+---
+
+### Step 2: Clone the Repository
+**For macOS/Linux:**  
+```bash
+git clone https://github.com/<your-username>/sustainhub.git
+cd GSoC/2025/SustainHub
+```
+
+**For macOS/Linux:** 
+```bash
+git clone https://github.com/<your-username>/sustainhub.git
+cd GSoC\2025\SustainHub
+```
+
+### Step 3: Navigate to the Project Directory
+
+Make sure you are inside the **SustainHub** folder:  
+
+```bash
+cd GSoC/2025/SustainHub
+```
+
+### Step 4: Run the Simulation
+
+You can run **SustainHub** in two ways:  
+1. Using the **Graphical User Interface (GUI)** (`gui.py`)  
+2. Running the **Core Simulation Script** (`main.py`)  
+
+---
+
+#### Option A: Run the GUI
+
+The GUI provides an interactive way to control the simulation.  
+
+**For macOS/Linux:**  
+```bash
+python3 gui.py
+```
+
+**For Windows:**  
+```bash
+python gui.py
+```
+
+**A graphical interface will open, where you can control:**
+
+- Number of tasks per step
+- Dropouts per step
+- Number of steps
+- Number of agents per run
+
+The simulation will start running inside the terminal if you
+**For macOS/Linux:**  
+```bash
+python3 main.py
+```
+
+**For Windows:**  
+```bash
+python main.py
+```
+
+- You will see **progress logs and metrics** printed step by step.  
+- **Graphs** (e.g., sustainability index, agent performance) will **pop up automatically** using matplotlib.  
+- Parameters such as **number of agents, steps, and dropout rates** need to be **manually edited inside `main.py`** before running.  
+
+---
+
+### Output Data
+
+Regardless of whether you use `gui.py` or `main.py`:  
+
+- A folder named **`data/`** is automatically created in the same directory.  
+- Inside `data/`, you will find:  
+  - **JSON files** → Storing learned **Q-values** from SARSA.  
+  - **Image files (PNG/JPG)** → Generated graphs and visualizations from the simulation.  
+
+This ensures your experimental results are stored for later analysis.  
+
+
   
