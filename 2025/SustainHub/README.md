@@ -246,7 +246,7 @@ cd GSoC/2025/SustainHub
 git clone https://github.com/<your-username>/sustainhub.git
 cd GSoC\2025\SustainHub
 ```
-
+---
 ### Step 3: Navigate to the Project Directory
 
 Make sure you are inside the **SustainHub** folder:  
@@ -254,6 +254,7 @@ Make sure you are inside the **SustainHub** folder:
 ```bash
 cd GSoC/2025/SustainHub
 ```
+---
 
 ### Step 4: Run the Simulation
 
@@ -284,6 +285,7 @@ python gui.py
 - Number of steps
 - Number of agents per run
 
+#### Option B: Run inside the terminal
 The simulation will start running inside the terminal if you
 **For macOS/Linux:**  
 ```bash
@@ -312,5 +314,80 @@ Regardless of whether you use `gui.py` or `main.py`:
 
 This ensures your experimental results are stored for later analysis.  
 
+## 9. Expected Output
 
-  
+When you run SustainHub, you should be able to see the following outputs depending on whether you use the **GUI** or **main.py (terminal mode)**.  
+All screenshots and plots should be placed in the **`images/`** folder located in the same directory as `gui.py` and `main.py`.  
+
+---
+
+### A. Running with GUI (`gui.py`)
+
+![Graph Popups](images/sucess_heatmap.png)  
+
+1. **Main GUI Window with Logs**  
+   ![GUI with Logs](images/logs.png)  
+
+2. **Three Graph Popups (Metrics)**  
+   - Harmony Index  ![Graph Popups](images/Harmony_Index.png)  
+   - Resilience Quotient  ![Graph Popups](images/RQ1.png)  
+   - Reassignment Overhead  ![Graph Popups](images/RO.png)  
+   
+
+3. **Graph Tab**  
+   ![Graph Tab](images/Graphs.png)  
+
+4. **Visualizer Tab**  
+   ![Visualizer Tab](images/Visualiser.png)  
+
+---
+
+### B. Running with Terminal (`main.py`)
+
+1. **Terminal Output with Logs**  
+   ![Terminal Logs](images/tlogs.png)  
+
+2. **Success Heatmap**  
+   ![Success Heatmap](images/sucess_heatmap.png)  
+
+3. **Three Graphs (Metrics)**  
+   - Harmony Index  ![Graph Popups](images/Harmony_Index.png)  
+   - Resilience Quotient  ![Graph Popups](images/RQ1.png)  
+   - Reassignment Overhead  ![Graph Popups](images/RO.png)  
+
+### B. data folder
+ - Harmony Index  ![Graph Popups](images/qdata.png) 
+
+**Note:** In terminal mode (`main.py`), there is **no visualization tab** and **parameters must be edited manually** in the code.  
+**Note:** The above images are just sample images. Your actual output will differ but should be more or less the same.
+
+
+## 10. References
+
+Refer to the following paper for detailed insights into **SustainHub** and its design methodology:  
+- [SustainHub Research Paper](link-to-paper)  
+
+---
+
+## 11. Contributor and Acknowledgements
+
+### Contributor
+- **Vidhi Rohira**  
+  - [SustainHub Paper](link-to-paper)  
+  - [Blog Posts](vidhirohira.github.io)  
+  - [Email](rohiravidhi@gmail.com)  
+  - [LinkedIn](https://www.linkedin.com/in/vidhi-rohira-435a22278/)  
+
+---
+
+### Acknowledgements
+A heartfelt thank you to **[OREL – The Orthogonal Research and Education Laboratory](https://orthogonal-research.weebly.com/)** for making this project possible.  
+
+Special thanks to my mentors for their tremendous guidance and support:  
+- Bradly Alicea  
+- Jesse Parent  
+- Sarrah Bastawala  
+- Mehul Arora  
+- Morgan Hough  
+
+Their mentorship and insights were invaluable in shaping SustainHub.  
