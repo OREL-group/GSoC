@@ -9,6 +9,41 @@ The system captures realistic OSS dynamics using a **dual-layer reinforcement le
 Through this design, SustainHub provides insights into **fairness, adaptability, resilience, and efficiency** in collaborative communities.  
 
 ---
+# SustainHub File Structure
+
+2025/SustainHub
+├── agents
+│ ├── init.py
+│ ├── base_agent.py
+│ ├── contributor.py
+│ ├── innovator.py
+│ ├── knowledge_curator.py
+│ ├── maintainer.py
+│ └── sarsa.py
+│
+├── simulation
+│ ├── init.py
+│ ├── metrics.py
+│ ├── persistence.py
+│ └── simulation.py
+│
+├── tasks
+│ ├── init.py
+│ ├── bug_fix.py
+│ ├── docs.py
+│ ├── feature.py
+│ └── generator.py
+│ └── mab.py
+│
+├── README.md
+├── graph.py
+├── gui.py
+├── main.py
+└── netlogo_integration.py
+
+Copy code
+
+---
 
 ## 1. Project Motivation
 
@@ -175,7 +210,9 @@ Implemented in **Tkinter** with GitHub-inspired dark theme. Divided into three t
 ## 7. Simulation Controls
 
 - **Tasks per Step**: Simulates workload variation.  
-- **Dropouts per Step**: Models contributor churn.  
+- **Dropouts per Step**: Models contributor churn. 
+- **Number of Steps**: 
+- **Number of Agents per run**:  
 
 These controls allow stress-testing of OSS dynamics under different conditions.    
 
