@@ -8,6 +8,44 @@ The system captures realistic OSS dynamics using a **dual-layer reinforcement le
 
 Through this design, SustainHub provides insights into **fairness, adaptability, resilience, and efficiency** in collaborative communities.  
 
+# Table of Contents
+
+- [SustainHub File Structure](#sustainhub-file-structure)
+- [1. Project Motivation](#1-project-motivation)
+- [2. Objectives](#2-objectives)
+- [3. Reinforcement Learning Framework](#3-reinforcement-learning-framework)
+  - [3.1 Multi-Armed Bandits (MAB)](#31-multi-armed-bandits-mab)
+  - [3.2 SARSA (State–Action–Reward–State–Action)](#32-sarsa-state–action–reward–state–action)
+  - [3.3 Synergy of MAB and SARSA](#33-synergy-of-mab-and-sarsa)
+- [4. Agents](#4-agents)
+  - [4.1 Why these agents?](#why-these-agents)
+- [5. Community Health Metrics](#5-community-health-metrics)
+  - [5.1 Harmony Index (HI)](#51-harmony-index-hi)
+  - [5.2 Resilience Quotient (RQ)](#52-resilience-quotient-rq)
+  - [5.3 Reassignment Overhead (RO)](#53-reassignment-overhead-ro)
+- [6. Graphical User Interface (GUI)](#6-graphical-user-interface-gui)
+  - [6.1 Logs Tab](#61-logs-tab)
+  - [6.2 Graphs Tab](#62-graphs-tab)
+  - [6.3 Visualizer Tab](#63-visualizer-tab)
+- [7. Simulation Controls](#7-simulation-controls)
+- [8. How to Run](#8-how-to-run)
+  - [8.1 Step 1: Fork the Repository](#step-1-fork-the-repository)
+  - [8.2 Step 2: Clone the Repository](#step-2-clone-the-repository)
+  - [8.3 Step 3: Navigate to the Project Directory](#step-3-navigate-to-the-project-directory)
+  - [8.4 Step 4: Run the Simulation](#step-4-run-the-simulation)
+    - [8.4.1 Option A: Run the GUI](#option-a-run-the-gui)
+    - [8.4.2 Option B: Run inside the terminal](#option-b-run-inside-the-terminal)
+  - [8.5 Output Data](#output-data)
+- [9. Expected Output](#9-expected-output)
+  - [9.1 Running with GUI (`gui.py`)](#a-running-with-gui-guipy)
+  - [9.2 Running with Terminal (`main.py`)](#b-running-with-terminal-mainpy)
+  - [9.3 Data Folder](#b-data-folder)
+- [10. References](#10-references)
+- [11. Contributor and Acknowledgements](#11-contributor-and-acknowledgements)
+  - [11.1 Contributor](#contributor)
+  - [11.2 Acknowledgements](#acknowledgements)
+
+
 ---
 # SustainHub File Structure
 ```
@@ -204,6 +242,8 @@ Implemented in **Tkinter** with GitHub-inspired dark theme. Divided into three t
 - Animated movements simulate task allocation and completion.  
 - Optional **NetLogo integration** for advanced visualizations.  
 
+![GUI with Logs](images/Logs.png)  
+You can see more in section 9
 ---
 
 ## 7. Simulation Controls
@@ -327,11 +367,15 @@ All screenshots and plots should be placed in the **`images/`** folder located i
 
 1. **Main GUI Window with Logs**  
    ![GUI with Logs](images/Logs.png)  
+   The above image just shows the Logs of step by step agents outputs.
 
 2. **Three Graph Popups (Metrics)**  
    - Harmony Index  ![Graph Popups](images/Harmony_Index.png)  
-   - Resilience Quotient  ![Graph Popups](images/RQ1.png)  
-   - Reassignment Overhead  ![Graph Popups](images/RO.png)  
+  A good harmony index should have a value above 0.5 and a very good harmony index will be greater than 0.75 .
+   - Resilience Quotient  ![Graph Popups](images/RQ1.png) 
+   A higher Resilience Quotient is better. 
+   - Reassignment Overhead  ![Graph Popups](images/RO.png) 
+   Reassignment overhead when 1 means that all skipped tasks are being reassigned so it is good. 
    
 
 3. **Graph Tab**  
@@ -392,3 +436,6 @@ Special thanks to my mentors for their tremendous guidance and support:
 - Morgan Hough  
 
 Their mentorship and insights were invaluable in shaping SustainHub.  
+
+# Note
+If you have any doubts or queries feel free to reach out to Vidhi Rohira.
