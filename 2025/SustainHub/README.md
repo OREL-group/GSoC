@@ -409,7 +409,7 @@ All screenshots and plots should be placed in the **`images/`** folder located i
 ## 10. References
 
 Refer to the following paper for detailed insights into **SustainHub** and its design methodology:  
-- [SustainHub Research Paper](link-to-paper)  
+- [SustainHub Research Paper](https://drive.google.com/file/d/1TAuF1jIwKrb32ABeFvaYM86IR5s69QFh/view?usp=sharing)  
 
 
 ---
@@ -418,7 +418,7 @@ Refer to the following paper for detailed insights into **SustainHub** and its d
 
 ### Contributor
 - **Vidhi Rohira**  
-  - [SustainHub Paper](link-to-paper)  
+  - [SustainHub Paper](https://drive.google.com/file/d/1TAuF1jIwKrb32ABeFvaYM86IR5s69QFh/view?usp=sharing)  
   - [Blog Posts](vidhirohira.github.io)  
   - [Email](rohiravidhi@gmail.com)  
   - [LinkedIn](https://www.linkedin.com/in/vidhi-rohira-435a22278/)  
