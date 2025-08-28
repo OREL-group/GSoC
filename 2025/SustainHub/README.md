@@ -367,6 +367,7 @@ All screenshots and plots should be placed in the **`images/`** folder located i
 Refer to the following paper for detailed insights into **SustainHub** and its design methodology:  
 - [SustainHub Research Paper](link-to-paper)  
 
+
 ---
 
 ## 11. Contributor and Acknowledgements
