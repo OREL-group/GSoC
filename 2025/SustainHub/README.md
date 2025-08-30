@@ -438,4 +438,4 @@ Special thanks to my mentors for their tremendous guidance and support:
 Their mentorship and insights were invaluable in shaping SustainHub.  
 
 # Note
-If you have any doubts or queries feel free to reach out to Vidhi Rohira.
+If you have any doubts or queries feel free to reach out to Vidhi Rohira. 
