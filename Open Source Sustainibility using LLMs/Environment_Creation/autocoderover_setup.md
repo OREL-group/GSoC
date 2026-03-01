@@ -42,8 +42,8 @@ We recommend running AutoCodeRover in a Docker container.
 Build and start the docker image:
 
 ```
-docker build -f Dockerfile -t acr .
-docker run -it -p 3000:3000 -p 5000:5000 acr
+docker build -f Dockerfile -t acr1 .
+docker run -it -p 3000:3000 -p 5000:5000 acr1
 ```
 
 ### Inference using locally hosted model
@@ -73,7 +73,7 @@ For this purpose, I have created a toy repository that implements a calculator. 
 
 ### ACR In Local issue mode : Set up and run on local repositories and local issues
 
-To run ACR on the local issue and local codebase of our toy repository,we need to first provide the docker container with access to the local folder (here "calculator_project"). To do so, add the following flag and arguments to the `docker run -it -p 3000:3000 -p 5000:5000 acr` command: 
+To run ACR on the local issue and local codebase of our toy repository,we need to first provide the docker container with access to the local folder (here "calculator_project"). To do so, add the following flag and arguments to the `docker run -it -p 3000:3000 -p 5000:5000 acr1` command: 
 ```
 -v "absolute//path//to//calculator_project":/calculator_project 
 ```
@@ -81,7 +81,7 @@ To run ACR on the local issue and local codebase of our toy repository,we need t
 Alternatively, for Command Prompt on Windows the command will become :
 
 ```
-docker run -it -p 3000:3000 -p 5000:5000 -v "%CD%\calculator_project":/home/calculator_project acr
+docker run -it -p 3000:3000 -p 5000:5000 -v "%CD%\calculator_project":/home/calculator_project acr1
 ```
 
 Then, follow the following steps : 

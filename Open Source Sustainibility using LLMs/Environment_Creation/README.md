@@ -56,8 +56,8 @@ We recommend running AutoCodeRover in a Docker container.
 Build and start the docker image:
 
 ```shell
-docker build -f Dockerfile -t acr .
-docker run -it -p 3000:3000 -p 5000:5000 acr
+docker build -f Dockerfile -t acr1 .
+docker run -it -p 3000:3000 -p 5000:5000 acr1
 ```
 5. Now, we can run ollama server on the host machine, and ACR in its container. ACR will attempt to communicate to the ollama server on host. 
 
