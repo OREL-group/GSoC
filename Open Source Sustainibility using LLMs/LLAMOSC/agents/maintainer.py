@@ -4,9 +4,6 @@ import random
 from LLAMOSC.utils import *
 from LLAMOSC.simulation.bid_output_parser import BidOutputParser, QualityRatingParser
 
-from langchain_community.chat_models import ChatOllama
-from langchain.schema import SystemMessage, HumanMessage
-
 
 class MaintainerAgent:
     def __init__(self, id, experience, name):
