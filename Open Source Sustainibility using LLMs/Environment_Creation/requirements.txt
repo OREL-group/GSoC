@@ -58,9 +58,11 @@ langchain-community==0.2.4
 langchain-core==0.2.5
 langchain-text-splitters==0.2.1
 langsmith==0.1.75
+loguru==0.7.3
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 marshmallow==3.21.3
+matplotlib==3.10.8
 matplotlib-inline==0.1.7
 mdurl==0.1.2
 mmh3==4.1.0
@@ -100,6 +102,7 @@ Pygments==2.18.0
 pypdf==4.2.0
 PyPika==0.48.9
 pyproject_hooks==1.1.0
+PyQt5==5.15.11
 pyreadline3==3.4.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1

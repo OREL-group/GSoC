@@ -103,7 +103,7 @@ Successfully installed LLAMOSC-0.1
 Run the provided script to create the toy_repo directory:
 
 ```bash
-python Open Source Sustainibility using LLMs\Environment_Creation\create_toy_repo.py
+python "Open Source Sustainibility using LLMs\create_toy_repo.py"
 ```
 
 This will create an empty calculator_project directory where the main `OREL-group/GSoC` repository was cloned.
