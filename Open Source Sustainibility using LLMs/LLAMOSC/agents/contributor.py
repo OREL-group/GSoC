@@ -123,7 +123,7 @@ class ContributorAgent:
             motivation_level = float(
                 motivation_parser.parse(motivation_level_desc)["rating"]
             )
-        except:
+        except (KeyError, ValueError, TypeError):
             motivation_level = 5  # neutral motivation level
         log(f"Generated initial motivation level: {motivation_level}")
         return motivation_level
