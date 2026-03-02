@@ -70,7 +70,7 @@ def rate_contributors_for_issue(
         ).content
         try:
             bid_value = int(bid_parser.parse(response)["bid"])
-        except:
+        except (KeyError, ValueError, TypeError):
             bid_value = 5
         contributor_id = (
             contributor_role.split(":")[1].strip().split(" ")[0].strip("()")
