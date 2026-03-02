@@ -24,6 +24,7 @@
 
 import shutil
 import random
+import logging
 
 from matplotlib.axes import Axes
 
@@ -36,6 +37,15 @@ from LLAMOSC.utils import *
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
+logging.basicConfig(
+    level=logging.WARNING,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("llamosc_errors.log")
+    ]
+)
 
 
 def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):

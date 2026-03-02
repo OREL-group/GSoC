@@ -1,18 +1,39 @@
 import os
 import subprocess
+import time
+import logging
 from loguru import logger
 from rich.console import Console
 from langchain_community.llms import Ollama
 from matplotlib.axes import Axes
 
+logger = logging.getLogger("LLAMOSC")
+
 console = Console()
 
 
 def query_ollama(prompt):
-    llm = Ollama(model="llama3")
-    res = llm.invoke(prompt, stop=["<|eot_id|>"])
-    # print(f"OLLAMA response: {res}")
-    return res
+    MAX_RETRIES = 3
+    RETRY_DELAY = 2
+    
+    for attempt in range(MAX_RETRIES):
+        try:
+            llm = Ollama(model="llama3")
+            res = llm.invoke(prompt, stop=["<|eot_id|>"])
+            
+            if res and res.strip():
+                return res
+            else:
+                logger.warning(f"[query_ollama] Empty response on attempt {attempt+1}")
+                
+        except Exception as e:
+            logger.error(f"[query_ollama] Attempt {attempt+1} failed: {e}")
+            
+        if attempt < MAX_RETRIES - 1:
+            time.sleep(RETRY_DELAY)
+    
+    logger.error("[query_ollama] All retries exhausted. Returning None.")
+    return None
 
 
 def run_command(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
