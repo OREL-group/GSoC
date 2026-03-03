@@ -662,8 +662,6 @@ class SimulationApp(QWidget):
                 merged_pull_request_dir = os.path.join(
                     merged_dir, most_recent_pull_request
                 )
-                if os.path.exists(merged_pull_request_dir):
-                    shutil.rmtree(merged_pull_request_dir)
                 os.rename(pull_request_dir, merged_pull_request_dir)
                 # delete the other versions of the pull request for the same task_id
                 for pr_dir in pull_request_dirs:
@@ -677,8 +675,6 @@ class SimulationApp(QWidget):
                 solved_dir = os.path.join(self.project_dir, "issues", "solved")
                 os.makedirs(solved_dir, exist_ok=True)
                 solved_issue_path = os.path.join(solved_dir, f"task_{task_id}.md")
-                if os.path.exists(solved_issue_path):
-                    os.remove(solved_issue_path)
                 os.rename(issue.filepath, solved_issue_path)
                 repo_commit_current_changes(self.project_dir)
 
