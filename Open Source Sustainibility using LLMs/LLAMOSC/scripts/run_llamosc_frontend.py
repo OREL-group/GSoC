@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QScrollArea,
     QFileDialog,
+    QDialog,
 )
 from PyQt5.QtCore import pyqtSignal, QObject, QTimer, Qt, QSize
 from PyQt5.QtGui import QPainter, QBrush, QColor, QTextCursor, QPixmap, QFont
@@ -165,11 +166,48 @@ class SimulationApp(QWidget):
         progress = int((current / total) * 100)
         self.progress_bar.setValue(progress)
 
+    def show_error_dialog(self, title, message):
+        dialog = QDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setModal(True)
+        dialog.setMinimumWidth(480)
+
+        layout = QVBoxLayout(dialog)
+        text_label = QLabel(message)
+        text_label.setWordWrap(True)
+        layout.addWidget(text_label)
+
+        button_row = QHBoxLayout()
+        button_row.addStretch(1)
+        ok_button = QPushButton("OK")
+        ok_button.setDefault(True)
+        ok_button.clicked.connect(dialog.accept)
+        button_row.addWidget(ok_button)
+        button_row.addStretch(1)
+        layout.addLayout(button_row)
+
+        dialog.exec_()
+
     def start_simulation(self):
         # Retrieve values from UI
-        n_contributors = int(self.contributors_input.text())
-        n_maintainers = int(self.maintainers_input.text())
-        n_issues = int(self.issues_input.text())
+        try:
+            n_contributors = int(self.contributors_input.text())
+            n_maintainers = int(self.maintainers_input.text())
+            n_issues = int(self.issues_input.text())
+        except ValueError:
+            self.show_error_dialog(
+                "Invalid input",
+                "Contributors, Maintainers and Issues must be integers.",
+            )
+            return
+
+        if n_contributors <= 0 or n_maintainers <= 0 or n_issues <= 0:
+            self.show_error_dialog(
+                "Invalid input",
+                "Contributors, Maintainers and Issues must be greater than 0.",
+            )
+            return
+
         self.use_acr = self.acr_checkbox.isChecked()
         test = self.test_checkbox.isChecked()
         algorithm = self.algorithm_selection.currentText()[0]
