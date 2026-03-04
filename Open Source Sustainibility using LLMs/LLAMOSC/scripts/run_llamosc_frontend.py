@@ -100,7 +100,7 @@ class SimulationApp(QWidget):
         layout.addWidget(self.acr_checkbox)
 
         # Use ACR checkbox
-        self.test_checkbox = QCheckBox("Testing mode")
+        self.test_checkbox = QCheckBox("Fast Testing Mode (Skip LLM calls, use mock data)")
         self.test_checkbox.setChecked(True)  # Set default to True
         layout.addWidget(self.test_checkbox)
 
@@ -377,7 +377,7 @@ class SimulationApp(QWidget):
             axis=self.ax_cont_exp,
             x_label="Time Step",
             y_label="Contributor Experience",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=5,
             title="Contributor Experience Metric",
         )
@@ -386,7 +386,7 @@ class SimulationApp(QWidget):
             axis=self.ax_cont_mot,
             x_label="Time Step",
             y_label="Contributor Motivation",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=10,
             title="Contributor Motivation Metric",
         )
@@ -395,7 +395,7 @@ class SimulationApp(QWidget):
             axis=self.ax_code_qal,
             x_label="Time Step",
             y_label="Code Quality",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=5,
             title="Simulation Average Code Quality Metric",
         )
