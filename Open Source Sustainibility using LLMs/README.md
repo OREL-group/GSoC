@@ -159,21 +159,13 @@ Ensure you have Python installed and the required dependencies set up.
 
 ### Steps to Run:
 
-1. **Clear Previous Simulation Data**
-
-   ```sh
-   python .\LLAMOSC\scripts\clear_calculator_project.py
-   ```
-
-   This command removes earlier simulation data to ensure a fresh run.
-
-2. **Start the Simulation GUI**
+1. **Start the Simulation GUI**
 
    ```sh
    python .\LLAMOSC\scripts\run_llamosc_frontend.py
    ```
 
-   Running this command will open the LLAMOSC Simulation interface.
+   Running this command will open the LLAMOSC Simulation interface. It Also removes earlier simulation data to ensure a fresh run.
 
 ### Simulation UI Explanation
 

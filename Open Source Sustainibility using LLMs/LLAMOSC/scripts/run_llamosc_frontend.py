@@ -57,9 +57,10 @@ from frontend import *
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
+from clear_calculator_project import clear_previous_project_directory
 import time
 
+clear_previous_project_directory() # Clear the project directory before starting the simulation
 
 class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
