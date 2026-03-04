@@ -635,7 +635,7 @@ class SimulationApp(QWidget):
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
                     self.sim.update_code_quality(pr_accepted)
-                except:
+                except Exception:
                     pr_accepted = self.sim.update_code_quality(random.randint(1, 3))
 
                 # update number of pending and solved issues

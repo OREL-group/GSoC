@@ -281,8 +281,7 @@ def main():
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
                     sim.update_code_quality(pr_accepted)
-                except:
-
+                except Exception:
                     pr_accepted = sim.update_code_quality(random.randint(1, 3))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
