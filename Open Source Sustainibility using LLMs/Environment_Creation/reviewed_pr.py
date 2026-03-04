@@ -350,7 +350,6 @@ def main():
 
         else:
             print("Reviewed and rejected the pull request", most_recent_pull_request)
-            # TODO : make a "rejected" folder in the pull_requests folder and move the rejected pull request there
             rejected_dir = os.path.join(project_dir, "pull_requests", "rejected")
             os.makedirs(rejected_dir, exist_ok=True)
             rejected_pull_request_dir = os.path.join(rejected_dir, most_recent_pull_request)
