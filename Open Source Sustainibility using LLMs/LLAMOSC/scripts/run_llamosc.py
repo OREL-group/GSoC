@@ -232,20 +232,22 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
+        
+        # Select contributor based on algorithm
         if algorithm == "d":
-            selected_contributor = sim.select_contributor_decentralized(issue)[0]
+            result = sim.select_contributor_decentralized(issue)
         else:
-            selected_contributor = sim.select_contributor_authoritarian(
-                selected_maintainer
-            )[0]
-
-        # Assign an issue from the available issues to the agent
-        if not selected_contributor:
-            selected_contributor = [
-                contributor
-                for contributor in contributors
-                if contributor.eligible_for_issue(issue)
-            ][0]
+            result = sim.select_contributor_authoritarian(selected_maintainer)
+        
+        # Check if any eligible contributors were found
+        if result is None:
+            log_and_print(
+                f"No eligible contributors found for Issue #{issue.id}. Skipping this issue.\n"
+            )
+            selected_maintainer.unassign_task()
+            return
+        
+        selected_contributor, discussion_history = result
 
         log(selected_contributor.name)
         # TODO : if no eligible contributors, loop until the issue is solved
