@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Optional
 from LLAMOSC.utils import log_and_print
 
 
@@ -42,6 +42,43 @@ class ConversationSpace:
         return "\n".join(
             [f"{m.timestamp} | {m.sender}: {m.content}" for m in self.messages]
         )
+
+    def get_engagement_metrics(self) -> Dict:
+        """
+        Returns basic engagement metrics for the conversation space.
+        """
+        if not self.messages:
+            return {
+                "total_messages": 0,
+                "unique_participants": 0,
+                "messages_per_sender": {},
+                "most_active_sender": None,
+                "first_message_time": None,
+                "last_message_time": None,
+                "conversation_duration_seconds": 0,
+            }
+
+        messages_per_sender = {}
+        for message in self.messages:
+            messages_per_sender[message.sender] = (
+                messages_per_sender.get(message.sender, 0) + 1
+            )
+
+        most_active_sender = max(messages_per_sender, key=messages_per_sender.get)
+
+        first_time = datetime.strptime(self.messages[0].timestamp, "%Y-%m-%d %H:%M:%S")
+        last_time = datetime.strptime(self.messages[-1].timestamp, "%Y-%m-%d %H:%M:%S")
+        duration = (last_time - first_time).seconds
+
+        return {
+            "total_messages": len(self.messages),
+            "unique_participants": len(messages_per_sender),
+            "messages_per_sender": messages_per_sender,
+            "most_active_sender": most_active_sender,
+            "first_message_time": self.messages[0].timestamp,
+            "last_message_time": self.messages[-1].timestamp,
+            "conversation_duration_seconds": duration,
+        }
 
     def clear(self):
         """Clear the conversation history."""
