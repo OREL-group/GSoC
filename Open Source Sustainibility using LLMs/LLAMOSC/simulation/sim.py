@@ -3,7 +3,6 @@ from LLAMOSC.simulation.rating_and_bidding import (
     rate_contributors_for_issue,
     simulate_github_discussion,
     simulate_llm_bidding,
-
 )
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.conversation_space import ConversationSpace
@@ -50,6 +49,10 @@ class Simulation:
             if contributor.eligible_for_issue(issue)
         ]
         if not eligible_contributors:
+            log_and_print(
+                f"\nNo eligible contributors found for Issue #{issue.id} (difficulty: {issue.difficulty}).\n"
+                f"All contributors: {[(c.name, c.experience, c.available) for c in self.contributors]}\n"
+            )
             return None
 
         log_and_print(
@@ -90,6 +93,10 @@ class Simulation:
             if contributor.eligible_for_issue(issue)
         ]
         if not eligible_contributors:
+            log_and_print(
+                f"\nNo eligible contributors found for Issue #{issue.id} (difficulty: {issue.difficulty}).\n"
+                f"All contributors: {[(c.name, c.experience, c.available) for c in self.contributors]}\n"
+            )
             return None
 
         log_and_print(

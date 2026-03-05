@@ -58,6 +58,23 @@ def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):
     # return lines.values()
 
 
+def read_issues(issues_folder):
+    """Reads issue files from the given folder and returns a list of Issue objects."""
+    issues = []
+    log_and_print(f"Reading issues from the issues folder: {issues_folder}")
+    if not os.path.exists(issues_folder):
+        return issues
+        
+    for filename in os.listdir(issues_folder):
+        file_path = os.path.join(issues_folder, filename)
+        issue_id = int(filename.split("_")[1].split(".")[0])
+        # TODO: Better way to get issue difficulty
+        issue = Issue(issue_id, (issue_id + 1) % 5, file_path)
+        issues.append(issue)
+        
+    return issues
+
+
 def main():
 
     parser = argparse.ArgumentParser(description="LLAMOSC Simulation")
@@ -102,25 +119,11 @@ def main():
     repo_commit_current_changes(project_dir)
 
     # Get the path to the issues folder
-    # current folder
     issues_parent_folder = os.path.join(project_dir, "issues")
     issues_folder = os.path.join(issues_parent_folder, "pending")
-    # Loop through all the files in the issues folder
-    log_and_print("Reading issues from the issues folder...")
-    for filename in os.listdir(issues_folder):
-        # Create the file path
-        file_path = os.path.join(issues_folder, filename)
-
-        # Extract the issue id from the filename
-        issue_id = int(filename.split("_")[1].split(".")[0])
-
-        # Create the issue object
-        # TODO: Better way to get issue difficulty
-        issue = Issue(issue_id, (issue_id + 1) % 5, file_path)
-
-        # Add the issue to the issues list
-        issues.append(issue)
-
+    issues = read_issues(issues_folder)
+   
+   
     if len(issues) < n_issues:
         issue_creator = IssueCreatorAgent(name="Issue Creator")
         existing_code = """"""
@@ -229,20 +232,22 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
+        
+        # Select contributor based on algorithm
         if algorithm == "d":
-            selected_contributor = sim.select_contributor_decentralized(issue)[0]
+            result = sim.select_contributor_decentralized(issue)
         else:
-            selected_contributor = sim.select_contributor_authoritarian(
-                selected_maintainer
-            )[0]
-
-        # Assign an issue from the available issues to the agent
-        if not selected_contributor:
-            selected_contributor = [
-                contributor
-                for contributor in contributors
-                if contributor.eligible_for_issue(issue)
-            ][0]
+            result = sim.select_contributor_authoritarian(selected_maintainer)
+        
+        # Check if any eligible contributors were found
+        if result is None:
+            log_and_print(
+                f"No eligible contributors found for Issue #{issue.id}. Skipping this issue.\n"
+            )
+            selected_maintainer.unassign_task()
+            return
+        
+        selected_contributor, discussion_history = result
 
         log(selected_contributor.name)
         # TODO : if no eligible contributors, loop until the issue is solved
@@ -325,15 +330,15 @@ def main():
                 rejected_pull_request_dir = os.path.join(rejected_dir, most_recent_pull_request)
                 os.rename(pull_request_dir, rejected_pull_request_dir)
 
-        # Increment solved issues counter and try dynamic issue creation
-        sim.issues_solved += 1
-        sim.try_dynamic_issue_creation(
-            issue_creator=issue_creator,
-            issue_queue=issues,
-            existing_issues=issues,
-            existing_code=existing_code,
-            issues_folder=issues_folder
-        )
+            # Increment solved issues counter and try dynamic issue creation
+            sim.issues_solved += 1
+            sim.try_dynamic_issue_creation(
+                issue_creator=issue_creator,
+                issue_queue=issues,
+                existing_issues=issues,
+                existing_code=existing_code,
+                issues_folder=issues_folder
+            )
 
         else:
             log_and_print("Error solving the assigned issue")
