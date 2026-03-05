@@ -107,7 +107,7 @@ class SimulationApp(QWidget):
         # Algorithm selection
         layout.addWidget(QLabel("Decision Making Algorithm:"))
         self.algorithm_selection = QComboBox()
-        self.algorithm_selection.addItems(["a (Authoritarian)", "d (Decentralized)"])
+        self.algorithm_selection.addItems(["a (Authoritarian)", "d (Decentralized)", "c (Collaborative)"])
         layout.addWidget(self.algorithm_selection)
 
         # Issue path selection
@@ -211,7 +211,7 @@ class SimulationApp(QWidget):
 
         self.use_acr = self.acr_checkbox.isChecked()
         test = self.test_checkbox.isChecked()
-        algorithm = self.algorithm_selection.currentText()[0]
+        self.algorithm = self.algorithm_selection.currentText()[0]
 
         current_folder = os.path.dirname(os.path.abspath(__file__))
         self.project_dir = getattr(self, "issues_path", None)
@@ -227,7 +227,7 @@ class SimulationApp(QWidget):
             f"Maintainers: {n_maintainers} "
             f"Issues: {n_issues} "
             f"Use ACR: {self.use_acr}\n "
-            f"Algorithm: {algorithm}\n "
+            f"Algorithm: {self.algorithm}\n "
             f"Issues Path: {self.project_dir} "
         )
 
@@ -248,6 +248,7 @@ class SimulationApp(QWidget):
         # current folder
         issues_parent_folder = os.path.join(self.project_dir, "issues")
         issues_folder = os.path.join(issues_parent_folder, "pending")
+        os.makedirs(issues_folder, exist_ok=True)
         # Loop through all the files in the issues folder
         self.progress_bar.setValue(10)
         # log_and_print("Reading existing issues from the issues folder...")
@@ -326,7 +327,7 @@ class SimulationApp(QWidget):
 
         self.progress_bar.setValue(100)
         log_and_print(
-            f"\nStarting simulation with {len(issues)} issues and {len(self.contributors)} contributors with ACR : {self.use_acr} and Algorithm : {algorithm}.\n"
+            f"\nStarting simulation with {len(issues)} issues and {len(self.contributors)} contributors with ACR : {self.use_acr} and Algorithm : {self.algorithm}.\n"
         )
 
         self.issues_history = {
@@ -517,21 +518,15 @@ class SimulationApp(QWidget):
             ):
                 self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
         else:
-            if self.algorithm_selection == "d":
+            if self.algorithm == "d":
                 # put eligible contributors in discussion state
                 for i in range(num_eligible_contributors):
                     self.simulation_window.stick_figure_app.set_stick_figure_position(
                         i, 2
                     )
-                result = self.sim.select_contributor_decentralized(issue)
-                if result is None:
-                    self.simulation_window.log.setText(
-                        self.simulation_window.log.text()
-                        + "\n"
-                        + f"No eligible contributors found for Issue #{issue.id}. Skipping"
-                    )
-                    return
-                selected_contributor, discussion_history = result
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_decentralized(issue)
+                )
                 formatted_history = format_discussion_history(discussion_history)
                 self.simulation_window.active_discussion_console.append_colored_text(
                     f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
@@ -551,21 +546,42 @@ class SimulationApp(QWidget):
                     + f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
                 )
 
+            elif self.algorithm =="c":
+                for i in range(num_eligible_contributors):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i,2
+                    )
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_collaborative(issue)
+                )
+                formatted_history = format_discussion_history(discussion_history)
+                self.simulation_window.active_discussion_console.append_colored_text(
+                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
+                    color="white",
+                )
+                # one contributor in busy state and other are in available state
+                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
+                for i in range(
+                    1, self.simulation_window.stick_figure_app.num_stick_figures
+                ):
+                    self.simulation_window.stick_figure_app.set_stick_figure_position(
+                        i,4
+                    )
+                self.simulation_window.log.setText(
+                    self.simulation_window.log.text()
+                    + "\n"
+                    + f"Formed collaborative team with Lead {selected_contributor.name} based on LLM assessment."
+                )
+
             else:
                 # put eligible contributors in discussion state
                 for i in range(num_eligible_contributors):
                     self.simulation_window.stick_figure_app.set_stick_figure_position(
                         i, 2
                     )
-                result = self.sim.select_contributor_authoritarian(selected_maintainer)
-                if result is None:
-                    self.simulation_window.log.setText(
-                        self.simulation_window.log.text()
-                        + "\n"
-                        + f"No eligible contributors found for Issue #{issue.id}. Skipping"
-                    )
-                    return
-                selected_contributor, discussion_history = result
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_authoritarian(selected_maintainer)
+                )
                 formatted_history = format_discussion_history(discussion_history)
                 self.simulation_window.active_discussion_console.append_colored_text(
                     f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
@@ -611,6 +627,7 @@ class SimulationApp(QWidget):
         QtTest.QTest.qWait(1000)
 
         pull_requests_dir = os.path.join(self.project_dir, "pull_requests")
+        os.makedirs(pull_requests_dir, exist_ok=True)
         if task_solved:
 
             # Find the most recent pull request for the given task_id

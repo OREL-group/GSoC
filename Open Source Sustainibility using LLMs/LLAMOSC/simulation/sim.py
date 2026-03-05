@@ -3,11 +3,14 @@ from LLAMOSC.simulation.rating_and_bidding import (
     rate_contributors_for_issue,
     simulate_github_discussion,
     simulate_llm_bidding,
+    form_collaborative_team,
 )
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.conversation_space import ConversationSpace
 from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.agents.contributor import ContributorAgent
+from langchain_community.chat_models import ChatOllama
+from langchain.schema import SystemMessage, HumanMessage
 import random
 import logging
 
@@ -49,10 +52,6 @@ class Simulation:
             if contributor.eligible_for_issue(issue)
         ]
         if not eligible_contributors:
-            log_and_print(
-                f"\nNo eligible contributors found for Issue #{issue.id} (difficulty: {issue.difficulty}).\n"
-                f"All contributors: {[(c.name, c.experience, c.available) for c in self.contributors]}\n"
-            )
             return None
 
         log_and_print(
@@ -93,10 +92,6 @@ class Simulation:
             if contributor.eligible_for_issue(issue)
         ]
         if not eligible_contributors:
-            log_and_print(
-                f"\nNo eligible contributors found for Issue #{issue.id} (difficulty: {issue.difficulty}).\n"
-                f"All contributors: {[(c.name, c.experience, c.available) for c in self.contributors]}\n"
-            )
             return None
 
         log_and_print(
@@ -127,6 +122,48 @@ class Simulation:
         )
 
         return selected_contributor, discussion_history
+
+    def simulate_collaborative_work(self, team, issue: Issue):
+        log_and_print(f"Simulating collaboration for Issue #{issue.id}...")
+        ## Announce team in a channle
+        for role, member in team.items():
+            self.conversation_space.post_message(
+                sender="system",
+                content=f"Team: {role} -> {member.name}"
+            )
+        model = ChatOllama(model="llama3")
+        issue_text = open(issue.filepath).read()
+        prompt = f"""
+        Simulate a brief dev conversation and work summary for:
+        Issue: {issue_text}
+        Team:
+        - Lead: {team['Lead'].name}
+        - Reviewer: {team['Reviewer'].name}
+        - Support: {team['Support'].name}
+        
+        Output a short log (max 150 words) showing the Lead coding, Reviewer suggesting a fix, and Support helping.
+        """
+        
+        ctx = SystemMessage(content="You generate realistic developer collaboration logs.")
+        log = model.invoke([ctx, HumanMessage(content=prompt)]).content
+        
+        log_and_print(f"\n--- Collaboration Log (#{issue.id}) ---\n{log}\n")
+        self.conversation_space.post_message(sender="system", content=f"Resolved Issue #{issue.id}. Lead preparing PR.")
+
+        return team['Lead']
+
+    def select_contributor_collaborative(self, issue: Issue):
+        eligible = [c for c in self.contributors if c.eligible_for_issue(issue)]
+        if not eligible:
+            return None
+        log_and_print(f"Eligible for collaboration on #{issue.id}: {[c.name for c in eligible]}")
+
+        # initially standard discussion only
+        history = simulate_github_discussion(eligible, issue)
+        ## now form the team and simulate the work
+        team = form_collaborative_team(eligible, issue, history)
+        lead = self.simulate_collaborative_work(team, issue)
+        return lead, history
 
     def try_dynamic_issue_creation(self, issue_creator, issue_queue, existing_issues, existing_code, issues_folder):
         # Build simulation state dict
