@@ -325,15 +325,15 @@ def main():
                 rejected_pull_request_dir = os.path.join(rejected_dir, most_recent_pull_request)
                 os.rename(pull_request_dir, rejected_pull_request_dir)
 
-        # Increment solved issues counter and try dynamic issue creation
-        sim.issues_solved += 1
-        sim.try_dynamic_issue_creation(
-            issue_creator=issue_creator,
-            issue_queue=issues,
-            existing_issues=issues,
-            existing_code=existing_code,
-            issues_folder=issues_folder
-        )
+            # Increment solved issues counter and try dynamic issue creation
+            sim.issues_solved += 1
+            sim.try_dynamic_issue_creation(
+                issue_creator=issue_creator,
+                issue_queue=issues,
+                existing_issues=issues,
+                existing_code=existing_code,
+                issues_folder=issues_folder
+            )
 
         else:
             log_and_print("Error solving the assigned issue")
