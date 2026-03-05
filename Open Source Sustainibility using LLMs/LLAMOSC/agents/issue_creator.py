@@ -5,14 +5,21 @@
 # TODO : Add issue difficulty
 
 import os
+import logging
 
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.utils import *
+
+logger = logging.getLogger("LLAMOSC")
 
 
 class IssueCreatorAgent:
     def __init__(self, name):
         self.name = name
+        self.dynamic_issues_created = 0
+        self.steps_since_last_creation = 0
+        self.MAX_DYNAMIC_ISSUES = 10
+        self.CREATION_COOLDOWN = 3
 
     def create_issue(self, existing_issues, existing_code, issues_folder):
 
@@ -117,6 +124,52 @@ class IssueCreatorAgent:
             os.path.join(issues_folder, issue_filename),
         )
         return created_issue_object
+
+    def should_create_issue(self, simulation_state: dict) -> bool:
+        # Guard Rail 1:
+        if simulation_state['pending_issues'] > 2:
+            logger.info(f"Too many pending issues ({simulation_state['pending_issues']}), skipping issue creation")
+            return False
+
+        # Guard Rail 2:
+        if self.dynamic_issues_created >= self.MAX_DYNAMIC_ISSUES:
+            logger.info(f"Maximum dynamic issues reached ({self.dynamic_issues_created}/{self.MAX_DYNAMIC_ISSUES}), skipping issue creation")
+            return False
+
+        # Guard Rail 3:
+        if self.steps_since_last_creation < self.CREATION_COOLDOWN:
+            self.steps_since_last_creation += 1
+            logger.info(f"Cooldown period active ({self.steps_since_last_creation}/{self.CREATION_COOLDOWN}), skipping issue creation")
+            return False
+
+        # LLM Decision:
+        try:
+            prompt = f"""
+            Based on the current simulation state, should a new issue be created?
+            
+            Simulation State:
+            - Pending Issues: {simulation_state.get('pending_issues', 0)}
+            - Solved Issues: {simulation_state.get('solved_issues', 0)}
+            - Average Code Quality: {simulation_state.get('avg_code_quality', 0)}
+            - Time Step: {simulation_state.get('time_step', 0)}
+            - Contributors: {simulation_state.get('contributors', [])}
+            
+            Reply with only YES or NO.
+            """
+            
+            response = query_ollama(prompt=prompt)
+            
+            if response is None:
+                logger.warning("LLM response was None, defaulting to False")
+                return False
+                
+            result = "YES" in response.upper()
+            logger.info(f"LLM decision for issue creation: {response.strip()} -> {result}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in LLM decision for issue creation: {e}")
+            return False
 
 
 # def main():

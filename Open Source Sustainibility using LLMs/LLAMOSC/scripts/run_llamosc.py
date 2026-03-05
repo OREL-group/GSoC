@@ -135,6 +135,16 @@ def main():
         for _ in range(len(issues) + 1, n_issues + 1):
             issue = issue_creator.create_issue(issues, existing_code, issues_folder)
             issues.append(issue)
+    else:
+        # Ensure issue_creator and existing_code are always available for dynamic issue creation
+        issue_creator = IssueCreatorAgent(name="Issue Creator")
+        existing_code = """"""
+
+        for root, _, files in os.walk(project_dir):
+            for file in files:
+                if file.endswith(".py"):
+                    with open(os.path.join(root, file), "r") as code_file:
+                        existing_code += code_file.read() + "\n"
 
     # Create required agents
     contributors = [
@@ -312,6 +322,16 @@ def main():
                     f"Maintainer {selected_maintainer.name} has rejected pull request for Issue #{issue.id}.\n"
                 )
                 # TODO : make a "rejected" folder in the pull_requests folder and move the rejected pull request there
+
+        # Increment solved issues counter and try dynamic issue creation
+        sim.issues_solved += 1
+        sim.try_dynamic_issue_creation(
+            issue_creator=issue_creator,
+            issue_queue=issues,
+            existing_issues=issues,
+            existing_code=existing_code,
+            issues_folder=issues_folder
+        )
 
         else:
             log_and_print("Error solving the assigned issue")
