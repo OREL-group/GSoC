@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QScrollArea,
     QFileDialog,
+    QDialog,
 )
 from PyQt5.QtCore import pyqtSignal, QObject, QTimer, Qt, QSize
 from PyQt5.QtGui import QPainter, QBrush, QColor, QTextCursor, QPixmap, QFont
@@ -56,9 +57,10 @@ from frontend import *
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
+from clear_calculator_project import clear_previous_project_directory
 import time
 
+clear_previous_project_directory() # Clear the project directory before starting the simulation
 
 class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
@@ -98,7 +100,7 @@ class SimulationApp(QWidget):
         layout.addWidget(self.acr_checkbox)
 
         # Use ACR checkbox
-        self.test_checkbox = QCheckBox("Testing mode")
+        self.test_checkbox = QCheckBox("Fast Testing Mode (Skip LLM calls, use mock data)")
         self.test_checkbox.setChecked(True)  # Set default to True
         layout.addWidget(self.test_checkbox)
 
@@ -165,11 +167,48 @@ class SimulationApp(QWidget):
         progress = int((current / total) * 100)
         self.progress_bar.setValue(progress)
 
+    def show_error_dialog(self, title, message):
+        dialog = QDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setModal(True)
+        dialog.setMinimumWidth(480)
+
+        layout = QVBoxLayout(dialog)
+        text_label = QLabel(message)
+        text_label.setWordWrap(True)
+        layout.addWidget(text_label)
+
+        button_row = QHBoxLayout()
+        button_row.addStretch(1)
+        ok_button = QPushButton("OK")
+        ok_button.setDefault(True)
+        ok_button.clicked.connect(dialog.accept)
+        button_row.addWidget(ok_button)
+        button_row.addStretch(1)
+        layout.addLayout(button_row)
+
+        dialog.exec_()
+
     def start_simulation(self):
         # Retrieve values from UI
-        n_contributors = int(self.contributors_input.text())
-        n_maintainers = int(self.maintainers_input.text())
-        n_issues = int(self.issues_input.text())
+        try:
+            n_contributors = int(self.contributors_input.text())
+            n_maintainers = int(self.maintainers_input.text())
+            n_issues = int(self.issues_input.text())
+        except ValueError:
+            self.show_error_dialog(
+                "Invalid input",
+                "Contributors, Maintainers and Issues must be integers.",
+            )
+            return
+
+        if n_contributors <= 0 or n_maintainers <= 0 or n_issues <= 0:
+            self.show_error_dialog(
+                "Invalid input",
+                "Contributors, Maintainers and Issues must be greater than 0.",
+            )
+            return
+
         self.use_acr = self.acr_checkbox.isChecked()
         test = self.test_checkbox.isChecked()
         algorithm = self.algorithm_selection.currentText()[0]
@@ -338,7 +377,7 @@ class SimulationApp(QWidget):
             axis=self.ax_cont_exp,
             x_label="Time Step",
             y_label="Contributor Experience",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=5,
             title="Contributor Experience Metric",
         )
@@ -347,7 +386,7 @@ class SimulationApp(QWidget):
             axis=self.ax_cont_mot,
             x_label="Time Step",
             y_label="Contributor Motivation",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=10,
             title="Contributor Motivation Metric",
         )
@@ -356,7 +395,7 @@ class SimulationApp(QWidget):
             axis=self.ax_code_qal,
             x_label="Time Step",
             y_label="Code Quality",
-            x_max=len(issues),
+            x_max=len(issues)-1,
             y_max=5,
             title="Simulation Average Code Quality Metric",
         )
@@ -596,7 +635,7 @@ class SimulationApp(QWidget):
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
                     self.sim.update_code_quality(pr_accepted)
-                except:
+                except Exception:
                     pr_accepted = self.sim.update_code_quality(random.randint(1, 3))
 
                 # update number of pending and solved issues

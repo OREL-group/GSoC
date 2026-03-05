@@ -35,7 +35,44 @@ pip install -r requirements.txt
 
 ## Step 2: Setting up Autocoderover
 
-1. Follow the instructions in the `autocoderover_setup.md` file located in the project directory: `OREL-GSoC/Open Source Sustainibility using LLMs/Environment_Creation/`.
+1. Install [ollama](https://ollama.com/) and download the corresponding models with ollama (e.g. `ollama pull llama3`).
+
+2. Download Docker Desktop and setup accopridng to instructions provided [here](https://docs.docker.com/desktop/install/windows-install/)
+
+*first time installation will need you to restart your pc.
+
+3. Clone [this modified fork of the auto-code-rover](https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git) instead of the original as some fixes were made to help it work better with locally hosted models especially llama3 7B using ollama. Without these fixes the correct answers will not be obtained.
+
+```shell
+git clone https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git
+cd auto-code-rover-for-llama37b
+```
+
+4. Since this project is using Ollama to host a open-source model locally, there is no need to setup an API key. 
+In the event of wanting to use this project with API's provided by OpenAI, Claude or GROQ, the instructions can be found [here](https://github.com/nus-apr/auto-code-rover#-setup--running).
+
+We recommend running AutoCodeRover in a Docker container.
+
+Build and start the docker image:
+
+```shell
+docker build -f Dockerfile -t acr1 .
+docker run -it -p 3000:3000 -p 5000:5000 acr1
+```
+5. Now, we can run ollama server on the host machine, and ACR in its container. ACR will attempt to communicate to the ollama server on host. 
+
+ACR (AutoCodeRover) is set up to be used only with the Llama3 (8B and 70B) model via Ollama. Hence, we will call it with the `llama3` model.
+```shell
+cd /opt/auto-code-rover
+conda activate auto-code-rover
+PYTHONPATH=. python app/main.py github-issue --output-dir output --setup-dir setup --model llama3 --task-id <task id> --clone-link <link for cloning the project> --commit-hash <any version that has the issue> --issue-link <link to issue page>
+```
+Here is an example command for running ACR on an issue from the langchain GitHub issue tracker using the llama3 model hosted locally using Ollama:
+```shell
+PYTHONPATH=. python app/main.py github-issue --output-dir output --setup-dir setup --model llama3 --task-id langchain-20453 --clone-link https://github.com/langchain-ai/langchain.git --commit-hash cb6e5e5 --issue-link https://github.com/langchain-ai/langchain/issues/20453 
+```
+
+for more information please look into [autocoderover_setup.md](./autocoderover_setup.md)
 
 ## Step 3: Running the Python File
 

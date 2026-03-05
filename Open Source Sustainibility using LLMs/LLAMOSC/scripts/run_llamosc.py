@@ -291,8 +291,7 @@ def main():
                 # increase no of pull requests and calculate new average code quality of the simulation
                 try:
                     sim.update_code_quality(pr_accepted)
-                except:
-
+                except Exception:
                     pr_accepted = sim.update_code_quality(random.randint(1, 3))
 
                 # make a "merged" folder in the pull_requests folder and move the merged pull request there
@@ -321,7 +320,10 @@ def main():
                 log_and_print(
                     f"Maintainer {selected_maintainer.name} has rejected pull request for Issue #{issue.id}.\n"
                 )
-                # TODO : make a "rejected" folder in the pull_requests folder and move the rejected pull request there
+                rejected_dir = os.path.join(project_dir, "pull_requests", "rejected")
+                os.makedirs(rejected_dir, exist_ok=True)
+                rejected_pull_request_dir = os.path.join(rejected_dir, most_recent_pull_request)
+                os.rename(pull_request_dir, rejected_pull_request_dir)
 
         # Increment solved issues counter and try dynamic issue creation
         sim.issues_solved += 1

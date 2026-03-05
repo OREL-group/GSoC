@@ -16,20 +16,20 @@ This environment is based on a paper "AutoCodeRover: Autonomous Program Improvem
 I may later add the [auto-code-rover repo](https://github.com/nus-apr/auto-code-rover) to my project as a dependency or publish a docker image of it on the web, currently I have cloned the repository and working within it. The steps to reproduce are as follows :
 
 ### Ollama Installation
-Please install [ollama](https://ollama.com/) and download the corresponding models with ollama (e.g. `ollama pull mistral`).
+Please install [ollama](https://ollama.com/) and download the corresponding models with ollama (e.g. `ollama pull llama3`).
 
 ### Download Docker Desktop 
 Since my setup is  ollama in host + ACR in its container, I follow the recommendation to install Docker Desktop on the host, in addition to the Docker Engine.
 Docker Desktop contains Docker Engine, and also has a virtual machine which makes it easier to access the host ports from within a container. With Docker Desktop, this setup will work without additional effort.
 
-Download Docker Desktop and setup accopridng to instructions provided [here](https://docs.docker.com/desktop/install/windows-install/)
+Download Docker Desktop and setup according to instructions provided [here](https://docs.docker.com/desktop/install/windows-install/)
 
 ### Git Clone
 Please clone [my fork of the repository](https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git) instead of the original as I have made some fixes to help it work better with locally hosted models especially llama3 7B using ollama. Without these fixes the correct answers will not be obtained.
 
 ```
 git clone https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git
-cd auto-code-rover
+cd auto-code-rover-for-llama37b
 ```
 
 ### Setup environment
@@ -42,8 +42,8 @@ We recommend running AutoCodeRover in a Docker container.
 Build and start the docker image:
 
 ```
-docker build -f Dockerfile -t acr .
-docker run -it -p 3000:3000 -p 5000:5000 acr
+docker build -f Dockerfile -t acr1 .
+docker run -it -p 3000:3000 -p 5000:5000 acr1
 ```
 
 ### Inference using locally hosted model
@@ -73,7 +73,7 @@ For this purpose, I have created a toy repository that implements a calculator. 
 
 ### ACR In Local issue mode : Set up and run on local repositories and local issues
 
-To run ACR on the local issue and local codebase of our toy repository,we need to first provide the docker container with access to the local folder (here "calculator_project"). To do so, add the following flag and arguments to the `docker run -it -p 3000:3000 -p 5000:5000 acr` command: 
+To run ACR on the local issue and local codebase of our toy repository,we need to first provide the docker container with access to the local folder (here "calculator_project"). To do so, add the following flag and arguments to the `docker run -it -p 3000:3000 -p 5000:5000 acr1` command: 
 ```
 -v "absolute//path//to//calculator_project":/calculator_project 
 ```
@@ -81,7 +81,7 @@ To run ACR on the local issue and local codebase of our toy repository,we need t
 Alternatively, for Command Prompt on Windows the command will become :
 
 ```
-docker run -it -p 3000:3000 -p 5000:5000 -v "%CD%\calculator_project":/home/calculator_project acr
+docker run -it -p 3000:3000 -p 5000:5000 -v "%CD%\calculator_project":/home/calculator_project acr1
 ```
 
 Then, follow the following steps : 

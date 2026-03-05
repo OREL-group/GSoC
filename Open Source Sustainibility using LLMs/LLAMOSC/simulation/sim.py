@@ -3,8 +3,10 @@ from LLAMOSC.simulation.rating_and_bidding import (
     rate_contributors_for_issue,
     simulate_github_discussion,
     simulate_llm_bidding,
+    form_collaborative_team,
 )
 from LLAMOSC.simulation.issue import Issue
+from LLAMOSC.simulation.conversation_space import ConversationSpace
 from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.agents.contributor import ContributorAgent
 import random
@@ -16,27 +18,19 @@ logger = logging.getLogger("LLAMOSC")
 class Simulation:
     def __init__(self, contributors):
         self.contributors = contributors
-        self.avg_code_quality = 4  # Initial code quality
-        self.num_pull_requests = 0  # To keep track of the number of pull requests
+        self.avg_code_quality = 4
+        self.num_pull_requests = 0
         self.time_step = 0
+
         self.issues_solved = 0
+        self.conversation_space = ConversationSpace(channel_name="general")
 
     def update_code_quality(self, new_quality):
-        """
-        Update the average code quality using a simple average.
-
-        :param new_quality: The code quality of the new pull request.
-        """
-        # Increment the number of pull requests
         self.num_pull_requests += 1
-
         log(f"Initial code quality: {self.avg_code_quality}")
         log(f"Recieved new code quality: {new_quality}")
-        # Calculate the new average
         if self.num_pull_requests == 1:
-
             self.avg_code_quality = new_quality
-            # self.avg_code_quality = (self.avg_code_quality + new_quality) / 2
             log(f"Number of pull requests: {self.num_pull_requests}")
             log(f"New code quality: {self.avg_code_quality}")
         else:
@@ -46,7 +40,6 @@ class Simulation:
             log(f"Number of pull requests: {self.num_pull_requests}")
             log(f"New code quality: {self.avg_code_quality}")
 
-    # if function is called with maintainer means authoritarian algorithm
     def select_contributor_authoritarian(
         self, maintainer: MaintainerAgent
     ) -> ContributorAgent:
@@ -82,9 +75,14 @@ class Simulation:
         log_and_print(
             f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with maintainer's rating of {max_value}\n"
         )
+
+        self.conversation_space.post_message(
+            sender="system",
+            content=f"Issue #{issue.id} assigned to {selected_contributor.name}."
+        )
+
         return selected_contributor, discussion_history
 
-    # if function is called with issue instead of maintainer means decentralized algorithm
     def select_contributor_decentralized(self, issue: Issue):
         eligible_contributors = [
             contributor
@@ -101,8 +99,6 @@ class Simulation:
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
         bids = simulate_llm_bidding(eligible_contributors, issue, discussion_history)
 
-        # randomly select among multiple agents with the same bid
-
         max_value = max(bids.values())
         highest_bidder_ids = [
             bid_id for bid_id, bid in bids.items() if bid == max_value
@@ -113,9 +109,16 @@ class Simulation:
             for contributor in self.contributors
             if contributor.id == highest_bidder_id
         ][0]
+
         log_and_print(
             f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with a bid of {max_value}\n"
         )
+
+        self.conversation_space.post_message(
+            sender="system",
+            content=f"Issue #{issue.id} assigned to {selected_contributor.name}."
+        )
+
         return selected_contributor, discussion_history
 
     def try_dynamic_issue_creation(self, issue_creator, issue_queue, existing_issues, existing_code, issues_folder):

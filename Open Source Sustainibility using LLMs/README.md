@@ -103,7 +103,7 @@ Successfully installed LLAMOSC-0.1
 Run the provided script to create the toy_repo directory:
 
 ```bash
-python Open Source Sustainibility using LLMs\Environment_Creation\create_toy_repo.py
+python "Open Source Sustainibility using LLMs\create_toy_repo.py"
 ```
 
 This will create an empty calculator_project directory where the main `OREL-group/GSoC` repository was cloned.
@@ -159,21 +159,13 @@ Ensure you have Python installed and the required dependencies set up.
 
 ### Steps to Run:
 
-1. **Clear Previous Simulation Data**
-
-   ```sh
-   python .\LLAMOSC\scripts\clear_calculator_project.py
-   ```
-
-   This command removes earlier simulation data to ensure a fresh run.
-
-2. **Start the Simulation GUI**
+1. **Start the Simulation GUI**
 
    ```sh
    python .\LLAMOSC\scripts\run_llamosc_frontend.py
    ```
 
-   Running this command will open the LLAMOSC Simulation interface.
+   Running this command will open the LLAMOSC Simulation interface. It Also removes earlier simulation data to ensure a fresh run.
 
 ### Simulation UI Explanation
 
