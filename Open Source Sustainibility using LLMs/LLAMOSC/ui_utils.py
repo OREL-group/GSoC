@@ -62,7 +62,7 @@ class StickFigureApp(QWidget):
         # Setup the timer
         self.timer = QTimer()
         self.timer.timeout.connect(self.move_stick_figures)
-        self.timer.start(1000)  # Move figures every 1 second
+        self.timer.start(100)  # Move figures every 0.1 second
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -181,9 +181,6 @@ class StickFigureApp(QWidget):
                 stick_figure.set_position(new_x, new_y)
 
         self.canvas.draw()
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.move_stick_figures)
-        self.timer.start(100)  # Move figures every 0.1 second
 
         # for i in range(self.num_stick_figures):
         #     self.set_stick_figure_position(i,1)
