@@ -58,6 +58,23 @@ def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):
     # return lines.values()
 
 
+def read_issues(issues_folder):
+    """Reads issue files from the given folder and returns a list of Issue objects."""
+    issues = []
+    log_and_print(f"Reading issues from the issues folder: {issues_folder}")
+    if not os.path.exists(issues_folder):
+        return issues
+        
+    for filename in os.listdir(issues_folder):
+        file_path = os.path.join(issues_folder, filename)
+        issue_id = int(filename.split("_")[1].split(".")[0])
+        # TODO: Better way to get issue difficulty
+        issue = Issue(issue_id, (issue_id + 1) % 5, file_path)
+        issues.append(issue)
+        
+    return issues
+
+
 def main():
 
     parser = argparse.ArgumentParser(description="LLAMOSC Simulation")
@@ -102,25 +119,11 @@ def main():
     repo_commit_current_changes(project_dir)
 
     # Get the path to the issues folder
-    # current folder
     issues_parent_folder = os.path.join(project_dir, "issues")
     issues_folder = os.path.join(issues_parent_folder, "pending")
-    # Loop through all the files in the issues folder
-    log_and_print("Reading issues from the issues folder...")
-    for filename in os.listdir(issues_folder):
-        # Create the file path
-        file_path = os.path.join(issues_folder, filename)
-
-        # Extract the issue id from the filename
-        issue_id = int(filename.split("_")[1].split(".")[0])
-
-        # Create the issue object
-        # TODO: Better way to get issue difficulty
-        issue = Issue(issue_id, (issue_id + 1) % 5, file_path)
-
-        # Add the issue to the issues list
-        issues.append(issue)
-
+    issues = read_issues(issues_folder)
+   
+   
     if len(issues) < n_issues:
         issue_creator = IssueCreatorAgent(name="Issue Creator")
         existing_code = """"""
