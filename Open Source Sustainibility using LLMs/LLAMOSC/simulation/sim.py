@@ -10,6 +10,9 @@ from LLAMOSC.simulation.conversation_space import ConversationSpace
 from LLAMOSC.agents.maintainer import MaintainerAgent
 from LLAMOSC.agents.contributor import ContributorAgent
 import random
+import logging
+
+logger = logging.getLogger("LLAMOSC")
 
 
 class Simulation:
@@ -18,6 +21,8 @@ class Simulation:
         self.avg_code_quality = 4
         self.num_pull_requests = 0
         self.time_step = 0
+
+        self.issues_solved = 0
         self.conversation_space = ConversationSpace(channel_name="general")
 
     def update_code_quality(self, new_quality):
@@ -115,3 +120,33 @@ class Simulation:
         )
 
         return selected_contributor, discussion_history
+
+    def try_dynamic_issue_creation(self, issue_creator, issue_queue, existing_issues, existing_code, issues_folder):
+        # Build simulation state dict
+        simulation_state = {
+            'issues_solved': self.issues_solved,
+            'pending_issues': len(existing_issues),
+            'avg_code_quality': self.avg_code_quality,
+            'active_contributors': len([c for c in self.contributors if c.available]),
+            'time_step': self.time_step
+        }
+        
+        # Call issue creator to check if new issue should be created
+        should_create = issue_creator.should_create_issue(simulation_state)
+        
+        if should_create:
+            try:
+                new_issue = issue_creator.create_issue(existing_issues, existing_code, issues_folder)
+                if new_issue:
+                    issue_queue.append(new_issue)
+                    existing_issues.append(new_issue)
+                    issue_creator.dynamic_issues_created += 1
+                    issue_creator.steps_since_last_creation = 0
+                    log_and_print(f"Created new dynamic issue: #{new_issue.id}")
+                else:
+                    logger.warning("Issue creator returned None, no new issue created")
+            except Exception as e:
+                logger.error(f"Error creating dynamic issue: {e}")
+        else:
+            # Increment steps since last creation even when not creating
+            issue_creator.steps_since_last_creation += 1
