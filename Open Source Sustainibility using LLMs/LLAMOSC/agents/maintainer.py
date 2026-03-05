@@ -43,10 +43,11 @@ class MaintainerAgent:
 
     def review_pull_request(self, pull_request_dir, local_repo_dir):
         pr_file_path = os.path.join(pull_request_dir, "pr.md")
-        diff_file_path = os.path.join(
-            pull_request_dir,
-            [f for f in os.listdir(pull_request_dir) if f.endswith(".diff")][0],
-        )
+        diff_files = [f for f in os.listdir(pull_request_dir) if f.endswith(".diff")]
+        if not diff_files:
+            log_and_print(f"No .diff file found in {pull_request_dir}, skipping review.")
+            return False
+        diff_file_path = os.path.join(pull_request_dir, diff_files[0])
 
         with open(pr_file_path, "r") as pr_file:
             pr_content = pr_file.read()
