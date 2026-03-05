@@ -3,7 +3,6 @@ from LLAMOSC.simulation.rating_and_bidding import (
     rate_contributors_for_issue,
     simulate_github_discussion,
     simulate_llm_bidding,
-    form_collaborative_team,
 )
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.conversation_space import ConversationSpace
