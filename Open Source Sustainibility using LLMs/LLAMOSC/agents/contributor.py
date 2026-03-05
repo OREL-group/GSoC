@@ -21,10 +21,10 @@ class ContributorAgent:
         self.id = id
         self.experience = experience
         self.available = True
-        self.motivation_level = type(int)  # 0 to 5
+        self.motivation_level = 0  # 0 to 10
         self.motivation_history = []
         self.name = name
-        self.assigned_issue = type(Issue)
+        self.assigned_issue = None
 
         if testing:
             self.role_description = "This is a test role description."
