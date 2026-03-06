@@ -523,9 +523,15 @@ class SimulationApp(QWidget):
                     self.simulation_window.stick_figure_app.set_stick_figure_position(
                         i, 2
                     )
-                selected_contributor, discussion_history = (
-                    self.sim.select_contributor_decentralized(issue)
-                )
+                result = self.sim.select_contributor_decentralized(issue)
+                if result is None:
+                    self.simulation_window.log.setText(
+                        self.simulation_window.log.text()
+                        + "\n"
+                        + f"No eligible contributors found for Issue #{issue.id}. Skipping"
+                    )
+                    return
+                selected_contributor, discussion_history = result
                 formatted_history = format_discussion_history(discussion_history)
                 self.simulation_window.active_discussion_console.append_colored_text(
                     f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
@@ -551,9 +557,15 @@ class SimulationApp(QWidget):
                     self.simulation_window.stick_figure_app.set_stick_figure_position(
                         i, 2
                     )
-                selected_contributor, discussion_history = (
-                    self.sim.select_contributor_authoritarian(selected_maintainer)
-                )
+                result = self.sim.select_contributor_authoritarian(selected_maintainer)
+                if result is None:
+                    self.simulation_window.log.setText(
+                        self.simulation_window.log.text()
+                        + "\n"
+                        + f"No eligible contributors found for Issue #{issue.id}. Skipping"
+                    )
+                    return
+                selected_contributor, discussion_history = result
                 formatted_history = format_discussion_history(discussion_history)
                 self.simulation_window.active_discussion_console.append_colored_text(
                     f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
