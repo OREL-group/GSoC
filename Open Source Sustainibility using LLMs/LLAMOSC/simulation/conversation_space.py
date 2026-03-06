@@ -38,36 +38,26 @@ class ConversationSpace:
         log_and_print(
             f"[#{self.channel_name}] {message.timestamp} | {sender}: {content}"
         )
-        # Re-index RAG on every new message
-        if self.use_rag and self.rag:
-            self._reindex_rag(message)
-
-    def _reindex_rag(self, message: Message):
-        """Index a new message into the RAG vectorstore."""
-        text = f"{message.timestamp} | {message.sender}: {message.content}"
-        self.rag.index_documents([text])
 
     def get_history(self) -> List[Message]:
         """Return full message history."""
         return self.messages
 
     def get_history_as_string(self, query: Optional[str] = None) -> str:
-        """
-        Return message history as a formatted string for LLM context.
-        If RAG is enabled and a query is provided, returns only the
-        most relevant messages instead of the full history.
-        """
-        if self.use_rag and self.rag and query:
+        if self.use_rag and self.rag and query and self.messages:
+            self.rag.vectorstore = None
+            texts = [
+                f"{m.timestamp} | {m.sender}: {m.content}"
+                for m in self.messages
+            ]
+            self.rag.index_documents(texts)
             retrieved = self.rag.retrieve_as_string(query)
             if retrieved:
-                logger.info(f"[ConversationSpace] RAG retrieved context for query: {query[:50]}")
                 return retrieved
-            else:
-                logger.warning("[ConversationSpace] RAG returned empty, falling back to full history.")
 
         return "\n".join(
             [f"{m.timestamp} | {m.sender}: {m.content}" for m in self.messages]
-        )
+        )   
 
     def get_engagement_metrics(self) -> Dict:
         """
