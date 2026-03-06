@@ -499,18 +499,30 @@ class SimulationApp(QWidget):
             # put eligible contributors in discussion state
             for i in range(num_eligible_contributors):
                 self.simulation_window.stick_figure_app.set_stick_figure_position(i, 2)
-            selected_contributor = random.choice(
-                [
-                    maintainer
-                    for maintainer in self.contributors
-                    if maintainer.eligible_for_issue(issue)
-                ]
-            )
-            self.simulation_window.log.setText(
-                self.simulation_window.log.text()
-                + "\n"
-                + f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
-            )
+            
+            if self.algorithm == "c":
+                ## show team formating logic
+                selected_contributor, discussion_history = (
+                    self.sim.select_contributor_collaborative(issue)
+                )
+                self.simulation_window.log.setText(
+                    self.simulation_window.log.text()
+                    + "\n"
+                    + f"Formed collaborative team with Lead {selected_contributor.name} (Fast Test Mode)."
+                )
+            else:
+                selected_contributor = random.choice(
+                    [
+                        maintainer
+                        for maintainer in self.contributors
+                        if maintainer.eligible_for_issue(issue)
+                    ]
+                )
+                self.simulation_window.log.setText(
+                    self.simulation_window.log.text()
+                    + "\n"
+                    + f"Selected contributor {selected_contributor.name} (Fast Test Mode)."
+                )
             # put one contributor in busy state and all others in available state
             self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
             for i in range(
