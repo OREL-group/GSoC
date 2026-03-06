@@ -4,7 +4,6 @@ from LLAMOSC.simulation.rag_retriever import RAGRetriever
 from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
 
-
 # TODO : use personalization in the prompt to get dofferent bidding response for different contributors
 # def generate_character_system_message(character_name, character_header):
 #     return SystemMessage(

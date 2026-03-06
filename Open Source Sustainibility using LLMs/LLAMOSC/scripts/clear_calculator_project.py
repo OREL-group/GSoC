@@ -44,6 +44,7 @@ def clear_previous_project_directory():
     calculator_file_path = os.path.join(
         project_dir, "calculator", "calculator.py"
     )  # Change this path if needed
+    os.makedirs(os.path.dirname(calculator_file_path), exist_ok=True)
     with open(calculator_file_path, "w") as file:
         file.write(replacementCode)
 
