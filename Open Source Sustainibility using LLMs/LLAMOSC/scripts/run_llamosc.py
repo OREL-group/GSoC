@@ -54,7 +54,8 @@ def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title, lines):
     axis.set_xlabel(x_label)
     axis.set_ylabel(y_label)
     axis.set_title(title)
-    axis.legend()
+    axis.legend(loc="upper right")
+  
     # return lines.values()
 
 
@@ -166,6 +167,9 @@ def main():
     experience_history = {
         contributor.name: [contributor.experience] for contributor in contributors
     }
+    motivation_history = {
+        contributor.name: [contributor.motivation_level] for contributor in contributors
+    }
     code_qal_history = [2.5]  # just a basic average to start with
     code_qal_curr_history = [2.5]  # just a basic average to start with
     time_history = [0]
@@ -174,10 +178,16 @@ def main():
         f"\nStarting simulation with {len(issues)} issues and {len(contributors)} contributors with ACR : {use_acr} and Algorithm : {algorithm}.\n"
     )
 
-    fig, (ax_cont_exp, ax_code_qal) = plt.subplots(2, 1)
+    fig, (ax_cont_exp, ax_code_qal, ax_cont_mot) = plt.subplots(3, 1, constrained_layout=True)
     lines_cont_exp = {
         contributor.name: ax_cont_exp.plot(
             time_history, experience_history[contributor.name], label=contributor.name
+        )[0]
+        for contributor in contributors
+    }
+    lines_cont_mot = {
+        contributor.name: ax_cont_mot.plot(
+            time_history, motivation_history[contributor.name], label=contributor.name
         )[0]
         for contributor in contributors
     }
@@ -355,6 +365,7 @@ def main():
         time_history.append(timestep)
         for contributor in contributors:
             experience_history[contributor.name].append(contributor.experience)
+            motivation_history[contributor.name].append(contributor.motivation_level)
         code_qal_history.append(sim.avg_code_quality)
         (
             code_qal_curr_history.append(pr_accepted)
@@ -367,6 +378,9 @@ def main():
         for contributor in contributors:
             lines_cont_exp[contributor.name].set_data(
                 time_history, experience_history[contributor.name]
+            )
+            lines_cont_mot[contributor.name].set_data(
+                time_history, motivation_history[contributor.name]
             )
 
         # Update code_quality metric line data
@@ -396,6 +410,16 @@ def main():
         y_max=5,
         title="Simulation Average Code Quality Metric",
         lines=lines_code_qal,
+    )
+
+    init_plot(
+        axis=ax_cont_mot,
+        x_label="Time Step",
+        y_label="Contributor Motivation",
+        x_max=len(issues),
+        y_max=10,
+        title="Contributor Motivation Metric",
+        lines=lines_cont_mot,
     )
 
     # draw the initial plot
