@@ -2,6 +2,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Dict, Optional
 from LLAMOSC.utils import log_and_print
+from LLAMOSC.simulation.rag_retriever import RAGRetriever
+
+import logging
+logger = logging.getLogger("LLAMOSC")
 
 
 @dataclass
@@ -18,12 +22,14 @@ class ConversationSpace:
     Simulates a Slack-like conversation space for contributors and maintainers.
     Analogous to how the simulation currently handles GitHub discussions,
     ConversationSpace provides a structured channel for team communication
-    around issues.
+    around issues. Supports RAG-based retrieval for relevant message history.
     """
 
-    def __init__(self, channel_name: str):
+    def __init__(self, channel_name: str, use_rag: bool = True):
         self.channel_name = channel_name
         self.messages: List[Message] = []
+        self.use_rag = use_rag
+        self.rag = RAGRetriever() if use_rag else None
 
     def post_message(self, sender: str, content: str):
         """Post a message to the conversation space."""
@@ -37,11 +43,21 @@ class ConversationSpace:
         """Return full message history."""
         return self.messages
 
-    def get_history_as_string(self) -> str:
-        """Return message history as a formatted string for LLM context."""
+    def get_history_as_string(self, query: Optional[str] = None) -> str:
+        if self.use_rag and self.rag and query and self.messages:
+            self.rag.vectorstore = None
+            texts = [
+                f"{m.timestamp} | {m.sender}: {m.content}"
+                for m in self.messages
+            ]
+            self.rag.index_documents(texts)
+            retrieved = self.rag.retrieve_as_string(query)
+            if retrieved:
+                return retrieved
+
         return "\n".join(
             [f"{m.timestamp} | {m.sender}: {m.content}" for m in self.messages]
-        )
+        )   
 
     def get_engagement_metrics(self) -> Dict:
         """
@@ -81,5 +97,7 @@ class ConversationSpace:
         }
 
     def clear(self):
-        """Clear the conversation history."""
+        """Clear the conversation history and reset RAG index."""
         self.messages = []
+        if self.rag:
+            self.rag.vectorstore = None

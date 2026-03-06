@@ -1,6 +1,6 @@
 from LLAMOSC.utils import *
 from LLAMOSC.simulation.bid_output_parser import BidOutputParser
-
+from LLAMOSC.simulation.rag_retriever import RAGRetriever
 from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
 
@@ -120,7 +120,13 @@ def simulate_github_discussion(eligible_contributors, issue):
     Difficulty: {issue.difficulty}
     """
     discussion_history.append({"role": "system", "content": initial_prompt})
+
+    # Initialize RAG retriever and index the issue description as seed context
+    rag = RAGRetriever()
+    rag.index_documents([issue_description])
+
     contributor_discussion_template = f"""
+    {{rag_context}}
     {{discussion_history}}
     Based on the above discussion, please reply with your thoughts on the issue in the style of {{contributor_name}} in 50 words or less, that addresses an approach to solve the issue, provides a unique perspective, and also helps prove your suitability/desire to participate in solving the following issue.
     Issue #{issue.id}: {issue_description}
@@ -128,8 +134,13 @@ def simulate_github_discussion(eligible_contributors, issue):
     """
 
     for contributor in eligible_contributors:
+        # Use RAG to retrieve relevant context for this contributor's response
+        query = f"contributor {contributor.name} experience {contributor.experience} issue {issue.id}"
+        rag_context = rag.retrieve_as_string(query)
+        rag_context_block = f"Relevant Context:\n{rag_context}\n" if rag_context else ""
 
         contributor_discussion_prompt = contributor_discussion_template.format(
+            rag_context=rag_context_block,
             discussion_history="\n".join(
                 f"{entry['role']}: {entry['content']}" for entry in discussion_history
             ),
@@ -145,12 +156,16 @@ def simulate_github_discussion(eligible_contributors, issue):
                 HumanMessage(content=contributor_discussion_prompt),
             ]
         ).content
+
         discussion_history.append(
             {
                 "role": f"{contributor.name} (id : {contributor.id}) (Experience: {contributor.experience}):",
                 "content": response,
             }
         )
+
+        # Index each contributor's response into RAG for subsequent contributors
+        rag.index_documents([response])
 
     formatted_history = format_discussion_history(discussion_history)
     log_and_print(formatted_history)
