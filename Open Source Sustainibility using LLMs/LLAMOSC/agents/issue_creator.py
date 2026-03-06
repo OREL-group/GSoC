@@ -104,8 +104,7 @@ class IssueCreatorAgent:
 #         Here is the current state of the project:
 #         {existing_code}
         Combine the following data only {new_issue}, write a issue in MARKDOWN ONLY that can be added to the project's issue tracker. Include the title, description, example code, checked resources, and system information in the appropriate sections.
-        Here is an existing issue for reference that you only use for format reference AND NOT USE ANY OF ITS CONTENT:
-        {existing_issues[0]}
+        {f"Here is an existing issue for reference that you only use for format reference AND NOT USE ANY OF ITS CONTENT: {existing_issues[0]}" if existing_issues else "No existing issues available for reference, use standard GitHub issue markdown format."}
         The entire issue should be less than 300 words.
         """
         final_issue = query_ollama(prompt=final_issue_prompt).strip()

@@ -60,6 +60,15 @@ class Simulation:
         )
 
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
+
+        # Log discussion messages to conversation space
+        for entry in discussion_history:
+            if entry["role"] != "system":
+                self.conversation_space.post_message(
+                    sender=entry["role"],
+                    content=entry["content"]
+                )
+
         bids = rate_contributors_for_issue(
             eligible_contributors, maintainer, discussion_history
         )
@@ -104,6 +113,15 @@ class Simulation:
         )
 
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
+
+        # Log discussion messages to conversation space
+        for entry in discussion_history:
+            if entry["role"] != "system":
+                self.conversation_space.post_message(
+                    sender=entry["role"],
+                    content=entry["content"]
+                )
+
         bids = simulate_llm_bidding(eligible_contributors, issue, discussion_history)
 
         max_value = max(bids.values())
