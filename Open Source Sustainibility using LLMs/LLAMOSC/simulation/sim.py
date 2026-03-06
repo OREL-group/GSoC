@@ -3,8 +3,8 @@ from LLAMOSC.simulation.rating_and_bidding import (
     rate_contributors_for_issue,
     simulate_github_discussion,
     simulate_llm_bidding,
-    form_collaborative_team,
 )
+from LLAMOSC.simulation.collaborative_team import form_collaborative_team
 from LLAMOSC.simulation.issue import Issue
 from LLAMOSC.simulation.conversation_space import ConversationSpace
 from LLAMOSC.agents.maintainer import MaintainerAgent
@@ -141,7 +141,7 @@ class Simulation:
         - Reviewer: {team['Reviewer'].name}
         - Support: {team['Support'].name}
         
-        Output a short log (max 150 words) showing the Lead coding, Reviewer suggesting a fix, and Support helping.
+        Output a short log (max 150 words) showing the Lead coding, Reviewer suggesting a fix, and Support helping. Do not include any timestamps or system dates in the output.
         """
         
         ctx = SystemMessage(content="You generate realistic developer collaboration logs.")

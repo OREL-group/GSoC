@@ -3,12 +3,6 @@ from LLAMOSC.simulation.bid_output_parser import BidOutputParser
 
 from langchain_community.chat_models import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage
-from langchain.output_parsers import RegexParser
-
-class TeamOutputParser(RegexParser):
-    def get_format_instructions(self) -> str:
-        return "Format: Lead <ID>, Reviewer <ID>, Support <ID> (all integers in angled brackets)."
-
 
 # TODO : use personalization in the prompt to get dofferent bidding response for different contributors
 # def generate_character_system_message(character_name, character_header):
@@ -230,73 +224,3 @@ def simulate_llm_bidding(eligible_contributors, issue, discussion_history):
 
     log_and_print(f"\nBids for Issue #{issue.id}: {bids}\n")
     return bids
-
-def form_collaborative_team(eligible_contributors, issue, discussion_history):
-    log_and_print(f"Forming collaborative team for Issue #{issue.id}...")
-    ## getting bids from all contributors
-    bids = simulate_llm_bidding(eligible_contributors, issue, discussion_history)
-    
-    model = ChatOllama(model="llama3")
-    team_parser = TeamOutputParser(
-        regex=r"Lead\s*<(\d+)>.*?Reviewer\s*<(\d+)>.*?Support\s*<(\d+)>", 
-        output_keys=["lead", "reviewer", "support"], 
-        default_output_key="lead"
-    )
-    issue_desc = open(issue.filepath).read()
-    
-    ## summarize state for selection
-    stats = ""
-    for c in eligible_contributors:
-        bid = bids.get(str(c.id), 5)
-        stats += f"ID: {c.id}, Name: {c.name}, Exp: {c.experience}, Mot: {c.motivation_level}, Bid: {bid}\n"
-
-    prompt = f"""
-    The following discussion just took place:
-    {{discussion}}
-    
-    Available Contributors:
-    {stats}
-    
-    Based on the above, assign THREE distinct contributors to these roles for Issue #{issue.id}:
-    - Lead: Primary dev (should have top experience/bid).
-    - Reviewer: Code quality checker (experienced).
-    - Support: Assisting with docs or testing.
-
-    {team_parser.get_format_instructions()}
-    """
-
-    system_msg = SystemMessage(
-        content="You are a technical lead assigning roles to form an efficient project team."
-    )
-    response = model.invoke([
-        system_msg, 
-        HumanMessage(content=prompt.format(
-            discussion="\n".join(f"{e['role']}: {e['content']}" for e in discussion_history if e['role'] != 'system')
-        ))
-    ]).content
-    
-    try:
-        res = team_parser.parse(response)
-        l_id, r_id, s_id = int(res["lead"]), int(res["reviewer"]), int(res["support"])
-        
-        ## Verify we got 3 unique people
-        if len({l_id, r_id, s_id}) < 3:
-            raise ValueError("Overlapping roles assigned")
-            
-        team = {
-            "Lead": next(c for c in eligible_contributors if c.id == l_id),
-            "Reviewer": next(c for c in eligible_contributors if c.id == r_id),
-            "Support": next(c for c in eligible_contributors if c.id == s_id)
-        }
-    except Exception:
-        log_and_print("LLM role assignment failed or was ambiguous. Defaulting to merit-based assignment.")
-        ## Fallback: Sort by Exp + Bid
-        ranked = sorted(eligible_contributors, key=lambda c: (bids.get(str(c.id), 0) + c.experience), reverse=True)
-        if len(ranked) >= 3:
-            team = {"Lead": ranked[0], "Reviewer": ranked[1], "Support": ranked[-1]}
-        else:
-            ## Handle small pool
-            team = {"Lead": ranked[0], "Reviewer": ranked[min(1, len(ranked)-1)], "Support": ranked[-1]}
-
-    log_and_print(f"Team: Lead={team['Lead'].name}, Reviewer={team['Reviewer'].name}, Support={team['Support'].name}")
-    return team
