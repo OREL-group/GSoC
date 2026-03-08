@@ -97,10 +97,29 @@ class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
 
 
+class OllamaWorker(QThread):
+    result_ready = pyqtSignal(str)
+    error = pyqtSignal(str)
+
+    def __init__(self, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            result = self.func(*self.args, **self.kwargs)
+            self.result_ready.emit(str(result))
+        except Exception as e:
+            self.error.emit(str(e))
+
+
 class SimulationApp(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.worker = None  # keep reference or it gets garbage collected
         self.initUI()
 
     def initUI(self):
