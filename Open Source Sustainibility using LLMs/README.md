@@ -1,5 +1,9 @@
 # LLAMOSC : LLM-Powered Agent-Based Model for Open Source Communities
 
+## Contributing
+
+We welcome contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, PR expectations, and code owner rules.
+
 ## Overview
 
 LLAMOSC (LLM-Powered Agent-Based Model for Open Source Communities) is a comprehensive framework designed to simulate and enhance the sustainability of open-source communities using Large Language Models (LLMs). The framework focuses on modeling interactions and productivity of agents with varying levels of experience, knowledge, and engagement in a virtual open-source environment.
