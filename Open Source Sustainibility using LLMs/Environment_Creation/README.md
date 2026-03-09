@@ -44,6 +44,7 @@ pip install -r requirements.txt
 3. Clone [this modified fork of the auto-code-rover](https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git) instead of the original as some fixes were made to help it work better with locally hosted models especially llama3 7B using ollama. Without these fixes the correct answers will not be obtained.
 
 ```shell
+cd ../../..
 git clone https://github.com/sarrah-basta/auto-code-rover-for-llama37b.git
 cd auto-code-rover-for-llama37b
 ```
