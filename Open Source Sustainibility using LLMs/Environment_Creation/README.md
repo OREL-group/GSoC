@@ -35,7 +35,10 @@ pip install -r requirements.txt
 
 ## Step 2: Setting up Autocoderover
 
-1. Install [ollama](https://ollama.com/) and download the corresponding models with ollama (e.g. `ollama pull llama3`).
+1. Install [ollama](https://ollama.com/) and download the corresponding models with ollama. Do make sure to restart the shell window if you're installing ollama for the first time.
+``` shell
+ollama pull llama3
+```
 
 2. Download Docker Desktop and setup accopridng to instructions provided [here](https://docs.docker.com/desktop/install/windows-install/)
 
