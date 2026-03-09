@@ -2,7 +2,10 @@
 
 ## Contributing
 
-We welcome contributions. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, PR expectations, and code owner rules.
+We welcome contributions.
+
+All pull requests for the LLAMOSC project should be opened against the `develop` branch.  
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution workflow, PR expectations, and code owner rules.
 
 ## Overview
 
