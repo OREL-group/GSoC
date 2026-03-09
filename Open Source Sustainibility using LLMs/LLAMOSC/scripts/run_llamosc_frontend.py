@@ -350,15 +350,15 @@ class SimulationApp(QWidget):
         )
 
         self.issues_history = {
-            "pending": {"moon_shot": 0, "earth_shot": 0, "mars_shot": 0},
-            "solved": {"moon_shot": 0, "earth_shot": 0, "mars_shot": 0},
+            "pending": {"earth_shot": 0,"moon_shot": 0, "mars_shot": 0},
+            "solved": {"earth_shot": 0,"moon_shot": 0, "mars_shot": 0},
         }
 
         for iss in issues:
             if iss.difficulty < 2:
-                self.issues_history["pending"]["moon_shot"] += 1
-            elif iss.difficulty < 4:
                 self.issues_history["pending"]["earth_shot"] += 1
+            elif iss.difficulty < 4:
+                self.issues_history["pending"]["moon_shot"] += 1
             else:
                 self.issues_history["pending"]["mars_shot"] += 1
 
@@ -699,11 +699,11 @@ class SimulationApp(QWidget):
 
                 # update number of pending and solved issues
                 if issue.difficulty < 2:
-                    self.issues_history["pending"]["moon_shot"] -= 1
-                    self.issues_history["solved"]["moon_shot"] += 1
-                elif issue.difficulty < 4:
                     self.issues_history["pending"]["earth_shot"] -= 1
                     self.issues_history["solved"]["earth_shot"] += 1
+                elif issue.difficulty < 4:
+                    self.issues_history["pending"]["moon_shot"] -= 1
+                    self.issues_history["solved"]["moon_shot"] += 1
                 else:
                     self.issues_history["pending"]["mars_shot"] -= 1
                     self.issues_history["solved"]["mars_shot"] += 1
