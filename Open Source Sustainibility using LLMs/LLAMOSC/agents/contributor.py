@@ -260,7 +260,7 @@ class ContributorAgent:
             except Exception as e:
                 log(f"Error starting container: {e}")
                 stop_running_containers()
-                exit(1)
+                raise Exception(f"Failed to start ACR container: {e}")
 
             task_id = self.assigned_issue.id
             # Command to activate conda environment and run Python script
@@ -403,7 +403,6 @@ class ContributorAgent:
             stop_running_containers()
             self.unassign_issue()
             return False
-            exit(1)
 
     def solve_issue_without_acr(self, project_dir, is_test=False):
         if self.assigned_issue is not None:
@@ -487,7 +486,6 @@ class ContributorAgent:
             log_and_print(f"Some error while trying to solve issue")
             self.unassign_issue()
             return False
-            exit(1)
 
 
 # # Example Usage
