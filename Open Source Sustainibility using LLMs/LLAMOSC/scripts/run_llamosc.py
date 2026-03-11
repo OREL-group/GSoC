@@ -162,7 +162,7 @@ def main():
         f"\nStarting simulation with {len(issues)} issues and {len(contributors)} contributors with ACR : {use_acr} and Algorithm : {algorithm}.\n"
     )
 
-    fig, (ax_cont_exp, ax_code_qal, ax_cont_mot) = plt.subplots(3, 1, figsize=(12, 8), constrained_layout=True)
+    fig, (ax_cont_exp, ax_code_qal, ax_cont_mot) = plt.subplots(3, 1, constrained_layout=True)
     lines_cont_exp = {
         contributor.name: ax_cont_exp.plot(
             time_history, experience_history[contributor.name], label=contributor.name
@@ -372,13 +372,6 @@ def main():
         # Update code_quality metric line data
         lines_code_qal["avg"].set_data(time_history, code_qal_history)
         lines_code_qal["curr"].set_data(time_history, code_qal_curr_history)
-
-        # Dynamically update X-axis limits
-        max_time = max(1, timestep)
-        ax_cont_exp.set_xlim(0, max_time)
-        ax_code_qal.set_xlim(0, max_time)
-        ax_cont_mot.set_xlim(0, max_time)
-
 
         # Draw the updated plot
         plt.draw()
