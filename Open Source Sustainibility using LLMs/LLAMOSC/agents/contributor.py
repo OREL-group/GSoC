@@ -72,6 +72,9 @@ class ContributorAgent:
         """
 
         role_description = query_ollama(role_specifier_prompt)
+        if role_description is None:
+            log(f"LLM call failed for generate_role_description. Using default role description.")
+            role_description = f"Contributor {self.name} is a level {self.experience} open-source contributor eager to learn and help."
         return role_description
 
     def generate_role_system_message(self, community_description, word_limit=50):
@@ -119,6 +122,9 @@ class ContributorAgent:
         Do nothing else.
         """
         motivation_level_desc = query_ollama(prompt=prompt_motivation)
+        if motivation_level_desc is None:
+            log(f"LLM call failed for generate_initial_motivation_level. Using default motivation level 5.")
+            return 5
         try:
             motivation_level = float(
                 motivation_parser.parse(motivation_level_desc)["rating"]
@@ -380,6 +386,11 @@ class ContributorAgent:
             Issue Summary: \n\n       Approach:    \n\n"""
 
             pr_content = query_ollama(prompt=prompt)
+            if pr_content is None:
+                log(f"LLM call failed for PR content generation in solve_issue. Using default PR content.")
+                pr_content = "Issue Summary: Unable to generate PR description due to LLM error.
+
+Approach: Please review the diff file for changes made."
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
             with open(pr_file_path, "w") as pr_file:
@@ -469,6 +480,11 @@ class ContributorAgent:
                 pr_content = prompt
             else:
                 pr_content = query_ollama(prompt=prompt)
+                if pr_content is None:
+                    log(f"LLM call failed for PR content generation in solve_issue_without_acr. Using default PR content.")
+                    pr_content = "Issue Summary: Unable to generate PR description due to LLM error.
+
+Approach: Please review the diff file for changes made."
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
             with open(pr_file_path, "w") as pr_file:

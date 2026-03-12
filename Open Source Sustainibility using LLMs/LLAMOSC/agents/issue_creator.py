@@ -36,7 +36,11 @@ class IssueCreatorAgent:
 
         Only return the title which should be less than 10 words, dont include anything extra.
         """
-        issue_title = query_ollama(prompt=title_prompt).strip()
+        issue_title = query_ollama(prompt=title_prompt)
+        if issue_title is None:
+            log("LLM call failed for issue title generation. Using default title.")
+            issue_title = f"New Issue #{len(existing_issues) + 1}"
+        issue_title = issue_title.strip()
 
         log_and_print(f"Generated Issue Title: {issue_title}")
 
@@ -48,7 +52,11 @@ class IssueCreatorAgent:
 
         Only return the description which should be less than 30 words.
         """
-        issue_description = query_ollama(prompt=description_prompt).strip()
+        issue_description = query_ollama(prompt=description_prompt)
+        if issue_description is None:
+            log("LLM call failed for issue description generation. Using default description.")
+            issue_description = "No description could be generated due to an LLM error."
+        issue_description = issue_description.strip()
 
         log_and_print(f"Generated Issue Description: {issue_description}")
 
@@ -58,7 +66,11 @@ class IssueCreatorAgent:
 
         Only return the expected pseudocode changes which should be less than 100 words and startign with ```python.
         """
-        example_code = query_ollama(prompt=example_code_prompt).strip()
+        example_code = query_ollama(prompt=example_code_prompt)
+        if example_code is None:
+            log("LLM call failed for example code generation. Using default example code.")
+            example_code = "```python\n# Example code could not be generated.\n```"
+        example_code = example_code.strip()
 
         log_and_print(f"Generated Example Code: {example_code}")
 
@@ -68,7 +80,11 @@ class IssueCreatorAgent:
 
         Only return the section which should be less than 20 words.
         """
-        checked_resources = query_ollama(prompt=checked_resources_prompt).strip()
+        checked_resources = query_ollama(prompt=checked_resources_prompt)
+        if checked_resources is None:
+            log("LLM call failed for checked resources generation. Using default value.")
+            checked_resources = "No similar issues or implementations found."
+        checked_resources = checked_resources.strip()
         log_and_print(f"Checked Other Resources: {checked_resources}")
 
         # Create prompt for generating the system information
@@ -77,7 +93,11 @@ class IssueCreatorAgent:
         
         Only return the system info which should be less than 12 words.
         """
-        system_info = query_ollama(prompt=system_info_prompt).strip()
+        system_info = query_ollama(prompt=system_info_prompt)
+        if system_info is None:
+            log("LLM call failed for system info generation. Using default system info.")
+            system_info = "Python 3.6+, LLAMOSC framework."
+        system_info = system_info.strip()
 
         # Log the results for debugging and monitoring
         log_and_print(f"Generated System Info: {system_info}")
@@ -101,7 +121,11 @@ class IssueCreatorAgent:
         {existing_issues[0]}
         The entire issue should be less than 300 words.
         """
-        final_issue = query_ollama(prompt=final_issue_prompt).strip()
+        final_issue = query_ollama(prompt=final_issue_prompt)
+        if final_issue is None:
+            log("LLM call failed for final issue generation. Using default issue content.")
+            final_issue = f"## {issue_title}\n\n{issue_description}\n\n### Example\n{example_code}\n\n### Resources Checked\n{checked_resources}\n\n### System Info\n{system_info}"
+        final_issue = final_issue.strip()
         log_and_print(f"Final Issue: {final_issue}")
         # Optionally, save the issue to a file or add it to the existing issues list
         # issues_folder = "issues_folder"

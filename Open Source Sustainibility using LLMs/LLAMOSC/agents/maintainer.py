@@ -44,6 +44,9 @@ class MaintainerAgent:
         review pull requests of the code submitted by contributors. 
         Please provide a brief review of the code quality in the pull request {pr_content}."""
         review_result = query_ollama(prompt=prompt_code_review)
+        if review_result is None:
+            log(f"LLM call failed for code review in review_pull_request. Using default review.")
+            review_result = "The pull request could not be automatically reviewed due to an LLM error. Defaulting to rejection."
         log_and_print(f"Raw code quality review result: {review_result}")
 
         prompt = f"""As an org admin with repository rights. it is your job to decide which pull 
@@ -53,6 +56,9 @@ class MaintainerAgent:
         Only give a 1 word response with 'approve' or 'reject'."""
 
         org_admin_result = query_ollama(prompt=prompt)
+        if org_admin_result is None:
+            log(f"LLM call failed for org admin decision in review_pull_request. Defaulting to reject.")
+            org_admin_result = "reject"
 
         if "approve" in org_admin_result.lower():
             code_quality = self.rate_code_quality(review_result)
@@ -79,6 +85,9 @@ class MaintainerAgent:
         {quality_parser.get_format_instructions()}"""
 
         review_result = query_ollama(prompt=prompt_code_quality)
+        if review_result is None:
+            log(f"LLM call failed for rate_code_quality. Using default rating of 3.")
+            return 3
         log_and_print(f"Code quality rating result: {review_result}")
 
         # Parse the review result to get the rating
