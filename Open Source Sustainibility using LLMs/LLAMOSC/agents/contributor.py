@@ -388,9 +388,7 @@ class ContributorAgent:
             pr_content = query_ollama(prompt=prompt)
             if pr_content is None:
                 log(f"LLM call failed for PR content generation in solve_issue. Using default PR content.")
-                pr_content = "Issue Summary: Unable to generate PR description due to LLM error.
-
-Approach: Please review the diff file for changes made."
+                pr_content = "Issue Summary: Unable to generate PR description due to LLM error.\n\nApproach: Please review the diff file for changes made."
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
             with open(pr_file_path, "w") as pr_file:
@@ -482,9 +480,7 @@ Approach: Please review the diff file for changes made."
                 pr_content = query_ollama(prompt=prompt)
                 if pr_content is None:
                     log(f"LLM call failed for PR content generation in solve_issue_without_acr. Using default PR content.")
-                    pr_content = "Issue Summary: Unable to generate PR description due to LLM error.
-
-Approach: Please review the diff file for changes made."
+                    pr_content = "Issue Summary: Unable to generate PR description due to LLM error.\n\nApproach: Please review the diff file for changes made."
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
             with open(pr_file_path, "w") as pr_file:
