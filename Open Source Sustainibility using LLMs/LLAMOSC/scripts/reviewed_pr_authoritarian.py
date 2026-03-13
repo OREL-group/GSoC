@@ -97,13 +97,18 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
-        selected_contributor = sim.select_contributor_authoritarian(
-            selected_maintainer
-        )[0]
-        # Assign an issue from the available issues to the agent
+        
+        # Fixed TODO: retry if no eligible contributors
+        max_retries = 10
+        selected_contributor = None
+        for attempt in range(max_retries):
+            candidates = sim.select_contributor_authoritarian(selected_maintainer)
+            if candidates:
+                selected_contributor = candidates[0]
+                break
+
         if selected_contributor:
             log(selected_contributor.name)
-            # TODO : if no eligible contributors, loop until the issue is solved
             selected_contributor.assign_issue(issue)
             task_solved = selected_contributor.solve_issue(project_dir)
             if task_solved:
@@ -184,12 +189,9 @@ def main():
 
 
         else:
-            selected_contributor = [
-                contributor
-                for contributor in contributors
-                if contributor.eligible_for_issue(issue)
-            ][0]
+            log_and_print(f"No eligible contributors for Issue #{issue.id} after {max_retries} tries")
             time += 1
+            continue
 
 
         # Print a separator for better readability

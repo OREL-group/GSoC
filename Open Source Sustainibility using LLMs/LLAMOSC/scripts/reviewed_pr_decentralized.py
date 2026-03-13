@@ -92,7 +92,16 @@ def main():
             ]
         )
         selected_maintainer.allot_task(issue)
-        selected_contributor = sim.select_contributor_decentralized(issue)[0]
+        
+        # Fixed TODO: retry if no eligible contributors
+        max_retries = 10
+        selected_contributor = None
+        for attempt in range(max_retries):
+            candidates = sim.select_contributor_decentralized(issue)
+            if candidates:
+                selected_contributor = candidates[0]
+                break
+
         # Assign an issue from the available issues to the agent
         if selected_contributor:
             # TODO : if no eligible contributors, loop until the issue is solved
@@ -176,12 +185,9 @@ def main():
 
 
         else:
-            selected_contributor = [
-                contributor
-                for contributor in contributors
-                if contributor.eligible_for_issue(issue)
-            ][0]
+            log_and_print(f"No eligible contributors for Issue #{issue.id} after {max_retries} tries")
             time += 1
+            continue
 
 
         # Print a separator for better readability
