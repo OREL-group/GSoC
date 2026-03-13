@@ -2,18 +2,22 @@ import os
 import docker
 from datetime import datetime
 
+
 import tarfile
 import io
 import random
+
 
 from LLAMOSC.utils import *
 from LLAMOSC.simulation.bid_output_parser import QualityRatingParser
 from LLAMOSC.simulation.issue import Issue
 from langchain.schema import SystemMessage, HumanMessage
 
+
 community_description = (
     "Our open-source community is focused on collaborative learning and innovation."
 )
+
 
 
 class ContributorAgent:
@@ -24,7 +28,8 @@ class ContributorAgent:
         self.motivation_level = 0  # 0 to 10
         self.motivation_history = []
         self.name = name
-        self.assigned_issue = None
+        self.assigned_issues = []  # Issue #64: support multiple
+
 
         if testing:
             self.role_description = "This is a test role description."
@@ -34,6 +39,7 @@ class ContributorAgent:
             self.motivation_level = random.randint(3, 10)
             self.motivation_history.append(self.motivation_level)
             return
+
 
         # Generate a personalized role and system message
         self.role_description = self.generate_role_description()
@@ -48,6 +54,7 @@ class ContributorAgent:
         self.motivation_history.append(
             self.motivation_level
         )  # append initial motivation level
+
 
     def generate_role_description(self, word_limit=50):
         """
@@ -71,8 +78,10 @@ class ContributorAgent:
         Do not add anything else.
         """
 
+
         role_description = query_ollama(role_specifier_prompt)
         return role_description
+
 
     def generate_role_system_message(self, community_description, word_limit=50):
         """
@@ -98,6 +107,7 @@ class ContributorAgent:
             )
         )
 
+
     def generate_initial_motivation_level(self):
         """
         Generates a motivation level for the contributor based on their role description by using parser.
@@ -106,6 +116,7 @@ class ContributorAgent:
         motivation_parser = QualityRatingParser(
             regex=r"<(\d)>", output_keys=["rating"], default_output_key="rating"
         )
+
 
         # Query OLLAMA to generate the motivation level
         prompt_motivation = f"""As a contributor in an open-source community, your role is to 
@@ -128,41 +139,72 @@ class ContributorAgent:
         log(f"Generated initial motivation level: {motivation_level}")
         return motivation_level
 
+
     def eligible_for_issue(self, issue):
         return self.available and self.experience >= issue.difficulty
 
-    def assign_issue(self, issue):
-        self.assigned_issue = issue
+
+    def should_collaborate(self, issue):
+        """Issue #64: Needs teammate if too hard solo"""
+        return issue.difficulty > self.experience * 1.3
+
+
+    def find_collaborator(self, available_agents):
+        """Issue #64: Closest experience match"""
+        candidates = [a for a in available_agents if a != self and a.available]
+        return min(candidates, key=lambda a: abs(a.experience - self.experience)) if candidates else None
+
+
+    def handle_subtask(self, issue, subtask_desc, project_dir=None):
+        """Issue #64: Solve single subtask"""
+        print(f"{self.name} solving subtask: {subtask_desc}")
+        # Reuse solve_issue logic (same filepath)
+        if project_dir:
+            return self.solve_issue_without_acr(project_dir)  # or solve_issue
+        return None
+
+
+    def assign_issue(self, issue_or_subtask):
+        self.assigned_issues.append(issue_or_subtask)
         self.available = False
-        log_and_print(f"Contributor {self.name} has been allotted Issue #{issue.id}.\n")
-        return self.assigned_issue
+        print(f"{self.name} assigned {issue_or_subtask.id if hasattr(issue_or_subtask, 'id') else 'subtask'}")
+        return issue_or_subtask
+
 
     def unassign_issue(self):
-        self.assigned_issue = None
-        self.available = True
+        if self.assigned_issues:
+            self.assigned_issues.pop()
+            self.available = not self.assigned_issues
+
 
     def increase_experience(self, adding_exp=1, task_difficulty=5):
         # Calculate the base experience increase
         base_increase = min(5 - self.experience, adding_exp)
 
+
         # Apply variability: experience increase could be a bit more or less than the base
         variability = random.uniform(0.4, 0.6)  # Adjusted to ensure at least 0.5 change
         variability_adjusted_increase = base_increase + variability
+
 
         # Scale the increase based on task difficulty (optional: adjust scaling factor)
         difficulty_adjusted_increase = variability_adjusted_increase * (
             task_difficulty / 5
         )
 
+
         # Clip experience increase to ensure it does not exceed the max allowed experience
         final_increase = min(difficulty_adjusted_increase, 5 - self.experience)
+
 
         # Increase experience
         self.experience += round(final_increase, 2)
         self.experience = round(self.experience, 2)
 
+
         # Optional: Print or log experience changes for debugging
         print(f"Experience increased by: {round(final_increase, 2):.2f}")
+
 
     def update_motivation_level(
         self, success=True, bid_selected=False, task_difficulty=3, code_quality=4
@@ -176,6 +218,7 @@ class ContributorAgent:
             motivation_trend = (self.motivation_level - average_past_motivation) * 0.2
         else:
             motivation_trend = 0
+
 
         # If the contributor was not selected for the task
         if not bid_selected:
@@ -198,6 +241,7 @@ class ContributorAgent:
                 )
                 self.motivation_level -= motivation_decrease
 
+
             # Adjust motivation based on code quality (0-5 scale)
             if code_quality > 4:
                 motivation_increase = max(0.1 * (code_quality - 4), 0.5)
@@ -213,17 +257,21 @@ class ContributorAgent:
                     motivation_increase = max(0.05 * (code_quality - 3), 0.5)
                     self.motivation_level += motivation_increase
 
+
         # Apply small random fluctuation to simulate real-life variability
         fluctuation = random.uniform(0.4, 0.6)  # Ensures at least 0.5 change
         self.motivation_level += (
             fluctuation if random.choice([True, False]) else -fluctuation
         )
 
+
         # Incorporate historical trend adjustment
         self.motivation_level += motivation_trend
 
+
         # Clip motivation level to stay within 0 to 10
         self.motivation_level = max(0, min(10, round(self.motivation_level, 2)))
+
 
         # Track the history of motivation
         self.motivation_history.append(self.motivation_level)
@@ -232,10 +280,19 @@ class ContributorAgent:
             f"Motivation level for contributor {self.name}: {self.motivation_history}"
         )
 
+
     def solve_issue(self, project_dir):
-        if self.assigned_issue is not None:
+        if len(self.assigned_issues) == 0:
+            log("No assigned issues to solve.")
+            return False
+            
+        # Get the most recently assigned issue
+        current_issue = self.assigned_issues[-1]
+        
+        if current_issue is not None:
             # Initialize Docker client
             client = docker.from_env()
+
 
             # stop any running containers
             stop_running_containers()
@@ -248,7 +305,9 @@ class ContributorAgent:
                     }
                 }
 
+
                 ports = {"3000/tcp": 3000, "5000/tcp": 5000}
+
 
                 container = client.containers.run(
                     "acr1",
@@ -262,7 +321,8 @@ class ContributorAgent:
                 stop_running_containers()
                 exit(1)
 
-            task_id = self.assigned_issue.id
+
+            task_id = current_issue.id
             # Command to activate conda environment and run Python script
             commands = [
                 "/bin/bash",
@@ -270,9 +330,11 @@ class ContributorAgent:
                 f"source activate auto-code-rover && PYTHONPATH=. python app/main.py local-issue --output-dir output --model llama3 --enable-validation --conv-round-limit 5 --task-id {task_id} --local-repo /home/calculator_project --issue-file /home/calculator_project/issues/pending/task_{task_id}.md",
             ]
 
+
             # Execute command inside the container and stream output
         try:
             exec_log = container.exec_run(commands, stream=True, tty=True)
+
 
             # Stream the output to the terminal
             for line in exec_log.output:
@@ -281,15 +343,18 @@ class ContributorAgent:
                 except Exception:
                     l = line
 
+
                 print(l, end="")
 
+
             # Find the most recent .diff file in the container
-            task_id = self.assigned_issue.id
+            task_id = current_issue.id
             output_dir = "/opt/auto-code-rover/output"
             output_files = (
                 container.exec_run(["ls", output_dir]).output.decode().split("\n")
             )
             task_dirs = [f for f in output_files if f.startswith(f"{task_id}_")]
+
 
             if not task_dirs:
                 log("No directories found for the given task ID.")
@@ -303,6 +368,7 @@ class ContributorAgent:
                 )
                 most_recent_dir = task_dirs[0]
 
+
                 # Find the .diff file in the most recent directory
                 diff_file_path = None
                 recent_dir_files = (
@@ -315,6 +381,7 @@ class ContributorAgent:
                         diff_file_path = f"{output_dir}/{most_recent_dir}/{file_name}"
                         break
 
+
             local_pull_requests_dir = os.path.join(project_dir, "pull_requests")
             if not os.path.exists(local_pull_requests_dir):
                 log(
@@ -322,7 +389,8 @@ class ContributorAgent:
                 )
                 os.makedirs(local_pull_requests_dir)
 
-            task_id = self.assigned_issue.id
+
+            task_id = current_issue.id
             version = len(
                 [
                     f
@@ -335,6 +403,7 @@ class ContributorAgent:
                 local_pull_requests_dir, pull_request_name
             )
             os.makedirs(local_pull_request_dir, exist_ok=True)
+
 
             local_diff_file_path = os.path.join(
                 local_pull_request_dir, f"{pull_request_name}.diff"
@@ -351,22 +420,28 @@ class ContributorAgent:
                 with tarfile.open(fileobj=tar_stream) as tar:
                     tar.extractall(path=local_pull_request_dir)
 
+
                 # Rename the extracted file to the desired name
                 extracted_file_path = os.path.join(
                     local_pull_request_dir, os.path.basename(diff_file_path)
                 )
                 os.rename(extracted_file_path, local_diff_file_path)
 
+
                 container.stop()
                 container.remove()
 
+
             # Make a pr.md file for in the pull_request folder
 
-            with open(self.assigned_issue.filepath, "r") as issue_file:
+
+            with open(current_issue.filepath, "r") as issue_file:
                 issue_content = issue_file.read()
+
 
             with open(local_diff_file_path, "r") as diff_file:
                 diff_content = diff_file.read()
+
 
             # Query OLLAMA to generate appropriate PR content based on the diff
             prompt = f"""As a contributor in an open source environment, your role is to 
@@ -379,6 +454,7 @@ class ContributorAgent:
             Use the following template for the pull request:
             Issue Summary: \n\n       Approach:    \n\n"""
 
+
             pr_content = query_ollama(prompt=prompt)
             log_and_print(f"Generated pull request content: {pr_content}")
             pr_file_path = os.path.join(local_pull_request_dir, "pr.md")
@@ -386,10 +462,11 @@ class ContributorAgent:
                 pr_file.write(pr_content)
             log_and_print(f"Created pull request file: {pr_file_path}")
 
+
             # commit the changes made i.e adding the pull_requests folder and the pull request file
             repo_commit_current_changes(project_dir)
             log_and_print(
-                f"Contributor {self.name} has created pull request for Issue #{self.assigned_issue.id}.\n"
+                f"Contributor {self.name} has created pull request for Issue #{current_issue.id}.\n"
             )
             self.unassign_issue()
             return (
@@ -398,6 +475,7 @@ class ContributorAgent:
                 + diff_content
             )
 
+
         except Exception as e:
             log_and_print(f"Error executing command in container: {e}")
             stop_running_containers()
@@ -405,17 +483,29 @@ class ContributorAgent:
             return False
             exit(1)
 
+
     def solve_issue_without_acr(self, project_dir, is_test=False):
-        if self.assigned_issue is not None:
-            task_id = self.assigned_issue.id
+        if len(self.assigned_issues) == 0:
+            log("No assigned issues to solve.")
+            return False
+            
+        # Get the most recently assigned issue
+        current_issue = self.assigned_issues[-1]
+        
+        if current_issue is not None:
+            task_id = current_issue.id
+
 
         # Instead of executing acr to solve the issue, we will use rng to decide if the issue is solved or not
         # if random.randint(0, 1) == 1: # 50 % cance is too little
 
+
         if True:
 
+
             # Find the most recent .diff file in the container
-            task_id = self.assigned_issue.id
+            task_id = current_issue.id
+
 
             local_pull_requests_dir = os.path.join(project_dir, "pull_requests")
             if not os.path.exists(local_pull_requests_dir):
@@ -424,7 +514,8 @@ class ContributorAgent:
                 )
                 os.makedirs(local_pull_requests_dir)
 
-            task_id = self.assigned_issue.id
+
+            task_id = current_issue.id
             version = len(
                 [
                     f
@@ -438,22 +529,28 @@ class ContributorAgent:
             )
             os.makedirs(local_pull_request_dir, exist_ok=True)
 
+
             local_diff_file_path = os.path.join(
                 local_pull_request_dir, f"{pull_request_name}.diff"
             )
+
 
             # Since there is no real diff file to copy, we will leave our diff file empty
             with open(local_diff_file_path, "w") as diff_file:
                 diff_file.write("")
             log_and_print(f"Created empty diff file: {local_diff_file_path}")
 
+
             # Make a pr.md file for in the pull_request folder
 
-            with open(self.assigned_issue.filepath, "r") as issue_file:
+
+            with open(current_issue.filepath, "r") as issue_file:
                 issue_content = issue_file.read()
+
 
             with open(local_diff_file_path, "r") as diff_file:
                 diff_content = diff_file.read()  # will be empty
+
 
             # Query OLLAMA to generate appropriate PR content based on the diff
             prompt = f"""As a contributor in an open source environment, your role is to 
@@ -475,13 +572,15 @@ class ContributorAgent:
                 pr_file.write(pr_content)
             log_and_print(f"Created pull request file: {pr_file_path}")
 
+
             # commit the changes made i.e adding the pull_requests folder and the pull request file
             repo_commit_current_changes(project_dir)
             log_and_print(
-                f"Contributor {self.name} has created pull request for Issue #{self.assigned_issue.id}.\n"
+                f"Contributor {self.name} has created pull request for Issue #{current_issue.id}.\n"
             )
             self.unassign_issue()
             return pr_content
+
 
         else:
             log_and_print(f"Some error while trying to solve issue")
@@ -490,16 +589,20 @@ class ContributorAgent:
             exit(1)
 
 
+
 # # Example Usage
 # if __name__ == "__main__":
 
+
 #     # Create a ContributorAgent instance
 #     contributor = ContributorAgent(id=1, experience=4, name="John Doe")
+
 
 #     current_folder = os.path.dirname(os.path.abspath(__file__))
 #     project_dir = os.path.join(
 #         current_folder, "..", "..", "..", "..", "calculator_project"
 #     )
+
 
 #     # Assign a mock issue (assuming issue object with id and difficulty attributes)
 #     issue = type(
@@ -513,8 +616,10 @@ class ContributorAgent:
 #     )
 #     contributor.assign_issue(issue)
 
+
 #     # # Solve the issue
 #     # contributor.solve_issue_without_acr(project_dir)
+
 
 
 # c = ContributorAgent(1, 2, "John")

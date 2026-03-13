@@ -55,7 +55,7 @@ class Simulation:
             return None
 
         log_and_print(
-            f"\nEligibility Check: Contributors for Issue #{issue.id}:\n{[(contributor.name, contributor.experience) for contributor in eligible_contributors]}\n"
+            f"\\nEligibility Check: Contributors for Issue #{issue.id}:\\n{[(contributor.name, contributor.experience) for contributor in eligible_contributors]}\\n"
         )
 
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
@@ -84,7 +84,7 @@ class Simulation:
         ][0]
 
         log_and_print(
-            f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with maintainer's rating of {max_value}\n"
+            f"\\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with maintainer's rating of {max_value}\\n"
         )
 
         self.conversation_space.post_message(
@@ -104,7 +104,7 @@ class Simulation:
             return None
 
         log_and_print(
-            f"\nEligibility Check: Contributors for Issue #{issue.id}:\n{[(contributor.name, contributor.experience) for contributor in eligible_contributors]}\n"
+            f"\\nEligibility Check: Contributors for Issue #{issue.id}:\\n{[(contributor.name, contributor.experience) for contributor in eligible_contributors]}\\n"
         )
 
         discussion_history = simulate_github_discussion(eligible_contributors, issue)
@@ -131,7 +131,7 @@ class Simulation:
         ][0]
 
         log_and_print(
-            f"\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with a bid of {max_value}\n"
+            f"\\nSelected Contributor for Issue #{issue.id}: {selected_contributor.name} with a bid of {max_value}\\n"
         )
 
         self.conversation_space.post_message(
@@ -165,23 +165,58 @@ class Simulation:
         ctx = SystemMessage(content="You generate realistic developer collaboration logs.")
         log = model.invoke([ctx, HumanMessage(content=prompt)]).content
         
-        log_and_print(f"\n--- Collaboration Log (#{issue.id}) ---\n{log}\n")
+        log_and_print(f"\\n--- Collaboration Log (#{issue.id}) ---\\n{log}\\n")
         self.conversation_space.post_message(sender="system", content=f"Resolved Issue #{issue.id}. Lead preparing PR.")
 
         return team['Lead']
 
     def select_contributor_collaborative(self, issue: Issue):
+        """Issue #64: 2-agent collaboration (improves PR #118)"""
         eligible = [c for c in self.contributors if c.eligible_for_issue(issue)]
         if not eligible:
             return None
-        log_and_print(f"Eligible for collaboration on #{issue.id}: {[c.name for c in eligible]}")
-
-        # initially standard discussion only
+        
+        log_and_print(f"Eligible for #{issue.id}: {[c.name for c in eligible]}")
+        
+        # Step 1: Discussion (reuse existing)
         history = simulate_github_discussion(eligible, issue)
-        ## now form the team and simulate the work
-        team = form_collaborative_team(eligible, issue, history)
-        lead = self.simulate_collaborative_work(team, issue)
-        return lead, history
+        
+        # Step 2: NEW Issue #64 logic - pick lead + collaborator
+        lead_agent = max(eligible, key=lambda c: c.experience)
+        
+        if lead_agent.should_collaborate(issue):
+            collaborator = lead_agent.find_collaborator(self.contributors)
+            if collaborator:
+                # Split & assign subtasks
+                issue.split_for_collaboration(lead_agent, collaborator)
+                
+                # Simulate collaborative discussion
+                team = {'Lead': lead_agent, 'Support': collaborator}
+                lead = self.simulate_collaborative_work(team, issue)
+                
+                # Issue #64: Individual subtasks + proportional credit
+                for subtask in issue.subtasks:
+                    agent = subtask['agent']
+                    agent.handle_subtask(issue, subtask['description'])
+                    agent.unassign_issue()
+                    # Award proportional credit
+                    credit = issue.difficulty / len(issue.subtasks)
+                    agent.increase_experience(adding_exp=credit)
+                
+                self.conversation_space.post_message(
+                    sender="system", 
+                    content=f"Issue #{issue.id} resolved collaboratively by {lead_agent.name}+{collaborator.name}"
+                )
+                return lead_agent, history
+            else:
+                print(f"No collaborator for {lead_agent.name}, fallback solo")
+        
+        # Fallback solo (backwards compatible)
+        lead_agent.assign_issue(issue)
+        pr_content = lead_agent.solve_issue(project_dir="path/to/project")
+        lead_agent.unassign_issue()
+        lead_agent.increase_experience(adding_exp=issue.difficulty)
+        return lead_agent, history
 
     def try_dynamic_issue_creation(self, issue_creator, issue_queue, existing_issues, existing_code, issues_folder):
         # Build simulation state dict

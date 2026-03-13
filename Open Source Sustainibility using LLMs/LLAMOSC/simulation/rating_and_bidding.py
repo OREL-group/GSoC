@@ -40,7 +40,7 @@ def rate_contributors_for_issue(
     bidding_template = f"""
     {{contributor_content}}
     Based on the above comment of the contributor, on a scale of 1 to 10, where 1 is not suitable at all and 10 is extremely suitable, rate the contributor's suitability for the following issue:
-    Issue #{maintainer.current_task.id}: {open(maintainer.current_task.filepath).read()}
+    Issue #{maintainer.current_task.id}: {open(maintainer.current_task.filepath).read().replace("{", "{{").replace("}", "}}")}
     Difficulty: {maintainer.current_task.difficulty}
 
     The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bid higher than 5. If the matching_level is high, bid lower than 5.     
@@ -114,6 +114,7 @@ def simulate_github_discussion(eligible_contributors, issue):
     model = ChatOllama(model="llama3")
     discussion_history = []
     issue_description = open(issue.filepath).read()
+    issue_description = issue_description.replace("{", "{{").replace("}", "}}")
     initial_prompt = f"""
     Issue #{issue.id}: {issue_description}
     Difficulty: {issue.difficulty}
@@ -178,6 +179,8 @@ def simulate_llm_bidding(eligible_contributors, issue, discussion_history):
         regex=r"<(\d+)>", output_keys=["bid"], default_output_key="bid"
     )
     issue_description = open(issue.filepath).read()
+    issue_description = issue_description.replace("{", "{{").replace("}", "}}")
+
     bidding_template = f"""
     {{discussion_history}}
     Based on the above discussion, where your comment is {{contributor_content}}, on a scale of 1 to 10, where 1 is not suitable at all and 10 is extremely suitable, rate your suitability compared to all the others for the following issue:
