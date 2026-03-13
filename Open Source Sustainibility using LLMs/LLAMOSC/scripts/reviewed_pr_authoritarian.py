@@ -36,9 +36,9 @@ def main():
         issue_id = int(filename.split("_")[1].split(".")[0])
 
 
-        # Create the issue object
-        # TODO: Better way to get issue difficulty maybe % 5 atleast
-        issue = Issue(issue_id, issue_id + 1, file_path)
+        # Fixed TODO: Better way to get issue difficulty (1-5)
+        difficulty = (issue_id % 5) + 1
+        issue = Issue(issue_id, difficulty, file_path)
 
 
         # Add the issue to the issues list
