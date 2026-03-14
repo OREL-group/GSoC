@@ -1,0 +1,63 @@
+---
+# Basic CI checks for pull requests.
+# Runs syntax/import validation, linting, and tests (if present).
+
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  pr-checks:
+    name: PR Checks
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: "Open Source Sustainibility using LLMs"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r Environment_Creation/requirements.txt
+          pip install -e .
+          pip install flake8 pytest
+
+      - name: Verify installed dependencies
+        run: pip check
+
+      - name: Python syntax validation
+        run: python -m compileall -q LLAMOSC
+      - name: Import validation
+        run: python -c "import sys; sys.path.insert(0, '.'); from LLAMOSC import utils; from LLAMOSC.agents import contributor, maintainer, issue_creator; from LLAMOSC.simulation import sim, issue; print('Imports successful')"
+          # """
+          # import sys; 
+          # sys.path.insert(0, '.'); 
+          # from LLAMOSC import utils; 
+          # from LLAMOSC.agents import contributor, maintainer, issue_creator; 
+          # from LLAMOSC.simulation import sim, issue; 
+          # print('Imports successful')
+          # """
+        # TODO better validation
+
+      - name: Lint with flake8
+        run: flake8 LLAMOSC --select=E9,F63,F7,F82 --count --show-source --statistics
+
+      # to be uncommented and verifified when tests are eventually added
+      # - name: Run tests
+      #   run: |
+      #     if find LLAMOSC -name "test_*.py" | grep -q .; then
+      #       pytest LLAMOSC -v --ignore=LLAMOSC/scripts
+      #     else
+      #       echo "No tests found, skipping pytest."
+      #     fi
