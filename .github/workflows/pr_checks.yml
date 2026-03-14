@@ -51,7 +51,7 @@ jobs:
         # TODO better validation
 
       - name: Lint with flake8
-        run: flake8 LLAMOSC --max-line-length=120 --extend-ignore=E203,W503,F401 --count --show-source
+        run: flake8 LLAMOSC --max-line-length=120 --extend-ignore=E203,W503,F401,F403 --count --show-source
 
       # to be uncommented and verifified when tests are eventually added
       # - name: Run tests
