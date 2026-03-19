@@ -20,14 +20,19 @@ Project #7 (Reinforcement Learning), INCF [Description on Neurostars](https://ne
 Project #8 (Reinforcement Learning), INCF [Description on Neurostars](https://neurostars.org/t/gsoc-2026-project-8-open-source-community-sustainability-llm/35567/1)
 
 ## Guidelines and AI Policy
-We strongly encourage you to share your proposal drafts with the mentors well before the deadline so we can review them and provide feedback. Early drafts help us guide you in refining your approach and significantly improve the quality of the final submission.
+We strongly encourage you to share your proposal drafts with the mentors well before the deadline so we can review them and provide feedback. Early drafts help us guide you in refining your approach and significantly improve the quality of the final submission. 
 
 __Please make sure your proposal clearly outlines:__
 • The problem you plan to address.    
 • Your proposed technical approach.    
 • Expected deliverables and milestones in the Timeline section.   
 • How your work aligns with the research direction and project goals.   
-As mentioned earlier, reviewing the previous project reports and related links will help you understand the context, metrics, and expectations we have for this year’s proposals.   
+As mentioned earlier, reviewing the previous project reports and related links will help you understand the context, metrics, and expectations we have for this year’s proposals. 
+
+
+All submissions will be made using [best practices](https://www.datacamp.com/tutorial/ coding-best-practices-and-guidelines).
+
+
 
 __Note on AI Usage__
 Use of AI is not prohibited, but please avoid relying on it blindly for both proposals and code contributions.     
