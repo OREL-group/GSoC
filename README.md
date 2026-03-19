@@ -30,7 +30,7 @@ __Please make sure your proposal clearly outlines:__
 As mentioned earlier, reviewing the previous project reports and related links will help you understand the context, metrics, and expectations we have for this year’s proposals. 
 
 
-All submissions will be made using [best practices](https://www.datacamp.com/tutorial/ coding-best-practices-and-guidelines).
+All submissions will be made using [best practices](https://www.datacamp.com/tutorial/coding-best-practices-and-guidelines).
 
 
 
