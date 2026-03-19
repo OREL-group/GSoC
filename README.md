@@ -23,11 +23,11 @@ Project #8 (Reinforcement Learning), INCF [Description on Neurostars](https://ne
 We strongly encourage you to share your proposal drafts with the mentors well before the deadline so we can review them and provide feedback. Early drafts help us guide you in refining your approach and significantly improve the quality of the final submission.
 
 __Please make sure your proposal clearly outlines:__
-• The problem you plan to address
-• Your proposed technical approach
-• Expected deliverables and milestones in the Timeline section
-• How your work aligns with the research direction and project goals
-As mentioned earlier, reviewing the previous project reports and related links will help you understand the context, metrics, and expectations we have for this year’s proposals.
+• The problem you plan to address.    
+• Your proposed technical approach.    
+• Expected deliverables and milestones in the Timeline section.   
+• How your work aligns with the research direction and project goals.   
+As mentioned earlier, reviewing the previous project reports and related links will help you understand the context, metrics, and expectations we have for this year’s proposals.   
 
 __Note on AI Usage__
 Use of AI is not prohibited, but please avoid relying on it blindly for both proposals and code contributions.     
