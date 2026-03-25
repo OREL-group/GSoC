@@ -389,30 +389,36 @@ def main():
         axis=ax_cont_exp,
         x_label="Time Step",
         y_label="Contributor Experience",
-        x_max=len(issues),
+        x_max=max(1, time_history[-1]),
         y_max=5,
         title="Contributor Experience Metric",
         lines=lines_cont_exp,
+        legend_loc="upper left",
+        bbox_to_anchor=(1.01, 1),
     )
 
     init_plot(
         axis=ax_code_qal,
         x_label="Time Step",
         y_label="Code Quality",
-        x_max=len(issues),
+        x_max=max(1, time_history[-1]),
         y_max=5,
         title="Simulation Average Code Quality Metric",
         lines=lines_code_qal,
+        legend_loc="upper right",
+        bbox_to_anchor=None,
     )
 
     init_plot(
         axis=ax_cont_mot,
         x_label="Time Step",
         y_label="Contributor Motivation",
-        x_max=len(issues),
+        x_max=max(1, time_history[-1]),
         y_max=10,
         title="Contributor Motivation Metric",
         lines=lines_cont_mot,
+        legend_loc="upper left",
+        bbox_to_anchor=(1.01, 1),
     )
 
     # draw the initial plot
