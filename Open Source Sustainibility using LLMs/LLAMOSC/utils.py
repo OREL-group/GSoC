@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 from loguru import logger
 from rich.console import Console
 from langchain_community.llms import Ollama
@@ -8,11 +9,19 @@ from matplotlib.axes import Axes
 console = Console()
 
 
-def query_ollama(prompt):
-    llm = Ollama(model="llama3")
-    res = llm.invoke(prompt, stop=["<|eot_id|>"])
-    # print(f"OLLAMA response: {res}")
-    return res
+def query_ollama(prompt, retries=3, delay=2):
+    for attempt in range(1, retries + 1):
+        try:
+            llm = Ollama(model="llama3")
+            res = llm.invoke(prompt, stop=["<|eot_id|>"])
+            # print(f"OLLAMA response: {res}")
+            return res
+        except Exception as e:
+            log(f"query_ollama attempt {attempt}/{retries} failed: {e}")
+            if attempt < retries:
+                time.sleep(delay)
+    log(f"query_ollama failed after {retries} attempts. Returning None.")
+    return None
 
 
 def run_command(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
