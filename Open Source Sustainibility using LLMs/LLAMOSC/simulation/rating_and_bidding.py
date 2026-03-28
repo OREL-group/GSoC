@@ -1,4 +1,4 @@
-from LLAMOSC.utils import *
+from .. import utils
 from LLAMOSC.simulation.bid_output_parser import BidOutputParser
 from LLAMOSC.simulation.rag_retriever import RAGRetriever
 from langchain_community.chat_models import ChatOllama
@@ -38,21 +38,37 @@ def rate_contributors_for_issue(
         regex=r"<(\d+)>", output_keys=["bid"], default_output_key="bid"
     )
     bidding_template = f"""
-    {{contributor_content}}
-    Based on the above comment of the contributor, on a scale of 1 to 10, where 1 is not suitable at all and 10 is extremely suitable, rate the contributor's suitability for the following issue:
-    Issue #{maintainer.current_task.id}: {open(maintainer.current_task.filepath).read()}
-    Difficulty: {maintainer.current_task.difficulty}
+You are a {contributor_role} working on a GitHub issue.
 
-    The rating should be inversely proportional to the matching_level, which is the difference between {{contributor_role}} and {maintainer.current_task.difficulty}. If the matching_level is low, bid higher than 5. If the matching_level is high, bid lower than 5.     
-    If experience is 5 in {{contributor_role}}, bid lesser than 3.
-    {bid_parser.get_format_instructions()}
-    Do nothing else.
-    """
+Your experience level affects your bidding behavior.
+
+Contributor Comment:
+{{contributor_content}}
+
+Issue Details:
+- Issue ID: {maintainer.current_task.id}
+- Difficulty: {maintainer.current_task.difficulty}
+
+Instructions:
+- If difficulty is high and your experience is low → give LOW bid
+- If difficulty matches your skill → give HIGH bid
+- Be realistic and vary responses (no generic answers)
+
+{bid_parser.get_format_instructions()}
+
+Only output the bid value.
+"""
 
     for entry in github_discussion:
         if entry["role"] == "system":
             continue
         contributor_role = entry["role"]
+        if contributor_role == "junior":
+           experience_weight = 2
+        elif contributor_role == "mid":
+            experience_weight = 5
+        else:
+             experience_weight = 8
         contributor_content = entry["content"]
         bid_message = bidding_template.format(
             contributor_content=contributor_content,
