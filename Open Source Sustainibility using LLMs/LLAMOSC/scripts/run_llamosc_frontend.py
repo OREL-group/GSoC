@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QDialog,
 )
-from PyQt5.QtCore import pyqtSignal, QObject, QTimer, Qt, QSize, QThread
+from PyQt5.QtCore import pyqtSignal, QObject, QThread, QTimer, Qt, QSize
 from PyQt5.QtGui import QPainter, QBrush, QColor, QTextCursor, QPixmap, QFont
 from PyQt5 import QtTest
 
@@ -61,6 +61,37 @@ from clear_calculator_project import clear_previous_project_directory
 import time
 
 clear_previous_project_directory() # Clear the project directory before starting the simulation
+
+class SimulationWorker(QThread):
+    """runs a single simulation step in a background thread"""
+
+    step_done = pyqtSignal(dict)
+    step_error = pyqtSignal(str)
+    log_update = pyqtSignal(str)
+
+    def __init__(self, app, is_test, timestep, issues, issues_parent_folder, issue):
+        super().__init__()
+        self.app = app
+        self.is_test = is_test
+        self.timestep = timestep
+        self.issues = issues
+        self.issues_parent_folder = issues_parent_folder
+        self.issue = issue
+
+    def run(self):
+        """entry point for the worker thread"""
+        try:
+            result = self.app._run_simulation_step(
+                self.is_test,
+                self.timestep,
+                self.issues,
+                self.issues_parent_folder,
+                self.issue,
+            )
+            self.step_done.emit(result)
+        except Exception as e:
+            self.step_error.emit(str(e))
+
 
 class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
@@ -169,6 +200,9 @@ class SimulationApp(QWidget):
         # Set layout and show window
         self.setLayout(layout)
         self.show()
+
+        ## worker reference
+        self.worker = None
 
     def select_issues_path(self):
         issues_path = QFileDialog.getExistingDirectory(self, "Select Issues Directory")
@@ -362,14 +396,9 @@ class SimulationApp(QWidget):
             else:
                 self.issues_history["pending"]["mars_shot"] += 1
 
-        # time.sleep(5)
-
         # Remove old widgets
         for widget in self.findChildren(QWidget):
             widget.deleteLater()
-
-        # log_and_print(f"Created agents: contributors and maintainers")
-        # time.sleep(2)
 
         self.sim = Simulation(self.contributors)
 
@@ -445,18 +474,46 @@ class SimulationApp(QWidget):
             )
         QtTest.QTest.qWait(1000)
 
-        def run_simulation():
-            for issue in issues:
-                global timestep
-                timestep += 1
-                self.update(test, timestep, issues, issues_parent_folder, issue)
-                print("\n", "-" * 100, "\n")
+        self._pending_issues = list(issues)
+        self._all_issues = issues
+        self._issues_parent_folder = issues_parent_folder
+        self._test_mode = test
+        self._timestep = 0
 
-        self.worker = OllamaWorker(run_simulation)
-        self.worker.error.connect(lambda e: self.show_error_dialog("Simulation Error", e))
+        self._dispatch_next_issue()
+
+    ## Wroker dispatch helpers
+    def _dispatch_next_issue(self):
+        """Start a worker for the next pending issue, or finish if done."""
+        if not self._pending_issues:
+            ## all issues processed
+            return
+
+        issue = self._pending_issues.pop(0)
+        self._timestep +=1
+
+        self.worker = SimulationWorker(
+            app=self,
+            is_test=self._test_mode,
+            timestep=self._timestep,
+            issues=self._all_issues,
+            issues_parent_folder=self._issues_parent_folder,
+            issue=issue,
+        )
+        self.worker.step_done.connect(self._apply_step_result)
+        self.worker.step_error.connect(self._on_step_error)
+        ## chain the next issue once this workers thread has fully finished
+        self.worker.finished.connect(self._dispatch_next_issue)
         self.worker.start()
 
-    def update(
+        print("\n", "-" * 100, "\n")
+
+    def _on_step_error(self, message):
+        """Called on the main thread when the worker raises an exception."""
+        self.show_error_dialog("Simulation Error", message)
+
+    ## data simulation step
+    def _run_simulation_step(
         self,
         is_test,
         timestep,
@@ -464,15 +521,10 @@ class SimulationApp(QWidget):
         issues_parent_folder,
         issue,
     ):
-        # Update the timestep counter
-        self.simulation_window.timestep_counter.setText(str(timestep))
-        # Example of updating logs or other UI elements
-        self.simulation_window.log.setText(f"Simulation timestep: {timestep}")
-
-        # start with all contributors in available state
-        for i in range(self.simulation_window.stick_figure_app.num_stick_figures):
-            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
-        QtTest.QTest.qWait(1000)
+        """Execute one simulation timestep and return a result dict. """
+        result = {}
+        result["timestep"] = timestep
+        result["issue"] = issue
 
         issues_folder = os.path.join(issues_parent_folder, "pending")
         issues_pending = len(os.listdir(issues_folder))
@@ -483,16 +535,12 @@ class SimulationApp(QWidget):
         else:
             issues_solved = 0
 
-        # Current issue
+        # Current issue description
         issue_description = open(issue.filepath).read()
         issue_title = issue_description.split("\n")[0]
-        self.simulation_window.log.setText(
-            self.simulation_window.log.text()
-            + "\n"
-            + f"Current Issue #{issue.id} (Difficulty ({issue.difficulty})): {issue_title}\n"
-        )
+        result["issue_title"] = issue_title
 
-        # from the maintainers, select the maintainer who will be responsible for the issue by random from avilable & eligible maintainers
+        # Pick a responsible maintainer
         selected_maintainer = random.choice(
             [
                 maintainer
@@ -501,6 +549,7 @@ class SimulationApp(QWidget):
             ]
         )
         selected_maintainer.allot_task(issue)
+        result["selected_maintainer"] = selected_maintainer
 
         num_eligible_contributors = len(
             [
@@ -509,128 +558,58 @@ class SimulationApp(QWidget):
                 if contributor.eligible_for_issue(issue)
             ]
         )
-        # display eligible contributors
-        for i in range(num_eligible_contributors):
-            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 1)
-        QtTest.QTest.qWait(1000)
+        result["num_eligible_contributors"] = num_eligible_contributors
+
+        discussion_history = None
+
         if is_test:
-            # put eligible contributors in discussion state
-            for i in range(num_eligible_contributors):
-                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 2)
-            
             if self.algorithm == "c":
-                ## show team formating logic
                 selected_contributor, discussion_history = (
                     self.sim.select_contributor_collaborative(issue)
                 )
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text()
-                    + "\n"
-                    + f"Formed collaborative team with Lead {selected_contributor.name} (Fast Test Mode)."
+                result["selection_log"] = (
+                    f"Formed collaborative team with Lead {selected_contributor.name} (Fast Test Mode)."
                 )
             else:
-                selected_contributor = random.choice(
-                    [
-                        maintainer
-                        for maintainer in self.contributors
-                        if maintainer.eligible_for_issue(issue)
-                    ]
+                eligible = [
+                    c for c in self.contributors
+                    if c.eligible_for_issue(issue)
+                ]
+                if not eligible:
+                    print(f"No eligible contributors for Issue #{issue.id}. Skipping.")
+                    result["skipped"] = True
+                    return result
+                selected_contributor = random.choice(eligible)
+                result["selection_log"] = (
+                    f"Selected contributor {selected_contributor.name} (Fast Test Mode)."
                 )
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text()
-                    + "\n"
-                    + f"Selected contributor {selected_contributor.name} (Fast Test Mode)."
-                )
-            # put one contributor in busy state and all others in available state
-            self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
-            for i in range(
-                1, self.simulation_window.stick_figure_app.num_stick_figures
-            ):
-                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
         else:
             if self.algorithm == "d":
-                # put eligible contributors in discussion state
-                for i in range(num_eligible_contributors):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i, 2
-                    )
                 selected_contributor, discussion_history = (
                     self.sim.select_contributor_decentralized(issue)
                 )
-                formatted_history = format_discussion_history(discussion_history)
-                self.simulation_window.active_discussion_console.append_colored_text(
-                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
-                    color="white",
+                result["selection_log"] = (
+                    f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
                 )
-                # put one contributor in busy state and all others in available state
-                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
-                for i in range(
-                    1, self.simulation_window.stick_figure_app.num_stick_figures
-                ):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i, 4
-                    )
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text()
-                    + "\n"
-                    + f"Selected contributor {selected_contributor.name} by bidding among all contributors in a decentralized manner."
-                )
-
-            elif self.algorithm =="c":
-                for i in range(num_eligible_contributors):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i,2
-                    )
+            elif self.algorithm == "c":
                 selected_contributor, discussion_history = (
                     self.sim.select_contributor_collaborative(issue)
                 )
-                formatted_history = format_discussion_history(discussion_history)
-                self.simulation_window.active_discussion_console.append_colored_text(
-                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
-                    color="white",
+                result["selection_log"] = (
+                    f"Formed collaborative team with Lead {selected_contributor.name} based on LLM assessment."
                 )
-                # one contributor in busy state and other are in available state
-                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
-                for i in range(
-                    1, self.simulation_window.stick_figure_app.num_stick_figures
-                ):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i,4
-                    )
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text()
-                    + "\n"
-                    + f"Formed collaborative team with Lead {selected_contributor.name} based on LLM assessment."
-                )
-
             else:
-                # put eligible contributors in discussion state
-                for i in range(num_eligible_contributors):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i, 2
-                    )
                 selected_contributor, discussion_history = (
                     self.sim.select_contributor_authoritarian(selected_maintainer)
                 )
-                formatted_history = format_discussion_history(discussion_history)
-                self.simulation_window.active_discussion_console.append_colored_text(
-                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
-                    color="white",
+                result["selection_log"] = (
+                    f"Selected contributor {selected_contributor.name} by maintainer rating all contributors in an authoritarian manner."
                 )
-                # put one contributor in busy state and all others in available state
-                self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
-                for i in range(
-                    1, self.simulation_window.stick_figure_app.num_stick_figures
-                ):
-                    self.simulation_window.stick_figure_app.set_stick_figure_position(
-                        i, 4
-                    )
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text()
-                    + "\n"
-                    + f"Selected contributor {selected_contributor.name} by maintainer rating all contributors in an authoritarian manner."
-                )
-        QtTest.QTest.qWait(1000)
+
+        result["selected_contributor"] = selected_contributor
+        result["discussion_history"] = discussion_history
+
+        # Update motivation for non-selected contributors
         for other_contributor in self.contributors:
             if other_contributor.id == selected_contributor.id:
                 continue
@@ -649,18 +628,17 @@ class SimulationApp(QWidget):
             if self.use_acr and not is_test
             else selected_contributor.solve_issue_without_acr(self.project_dir, is_test)
         )
-
-        self.simulation_window.pull_requests_console.append_colored_text(
-            f"\n\n\nPull Request Created for Issue #{issue.id} by contributor {selected_contributor.name}:\n {task_solved}",
-            color="green",
-        )
-        QtTest.QTest.qWait(1000)
+        result["task_solved"] = task_solved
 
         pull_requests_dir = os.path.join(self.project_dir, "pull_requests")
         os.makedirs(pull_requests_dir, exist_ok=True)
-        if task_solved:
 
-            # Find the most recent pull request for the given task_id
+        pr_accepted = None
+        most_recent_pull_request = None
+        pull_request_dir = None
+        pull_request_dirs = []
+
+        if task_solved:
             task_id = issue.id
             pull_request_dirs = [
                 f
@@ -669,7 +647,11 @@ class SimulationApp(QWidget):
             ]
             if len(pull_request_dirs) == 0:
                 log_and_print(f"No pull requests found for task ID: {task_id}")
-                return
+                result["pr_accepted"] = None
+                result["most_recent_pull_request"] = None
+                result["pull_request_dir"] = None
+                result["pull_request_dirs"] = []
+                return result
 
             log_and_print("Solved the assigned issue")
             pull_request_dirs.sort(key=lambda x: int(x.split("_v")[-1]))
@@ -685,19 +667,15 @@ class SimulationApp(QWidget):
                 )
 
             if pr_accepted:
-                message = f"Maintainer {selected_maintainer.name} has merged pull request for Issue #{issue.id}.\n"
-                self.simulation_window.log.setText(
-                    self.simulation_window.log.text() + "\n" + message
-                )
                 # increase experience of the contributor
                 selected_contributor.increase_experience(1, issue.difficulty)
-                # increase no of pull requests and calculate new average code quality of the simulation
+                # increase no of pull requests and calculate new average code quality
                 try:
                     self.sim.update_code_quality(pr_accepted)
                 except Exception:
                     pr_accepted = self.sim.update_code_quality(random.randint(1, 3))
 
-                # update number of pending and solved issues
+                # Update issue difficulty bucket counters
                 if issue.difficulty < 2:
                     self.issues_history["pending"]["moon_shot"] -= 1
                     self.issues_history["solved"]["moon_shot"] += 1
@@ -708,22 +686,11 @@ class SimulationApp(QWidget):
                     self.issues_history["pending"]["mars_shot"] -= 1
                     self.issues_history["solved"]["mars_shot"] += 1
 
-                for category in self.simulation_window.pending_labels.keys():
-                    self.simulation_window.pending_labels[category].setText(
-                        f"{category.replace('_', ' ').title()}: {self.issues_history['pending'][category]}"
-                    )
-                    self.simulation_window.solved_labels[category].setText(
-                        f"{category.replace('_', ' ').title()}: {self.issues_history['solved'][category]}"
-                    )
-                QtTest.QTest.qWait(1000)
-                # make a "merged" folder in the pull_requests folder and move the merged pull request there
+                # Filesystem operations (safe to do off-thread)
                 merged_dir = os.path.join(self.project_dir, "pull_requests", "merged")
                 os.makedirs(merged_dir, exist_ok=True)
-                merged_pull_request_dir = os.path.join(
-                    merged_dir, most_recent_pull_request
-                )
+                merged_pull_request_dir = os.path.join(merged_dir, most_recent_pull_request)
                 os.rename(pull_request_dir, merged_pull_request_dir)
-                # delete the other versions of the pull request for the same task_id
                 for pr_dir in pull_request_dirs:
                     if pr_dir == most_recent_pull_request:
                         continue
@@ -731,24 +698,25 @@ class SimulationApp(QWidget):
                         pr_dir_path = os.path.join(pull_requests_dir, pr_dir)
                         shutil.rmtree(pr_dir_path)
 
-                # make a "solved" folder in the issues folder and move the solved issue there
                 solved_dir = os.path.join(self.project_dir, "issues", "solved")
                 os.makedirs(solved_dir, exist_ok=True)
                 solved_issue_path = os.path.join(solved_dir, f"task_{task_id}.md")
                 os.rename(issue.filepath, solved_issue_path)
                 repo_commit_current_changes(self.project_dir)
-
             else:
                 log_and_print(
                     f"Maintainer {selected_maintainer.name} has rejected pull request for Issue #{issue.id}.\n"
                 )
-                # TODO : make a "rejected" folder in the pull_requests folder and move the rejected pull request there
 
         else:
             log_and_print("Error solving the assigned issue")
-            return
 
-        # update selected_contributor motivation level
+        result["pr_accepted"] = pr_accepted
+        result["most_recent_pull_request"] = most_recent_pull_request
+        result["pull_request_dir"] = pull_request_dir
+        result["pull_request_dirs"] = pull_request_dirs
+
+        # Update selected contributor motivation level
         if is_test:
             selected_contributor.motivation_level += 0.5
         else:
@@ -758,7 +726,8 @@ class SimulationApp(QWidget):
                 task_difficulty=issue.difficulty,
                 code_quality=pr_accepted if pr_accepted else random.randrange(0, 3),
             )
-        # Append new experiences to history
+
+        # Snapshot history for plotting
         self.time_history.append(timestep)
         for contributor in self.contributors:
             self.experience_history[contributor.name].append(contributor.experience)
@@ -771,6 +740,100 @@ class SimulationApp(QWidget):
             if pr_accepted
             else self.code_qal_curr_history.append(random.randint(1, 3))
         )
+        return result
+
+    def _apply_step_result(self, result):
+        """Applying all UI updates from a completed simulation step."""
+        # if the simulation step was skipped update log and return no UI updates needed
+        if result.get("skipped"):
+            issue = result.get("issue")
+            self.simulation_window.log.setText(
+                f"Issue #{issue.id} skipped: no eligible contributors."
+            )
+            return
+
+        timestep = result["timestep"]
+        issue = result["issue"]
+        issue_title = result["issue_title"]
+        selected_contributor = result["selected_contributor"]
+        selected_maintainer = result["selected_maintainer"]
+        num_eligible_contributors = result["num_eligible_contributors"]
+        task_solved = result["task_solved"]
+        pr_accepted = result["pr_accepted"]
+        discussion_history = result["discussion_history"]
+
+        ## update timstamp counter and log
+        self.simulation_window.timestep_counter.setText(str(timestep))
+        self.simulation_window.log.setText(f"Simulation timestep: {timestep}")
+
+        #move all contributors to "available" state
+        for i in range(self.simulation_window.stick_figure_app.num_stick_figures):
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
+        QtTest.QTest.qWait(1000)
+
+        # show current issue in log
+        self.simulation_window.log.setText(
+            self.simulation_window.log.text()
+            + "\n"
+            + f"Current Issue #{issue.id} (Difficulty ({issue.difficulty})): {issue_title}\n"
+        )
+
+        # moving eligible contributors to "eligible" state
+        for i in range(num_eligible_contributors):
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 1)
+        QtTest.QTest.qWait(1000)
+
+        # show contributor selection algorithm result
+        if self._test_mode:
+            for i in range(num_eligible_contributors):
+                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 2)
+        else:
+            if discussion_history:
+                formatted_history = format_discussion_history(discussion_history)
+                self.simulation_window.active_discussion_console.append_colored_text(
+                    f"\n\n\nDiscussion History for Issue #{issue.id}:\n {formatted_history}",
+                    color="white",
+                )
+            for i in range(num_eligible_contributors):
+                self.simulation_window.stick_figure_app.set_stick_figure_position(i, 2)
+
+        self.simulation_window.log.setText(
+            self.simulation_window.log.text()
+            + "\n"
+            + result["selection_log"]
+        )
+
+        # move selected contributor to busy, others back to available
+        self.simulation_window.stick_figure_app.set_stick_figure_position(0, 3)
+        for i in range(1, self.simulation_window.stick_figure_app.num_stick_figures):
+            self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
+
+        QtTest.QTest.qWait(1000)
+
+        # Show pull request result
+        self.simulation_window.pull_requests_console.append_colored_text(
+            f"\n\n\nPull Request Created for Issue #{issue.id} by contributor {selected_contributor.name}:\n {task_solved}",
+            color="green",
+        )
+        QtTest.QTest.qWait(1000)
+
+        if task_solved and pr_accepted:
+            message = f"Maintainer {selected_maintainer.name} has merged pull request for Issue #{issue.id}.\n"
+            self.simulation_window.log.setText(
+                self.simulation_window.log.text() + "\n" + message
+            )
+
+            # Refresh issue counters
+            for category in self.simulation_window.pending_labels.keys():
+                self.simulation_window.pending_labels[category].setText(
+                    f"{category.replace('_', ' ').title()}: {self.issues_history['pending'][category]}"
+                )
+                self.simulation_window.solved_labels[category].setText(
+                    f"{category.replace('_', ' ').title()}: {self.issues_history['solved'][category]}"
+                )
+            QtTest.QTest.qWait(1000)
+
+        ## update all metric plots
         self.simulation_window.update_axes(
             self.time_history,
             self.experience_history,
@@ -780,12 +843,10 @@ class SimulationApp(QWidget):
             self.motivation_history,
         )
 
-        # legend 1-eligible 2 - disucssion 3 -busy 4 - available / all?
-        # put all back in available state
+        # Put all stick figures back to "available" state
         for i in range(self.simulation_window.stick_figure_app.num_stick_figures):
             self.simulation_window.stick_figure_app.set_stick_figure_position(i, 4)
 
-        # Timer to display
         QtTest.QTest.qWait(1000)
 
 

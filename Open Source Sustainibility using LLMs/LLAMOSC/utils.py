@@ -149,7 +149,7 @@ def repo_apply_diff_and_commit(project_dir, diff_file_path, logger=None):
 
     except Exception as e:
         log(f"Unexpected error: {e}")
-        exit(1)
+        raise
 
 
 def log(msg):
@@ -181,7 +181,7 @@ def stop_running_containers():
             container.remove()
     except Exception as e:
         log(f"Error stopping/removing container: {e}")
-        exit(1)
+        raise
 
 
 def init_plot(axis: Axes, x_label, y_label, x_max, y_max, title):

@@ -180,9 +180,6 @@ class StickFigureApp(QWidget):
                 stick_figure.set_position(new_x, new_y)
 
         self.canvas.draw()
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.move_stick_figures)
-        self.timer.start(100)  # Move figures every 0.1 second
 
         # for i in range(self.num_stick_figures):
         #     self.set_stick_figure_position(i,1)
@@ -385,10 +382,7 @@ class MyMainWindow(QMainWindow):
         self.lower_plots_layout.addWidget(QLabel("Contributor Motivation"))
         self.lower_plots_layout.addWidget(self.plot_cont_motiv)
 
-        # Timer for updating layout
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.stick_figure_app.move_stick_figures)
-        self.timer.start(200)  # Update every second
+        # Animations handled by StickFigureApp's own timer
 
     def create_issues_bar(self):
         # Define colors and icons
