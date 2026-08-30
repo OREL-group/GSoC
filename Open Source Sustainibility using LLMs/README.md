@@ -70,7 +70,6 @@ LLAMOSC integrates multiple capabilities to automate and optimize open-source co
  
 ### Demo 
 ![LLAMOSC Simulation GUI](https://github.com/user-attachments/assets/91ccaf5c-ff2f-4391-9618-273aaaef493c)
-You can find the full demo at https://youtu.be/NuKh1i70X8Q .
 
 ## Installation instructions
 
@@ -217,10 +216,6 @@ The simulation assesses different metrics such as:
 - **Contributor Motivation** (how well agents interact and based on their initial level as well)
 
 These metrics help in evaluating the impact of various practices and their level of sustainibility of open-source communities.
-
-## Additional Resources
-
-- **Project Report:** Read more about LLAMOSC in the detailed GSoC 2024 report: [Sarrah's Blog](https://github.com/sarrah-basta/blogs/blob/gh-pages/_posts/2024-08-24-GSoC_'24_OREL_INCF_Project_Report.md)
 
 ## Future Work
 
