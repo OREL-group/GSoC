@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QDialog,
 )
-from PyQt5.QtCore import pyqtSignal, QObject, QTimer, Qt, QSize
+from PyQt5.QtCore import pyqtSignal, QObject, QTimer, Qt, QSize, QThread
 from PyQt5.QtGui import QPainter, QBrush, QColor, QTextCursor, QPixmap, QFont
 from PyQt5 import QtTest
 
@@ -66,10 +66,29 @@ class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
 
 
+class OllamaWorker(QThread):
+    result_ready = pyqtSignal(str)
+    error = pyqtSignal(str)
+
+    def __init__(self, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            result = self.func(*self.args, **self.kwargs)
+            self.result_ready.emit(str(result))
+        except Exception as e:
+            self.error.emit(str(e))
+
+
 class SimulationApp(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.worker = None  # keep reference or it gets garbage collected
         self.initUI()
 
     def initUI(self):
@@ -426,17 +445,16 @@ class SimulationApp(QWidget):
             )
         QtTest.QTest.qWait(1000)
 
-        for issue in issues:
-            timestep += 1
-            self.update(
-                test,
-                timestep,
-                issues,
-                issues_parent_folder,
-                issue,
-            )
-            # Print a separator for better readability
-            print("\n", "-" * 100, "\n")
+        def run_simulation():
+            for issue in issues:
+                global timestep
+                timestep += 1
+                self.update(test, timestep, issues, issues_parent_folder, issue)
+                print("\n", "-" * 100, "\n")
+
+        self.worker = OllamaWorker(run_simulation)
+        self.worker.error.connect(lambda e: self.show_error_dialog("Simulation Error", e))
+        self.worker.start()
 
     def update(
         self,

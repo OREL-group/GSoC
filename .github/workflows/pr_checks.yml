@@ -1,0 +1,68 @@
+---
+# Basic CI checks for pull requests.
+# Runs syntax/import validation, linting, and tests (if present).
+
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  pr-checks:
+    name: PR Checks
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: "Open Source Sustainibility using LLMs"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+          pip install flake8 pytest
+
+      - name: Python syntax validation
+        run: python3 -m compileall -q LLAMOSC
+
+      - name: Import validation
+        run: |
+          python3 - <<EOF
+          import sys
+          sys.path.insert(0, '.')
+          from LLAMOSC import utils
+          from LLAMOSC.agents import contributor, maintainer, issue_creator
+          from LLAMOSC.simulation import sim, issue
+          print("Imports successful")
+          EOF
+
+      - name: Lint with flake8
+        run: |
+          if compgen -G "LLAMOSC/*.py" > /dev/null; then
+            flake8 LLAMOSC \
+              --max-line-length=120 \
+              --extend-ignore=E203,W503 \
+              --count \
+              --show-source
+          else
+            echo "No Python files found in LLAMOSC, skipping flake8."
+          fi
+
+      - name: Run tests
+        run: |
+          if find LLAMOSC -name "test_*.py" | grep -q .; then
+            pytest LLAMOSC -v --ignore=LLAMOSC/scripts
+          else
+            echo "No tests found, skipping pytest."
+          fi
