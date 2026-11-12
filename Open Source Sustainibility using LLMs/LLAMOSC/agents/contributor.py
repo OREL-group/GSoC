@@ -409,10 +409,16 @@ class ContributorAgent:
         if self.assigned_issue is not None:
             task_id = self.assigned_issue.id
 
-        # Instead of executing acr to solve the issue, we will use rng to decide if the issue is solved or not
-        # if random.randint(0, 1) == 1: # 50 % cance is too little
+        # calculating experirnce based on Exp,mot and difficulty
+        # Experience (1-5), Motivation (0-10), Difficulty (assumed 1-5)
+        base_chance = 0.5 
+        exp_factor = (self.experience - getattr(self.assigned_issue, 'difficulty', 3)) * 0.1 
+        mot_factor = (self.motivation_level - 5) * 0.05 
 
-        if True:
+        # Caping the probability between 10% and 95% to ensure realistic variance
+        success_probability = max(0.1, min(0.95, base_chance + exp_factor + mot_factor))
+
+        if random.random() <= success_probability:
 
             # Find the most recent .diff file in the container
             task_id = self.assigned_issue.id
